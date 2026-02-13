@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="POMuswick.Views.SubcategoryPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:POMuswick.Controls"
+    xmlns:local="clr-namespace:POMuswick.ViewModels"
+    x:Name="SubcategoriesPage"
+    Title="Product Subcategories">
+
+    <Shell.SearchHandler>
+        <controls:MySearchHandler
+            DisplayMemberName="Name"
+            Placeholder="Search Products"
+            ShowsResults="false" />
+    </Shell.SearchHandler>
+
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="55" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="80" />
+            </Grid.RowDefinitions>
+
+            <controls:CustomHeader Grid.Row="0" />
+
+            <StackLayout
+                Grid.Row="1"
+                Orientation="Vertical"
+                Spacing="0"
+                VerticalOptions="Start">
+                <Label
+                    x:Name="CategoryLabel"
+                    Padding="0,15,0,15"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalOptions="Center"
+                    Text="{Binding Category}"
+                    TextColor="Red" />
+                <BoxView
+                    BackgroundColor="gray"
+                    HeightRequest="3"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill"
+                    Color="lightgray" />
+            </StackLayout>
+
+            <CollectionView
+                x:Name="SubcategoriesListSearch"
+                Grid.Row="2"
+                SelectionChanged="OnSubcategoryTapped"
+                SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout
+                                Orientation="Vertical"
+                                Spacing="0"
+                                VerticalOptions="Start">
+                                <Label
+                                    Margin="0,0,0,0"
+                                    IsVisible="false"
+                                    Text="{Binding Code}" />
+                                <Label
+                                    Margin="60,15,0,15"
+                                    BackgroundColor="White"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    HorizontalOptions="Start"
+                                    LineBreakMode="WordWrap"
+                                    Text="{Binding Description}"
+                                    TextColor="black"
+                                    VerticalOptions="Start" />
+                                <BoxView
+                                    BackgroundColor="gray"
+                                    HeightRequest="3"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Fill"
+                                    Color="lightgray" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <controls:CustomToolbar Grid.Row="3" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="POMuswick.Views.ShoppingCartPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:POMuswick.Controls"
+    xmlns:local="clr-namespace:POMuswick.ViewModels"
+    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    Title="Shopping Cart"
+    Shell.TabBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:StringToColorConverter x:Key="StringToColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="40,Auto,*,80">
+
+        <!--  HEADER  -->
+        <controls:CustomHeader Grid.Row="0" />
+
+        <!--  SUMMARY + ACTIONS  -->
+        <Grid
+            Grid.Row="1"
+            Padding="10"
+            ColumnDefinitions="*,Auto">
+
+            <!--  LEFT INFO  -->
+            <VerticalStackLayout Spacing="4">
+                <HorizontalStackLayout>
+                    <Label Text="Items:" WidthRequest="70" />
+                    <Label FontAttributes="Bold" Text="{Binding CartItems}" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout>
+                    <Label Text="Pieces:" WidthRequest="70" />
+                    <Label FontAttributes="Bold" Text="{Binding CartPieces}" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout>
+                    <Label Text="Total:" WidthRequest="70" />
+                    <Label FontAttributes="Bold" Text="{Binding CartTotal}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!--  BUTTONS  -->
+            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                <Button
+                    x:Name="btnCheckout"
+                    BackgroundColor="Blue"
+                    Clicked="btnCheckout_Clicked"
+                    Command="{Binding OpenCheckout}"
+                    CornerRadius="10"
+                    HeightRequest="35"
+                    Text="Checkout"
+                    TextColor="White"
+                    WidthRequest="130" />
+
+                <Button
+                    x:Name="btnSignIn"
+                    BackgroundColor="Blue"
+                    Clicked="btnSignIn_Clicked"
+                    Command="{Binding OpenSignIn}"
+                    CornerRadius="10"
+                    HeightRequest="35"
+                    Text="Sign In"
+                    TextColor="White"
+                    WidthRequest="130" />
+            </VerticalStackLayout>
+
+        </Grid>
+
+        <!--  TITLE BAR  -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,1,*">
+
+            <HorizontalStackLayout
+                Grid.Row="0"
+                Padding="10"
+                HorizontalOptions="Center">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="20"
+                    Text="Items"
+                    TextColor="Blue"
+                    VerticalOptions="Center" />
+
+                <ImageButton
+                    x:Name="btnClearCart"
+                    Margin="20,0,0,0"
+                    BackgroundColor="Transparent"
+                    Clicked="btnClearCart_Clicked"
+                    HeightRequest="28"
+                    Source="delete.png"
+                    WidthRequest="28" />
+
+
+
+            </HorizontalStackLayout>
+            <BoxView
+                Grid.Row="1"
+                BackgroundColor="Gray"
+                HeightRequest="1"
+                Color="LightGray" />
+
+            <CollectionView
+                x:Name="ItemsListCart"
+                Grid.Row="2"
+                Margin="0,10,0,0"
+                ItemsSource="{Binding CartItemList}"
+                SelectionMode="None">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <controls:CustomListItem />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </Grid>
+
+        <!--  BOTTOM TOOLBAR (FIXED 80)  -->
+        <controls:CustomToolbar Grid.Row="3" HeightRequest="80" />
+
+    </Grid>
+</ContentPage>

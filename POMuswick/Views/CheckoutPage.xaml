@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="POMuswick.Views.CheckoutPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:POMuswick.Controls"
+    xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+    x:Name="Checkout"
+    Title="Checkout"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
+        </Grid.RowDefinitions>
+
+        <!--  HEADER  -->
+        <controls:CustomHeader Grid.Row="0" />
+
+        <!--  BODY  -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="0">
+                <BoxView
+                    x:Name="DeliveryBlock"
+                    HeightRequest="3"
+                    Color="Gray" />
+
+                <!--  DELIVERY / PICKUP  -->
+                <HorizontalStackLayout HorizontalOptions="Center">
+
+                    <!--  DELIVERY  -->
+                    <Border
+                        x:Name="Delivery"
+                        Margin="10"
+                        BackgroundColor="Gray"
+                        HeightRequest="170"
+                        Stroke="White"
+                        StrokeShape="RoundRectangle 10"
+                        WidthRequest="180">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnDelivery" />
+                        </Border.GestureRecognizers>
+
+                        <VerticalStackLayout>
+                            <HorizontalStackLayout HeightRequest="60">
+                                <Label
+                                    FontFamily="FontAwesomeFreeSolid"
+                                    FontSize="18"
+                                    Text="&#xF0D1;"
+                                    TextColor="Blue" />
+                                <Label
+                                    FontSize="16"
+                                    Text="Delivery"
+                                    TextColor="Blue" />
+                                <Label
+                                    FontFamily="FontAwesomeFreeSolid"
+                                    IsVisible="{Binding IsDeliveryHighlighted}"
+                                    Text="&#xF00C;"
+                                    TextColor="Blue" />
+                            </HorizontalStackLayout>
+
+                            <VerticalStackLayout Margin="15,10,0,0">
+                                <Label FontSize="11" Text="{Binding CompanyName}" />
+                                <Label
+                                    x:Name="DeliveryAddress"
+                                    FontSize="11"
+                                    Text="{Binding CompanyAddress}" />
+                                <Label FontSize="11" Text="{Binding CompanyCityStateZip}" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  PICKUP  -->
+                    <Border
+                        x:Name="Pickup"
+                        Margin="10"
+                        BackgroundColor="Gray"
+                        HeightRequest="170"
+                        Stroke="White"
+                        StrokeShape="RoundRectangle 10"
+                        WidthRequest="180">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnPickup" />
+                        </Border.GestureRecognizers>
+
+                        <VerticalStackLayout>
+                            <HorizontalStackLayout HeightRequest="60">
+                                <Label
+                                    FontFamily="FontAwesomeFreeSolid"
+                                    FontSize="18"
+                                    Text="&#xF474;"
+                                    TextColor="Blue" />
+                                <Label
+                                    FontSize="16"
+                                    Text="Pickup"
+                                    TextColor="Blue" />
+                                <Label
+                                    FontFamily="FontAwesomeFreeSolid"
+                                    IsVisible="{Binding IsPickupHighlighted}"
+                                    Text="&#xF00C;"
+                                    TextColor="Blue" />
+                            </HorizontalStackLayout>
+
+                            <VerticalStackLayout Margin="15,10,0,0">
+                                <Label FontSize="11" Text="{Binding LocationName}" />
+                                <Label FontSize="11" Text="{Binding LocationAddress}" />
+                                <Label FontSize="11" Text="{Binding LocationCityStateZip}" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </HorizontalStackLayout>
+
+                <BoxView
+                    BackgroundColor="gray"
+                    HeightRequest="3"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill"
+                    Color="LightGray" />
+
+                <!--  SUMMARY  -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
+
+                    <VerticalStackLayout Padding="20">
+                        <Label Text="{Binding CartItems, StringFormat='Items: {0}'}" />
+                        <Label Text="{Binding CartPieces, StringFormat='Pieces: {0}'}" />
+                        <Label Text="{Binding CartTotal, StringFormat='Total: {0}'}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Padding="20">
+                        <Button
+                            BackgroundColor="Blue"
+                            Clicked="OnPlaceOrderClicked"
+                            Text="Place Order"
+                            TextColor="White" />
+
+                        <HorizontalStackLayout>
+                            <CheckBox
+                                x:Name="HoldForReviewCheckbox"
+                                IsChecked="{Binding HoldForReview}"
+                                VerticalOptions="Center"
+                                Color="Blue" />
+                            <Label
+                                x:Name="HoldForReviewLabel"
+                                Text="Hold For Review"
+                                VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!--  ITEM HEADER  -->
+                <Label
+                    BackgroundColor="White"
+                    FontAttributes="Bold"
+                    FontSize="20"
+                    Text="Items"
+                    TextColor="Blue" />
+
+
+                <BoxView
+                    BackgroundColor="gray"
+                    HeightRequest="3"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill"
+                    Color="lightgray" />
+
+                <!--  CART LIST  -->
+                <CollectionView
+                    x:Name="ItemsListCart"
+                    ItemsSource="{Binding CartItemList}"
+                    SelectionMode="None">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <VerticalStackLayout Padding="10">
+                                <Label
+                                    FontAttributes="Bold"
+                                    Text="{Binding Description}"
+                                    TextColor="Blue" />
+
+                                <HorizontalStackLayout>
+                                    <ffimageloading:CachedImage
+                                        Margin="5"
+                                        Aspect="AspectFit"
+                                        HeightRequest="90"
+                                        Source="{Binding ImageURL}"
+                                        WidthRequest="90" />
+
+                                    <VerticalStackLayout VerticalOptions="Center">
+                                        <HorizontalStackLayout>
+                                            <Label FontAttributes="Bold" Text="{Binding ItemNoDisplay}" />
+                                            <Label Text="{Binding ItemNoDisplayUPC}" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding CategoryDesc}" />
+                                        <HorizontalStackLayout WidthRequest="150">
+                                            <Label
+                                                Margin="5,0,0,0"
+                                                BackgroundColor="White"
+                                                FontAttributes="Bold"
+                                                FontSize="20"
+                                                IsVisible="{Binding IsLoggedIn}"
+                                                MaxLines="1"
+                                                Text="{Binding PriceDisplay}"
+                                                TextColor="Black" />
+                                            <Label
+                                                Margin="0,5,0,0"
+                                                BackgroundColor="White"
+                                                FontSize="14"
+                                                IsVisible="{Binding IsLoggedIn}"
+                                                Text="{Binding SizeUOM}"
+                                                TextColor="Black" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding QtyOrder, StringFormat='Qty: {0}'}" />
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+
+                                <BoxView
+                                    BackgroundColor="gray"
+                                    HeightRequest="3"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Fill"
+                                    Color="lightgray" />
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!--  TOOLBAR  -->
+        <controls:CustomToolbar Grid.Row="2" />
+
+    </Grid>
+</ContentPage>

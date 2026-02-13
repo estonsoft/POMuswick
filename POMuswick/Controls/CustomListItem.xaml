@@ -1,0 +1,121 @@
+﻿<ContentView
+    x:Class="POMuswick.Controls.CustomListItem"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:POMuswick.Controls"
+    xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui">
+
+    <Grid
+        Padding="10"
+        ColumnDefinitions="*,*,*"
+        RowDefinitions="*,*,*,*,*">
+
+        <!--  TITLE  -->
+        <Label
+            Grid.Row="0"
+            Grid.ColumnSpan="3"
+            FontAttributes="Bold"
+            FontSize="16"
+            Text="{Binding Description}"
+            TextColor="RoyalBlue" />
+
+        <!--  IMAGE  -->
+        <ff:CachedImage
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="10"
+            Aspect="AspectFit"
+            ErrorPlaceholder="missing_item.jpg"
+            HeightRequest="90"
+            LoadingPlaceholder="missing_item.jpg"
+            Source="{Binding ImageURL}"
+            WidthRequest="90" />
+
+        <!--  DETAILS  -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Grid.Column="1"
+            Spacing="2">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="14"
+                Text="{Binding ItemNoDisplay}"
+                TextColor="Black" />
+            <Label FontSize="12" Text="{Binding ItemNoDisplayUPC}" />
+            <Label FontSize="14" Text="{Binding CategoryDesc}" />
+
+            <!--  STOCK  -->
+            <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}" Spacing="4">
+                <Label
+                    FontSize="14"
+                    IsVisible="{Binding IsQOHVisible}"
+                    Text="QOH:" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    IsVisible="{Binding IsQOHRedVisible}"
+                    Text="{Binding QOH}"
+                    TextColor="Red" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    IsVisible="{Binding IsQOHBlackVisible}"
+                    Text="{Binding QOH}" />
+                <Label
+                    FontSize="12"
+                    IsVisible="{Binding IsInStockVisible}"
+                    Text="In Stock" />
+                <Label
+                    FontSize="12"
+                    IsVisible="{Binding IsOutOfStockVisible}"
+                    Text="Out Of Stock"
+                    TextColor="Red" />
+                <Label
+                    BackgroundColor="White"
+                    FontSize="12"
+                    IsVisible="{Binding IsMaxOrderQtyVisible}"
+                    Text="{Binding MaxOrderQtyDisplay}"
+                    TextColor="Black" />
+            </HorizontalStackLayout>
+            <!--  PRICE  -->
+            <HorizontalStackLayout
+                Grid.Row="2"
+                Grid.ColumnSpan="3"
+                Spacing="4">
+                <Label
+                    BackgroundColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    IsVisible="{Binding IsPriceVisible}"
+                    Text="{Binding PriceDisplay}" />
+                <Label
+                    BackgroundColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Text="{Binding SizeUOM}"
+                    TextColor="Black" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <controls:CustomStepper
+            x:Name="stepper"
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            Margin="0,5,0,0"
+            IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
+            IsStepperVisible="{Binding IsStepperVisible}"
+            ItemNo="{Binding ItemNo}"
+            MaxOrderQty="{Binding MaxOrderQty}"
+            Text="{Binding QtyOrder}"
+            UOM="{Binding UOM}" />
+        <!--  DIVIDER  -->
+        <BoxView
+            Grid.Row="4"
+            Grid.ColumnSpan="3"
+            BackgroundColor="gray"
+            HeightRequest="1"
+            Color="LightGray" />
+
+    </Grid>
+</ContentView>

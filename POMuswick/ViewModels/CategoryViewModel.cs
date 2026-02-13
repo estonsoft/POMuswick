@@ -1,0 +1,73 @@
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+
+namespace POMuswick.ViewModels;
+
+public class CategoryViewModel : BaseViewModel
+{
+    private Category _selectedItem;
+
+    public ObservableCollection<Category> Categories { get; }
+    public Command LoadCategoriesCommand { get; }
+    public Command<Category> CategoryTapped { get; }
+
+    public CategoryViewModel()
+    {
+        Title = "Categories";
+        Categories = new ObservableCollection<Category>();
+        LoadCategoriesCommand = new Command(async () => await ExecuteLoadCategoriesCommand());
+
+        CategoryTapped = new Command<Category>(OnCategorySelected);
+    }
+
+    async Task ExecuteLoadCategoriesCommand()
+    {
+        IsBusy = true;
+
+        try
+        {
+            //Database db = new Database();
+
+            Categories.Clear();
+            var items = App.g_db.GetCategories();
+            foreach (var item in items)
+            {
+                Categories.Add(item);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public void OnAppearing()
+    {
+        IsBusy = true;
+        SelectedItem = null;
+    }
+
+    public Category SelectedItem
+    {
+        get => _selectedItem;
+        set
+        {
+            SetProperty(ref _selectedItem, value);
+            OnCategorySelected(value);
+        }
+    }
+
+    async void OnCategorySelected(Category category)
+    {
+        if (category == null)
+            return;
+
+        await App.Current.MainPage.DisplayAlert("Muswick Wholesale Grocers", "Category Selected (tapped)", "Ok");
+        // This will push the ItemDetailPage onto the navigation stack
+        //await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
+    }
+}

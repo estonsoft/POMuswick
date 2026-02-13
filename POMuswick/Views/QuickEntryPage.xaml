@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="POMuswick.Views.QuickEntryPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:POMuswick.Controls"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:ffImage="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+    xmlns:scanditBarcode="clr-namespace:Scandit.DataCapture.Barcode.Ar.UI.Maui;assembly=ScanditBarcodeCaptureMaui"
+    xmlns:scanditCore="clr-namespace:Scandit.DataCapture.Core.UI.Maui;assembly=ScanditCaptureCoreMaui"
+    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    Title="Quick Entry"
+    BackgroundColor="White"
+    Shell.NavBarIsVisible="False">
+
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <controls:CustomHeader Grid.Row="0" />
+
+            <ScrollView Grid.Row="1">
+                <StackLayout
+                    Padding="0,10,0,0"
+                    BackgroundColor="White"
+                    VerticalOptions="Start">
+                    <Grid>
+                        <scanditCore:DataCaptureView
+                            x:Name="ScannerView"
+                            DataCaptureContext="{Binding DataCaptureContext}"
+                            HeightRequest="180"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="200" />
+                        <!--<Label Text="" TextDecorations="Underline" Margin="0,-105,0,0" HeightRequest="2" WidthRequest="200" FontSize="14" HorizontalOptions="Fill" BackgroundColor="RoyalBlue" TextColor="RoyalBlue"/>-->
+                        <StackLayout
+                            x:Name="TapToScan"
+                            HorizontalOptions="Center"
+                            IsVisible="false"
+                            VerticalOptions="Center">
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnScannerEnable" />
+                            </StackLayout.GestureRecognizers>
+                            <Label
+                                FontAttributes="Bold"
+                                FontFamily="FontAwesomePro6Regular"
+                                FontSize="48"
+                                HorizontalOptions="Center"
+                                Text="&#xF030;"
+                                TextColor="Red"
+                                VerticalOptions="Center" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="20"
+                                HorizontalOptions="Center"
+                                Text="Tap To Scan"
+                                TextColor="Red"
+                                VerticalOptions="Center" />
+                        </StackLayout>
+                    </Grid>
+
+                    <StackLayout
+                        Margin="0,10,0,0"
+                        HorizontalOptions="Center"
+                        Orientation="Horizontal"
+                        VerticalOptions="Center">
+                        <Entry
+                            x:Name="ScanItem"
+                            Margin="0,0,0,0"
+                            Completed="ScanItem_Completed"
+                            FontSize="18"
+                            HeightRequest="45"
+                            HorizontalOptions="Start"
+                            Keyboard="Numeric"
+                            Placeholder="Item # or UPC"
+                            PlaceholderColor="Gray"
+                            VerticalOptions="Center"
+                            WidthRequest="200" />
+                        <Button
+                            x:Name="EnterButton"
+                            Margin="10,0,0,0"
+                            BackgroundColor="RoyalBlue"
+                            Clicked="EnterButton_Clicked"
+                            CornerRadius="10"
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            HeightRequest="35"
+                            HorizontalOptions="Start"
+                            Text="  Enter  "
+                            TextColor="White"
+                            TextTransform="None" />
+
+                    </StackLayout>
+                    <StackLayout
+                        Margin="0,10,0,0"
+                        Orientation="Vertical"
+                        Spacing="0"
+                        VerticalOptions="Fill">
+                        <Label
+                            x:Name="Description"
+                            Margin="20,0,0,0"
+                            BackgroundColor="White"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            HorizontalOptions="Fill"
+                            TextColor="Blue" />
+                        <Label
+                            x:Name="Message"
+                            Margin="0,0,0,0"
+                            BackgroundColor="White"
+                            FontSize="16"
+                            HorizontalOptions="Center"
+                            IsVisible="false"
+                            TextColor="Red" />
+                        <StackLayout
+                            Margin="0,5,0,0"
+                            HorizontalOptions="Fill"
+                            Orientation="Horizontal"
+                            VerticalOptions="Center">
+                            <ffImage:CachedImage
+                                x:Name="ImageURL"
+                                Margin="15,15,15,15"
+                                Aspect="AspectFit"
+                                DownsampleToViewSize="true"
+                                HeightRequest="90"
+                                HorizontalOptions="Fill"
+                                RetryCount="100"
+                                VerticalOptions="Fill"
+                                WidthRequest="90">
+                                <ffImage:CachedImage.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnShowImage" />
+                                </ffImage:CachedImage.GestureRecognizers>
+                            </ffImage:CachedImage>
+                            <StackLayout
+                                Margin="0,0,0,0"
+                                HorizontalOptions="Fill"
+                                Orientation="Vertical"
+                                VerticalOptions="Center">
+                                <StackLayout
+                                    Margin="0,0,0,0"
+                                    HorizontalOptions="Fill"
+                                    Orientation="Horizontal"
+                                    VerticalOptions="Fill">
+                                    <Label
+                                        x:Name="ItemNoDisplay"
+                                        Margin="5,5,0,0"
+                                        BackgroundColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        HorizontalOptions="Fill"
+                                        TextColor="Black" />
+                                    <Label
+                                        x:Name="ItemNoDisplayUPC"
+                                        Margin="10,8,0,0"
+                                        BackgroundColor="White"
+                                        FontSize="12"
+                                        HorizontalOptions="Fill"
+                                        TextColor="Black" />
+                                </StackLayout>
+                                <Label
+                                    Margin="{OnPlatform iOS='5,-4,0,0',
+                                                        Android='5,-8,0,0',
+                                                        Default='5,-8,0,0'}"
+                                    BackgroundColor="White"
+                                    FontSize="14"
+                                    HorizontalOptions="Fill"
+                                    Text="{Binding CategoryDesc}"
+                                    TextColor="Black" />
+                                <StackLayout
+                                    x:Name="StockRow"
+                                    Margin="{OnPlatform iOS='0,-4,0,0',
+                                                        Android='0,-8,0,0',
+                                                        Default='0,-8,0,0'}"
+                                    HorizontalOptions="Fill"
+                                    Orientation="Horizontal"
+                                    VerticalOptions="Fill">
+                                    <Label
+                                        x:Name="QOHLabel"
+                                        Margin="5,0,0,0"
+                                        BackgroundColor="White"
+                                        FontSize="14"
+                                        HorizontalOptions="Fill"
+                                        TextColor="Black"
+                                        VerticalOptions="Fill" />
+                                    <Label
+                                        x:Name="QOHRed"
+                                        Margin="0,0,0,0"
+                                        BackgroundColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        HorizontalOptions="Fill"
+                                        Text="{Binding QOH}"
+                                        TextColor="Red"
+                                        VerticalOptions="Fill" />
+                                    <Label
+                                        x:Name="QOHBlack"
+                                        Margin="0,0,0,0"
+                                        BackgroundColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        HorizontalOptions="Fill"
+                                        Text="{Binding QOH}"
+                                        TextColor="Black"
+                                        VerticalOptions="Fill" />
+                                    <Label
+                                        x:Name="QOHInStock"
+                                        Margin="5,0,0,0"
+                                        BackgroundColor="White"
+                                        FontSize="12"
+                                        HorizontalOptions="Fill"
+                                        Text="In Stock"
+                                        TextColor="Black"
+                                        VerticalOptions="Fill" />
+                                    <Label
+                                        x:Name="QOHOutOfStock"
+                                        Margin="5,0,0,0"
+                                        BackgroundColor="White"
+                                        FontSize="12"
+                                        HorizontalOptions="Fill"
+                                        Text="Out Of Stock"
+                                        TextColor="Red"
+                                        VerticalOptions="Fill" />
+                                    <Label
+                                        x:Name="MaxOrderQty"
+                                        Margin="5,0,0,0"
+                                        BackgroundColor="White"
+                                        FontSize="12"
+                                        HorizontalOptions="Fill"
+                                        TextColor="Black"
+                                        VerticalOptions="Fill" />
+                                </StackLayout>
+                                <StackLayout
+                                    Margin="0,0,0,0"
+                                    Orientation="Horizontal"
+                                    WidthRequest="130">
+                                    <Label
+                                        x:Name="PriceDisplay"
+                                        Margin="5,0,0,0"
+                                        BackgroundColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="20"
+                                        HorizontalOptions="Fill"
+                                        MaxLines="1"
+                                        TextColor="Black"
+                                        VerticalOptions="Fill" />
+                                    <Label
+                                        x:Name="SizeUOM"
+                                        Margin="0,6,0,0"
+                                        BackgroundColor="White"
+                                        FontSize="14"
+                                        HorizontalOptions="Fill"
+                                        TextColor="Black"
+                                        VerticalOptions="Fill" />
+                                </StackLayout>
+                            </StackLayout>
+                        </StackLayout>
+                    </StackLayout>
+                    <StackLayout
+                        x:Name="QuickEntryStepper"
+                        Margin="0,0,0,0"
+                        HorizontalOptions="Center"
+                        Orientation="Horizontal"
+                        VerticalOptions="Center">
+                        <ImageButton
+                            x:Name="MinusButton"
+                            Margin="0,5,0,5"
+                            BackgroundColor="Transparent"
+                            Clicked="MinusButton_Clicked"
+                            HeightRequest="50"
+                            HorizontalOptions="Center"
+                            Source="blue_minus.png"
+                            VerticalOptions="Center"
+                            WidthRequest="40" />
+                        <Label
+                            x:Name="QtyStepper"
+                            Margin="10,0,0,0"
+                            FontAttributes="Bold"
+                            FontSize="24"
+                            HorizontalOptions="Center"
+                            TextColor="black"
+                            VerticalOptions="Center" />
+                        <ImageButton
+                            x:Name="PlusButton"
+                            Margin="10,5,0,5"
+                            BackgroundColor="Transparent"
+                            Clicked="PlusButton_Clicked"
+                            HeightRequest="50"
+                            HorizontalOptions="Center"
+                            Source="blue_plus.png"
+                            VerticalOptions="Center"
+                            WidthRequest="40" />
+                    </StackLayout>
+                    <Button
+                        x:Name="AddToOrderButton"
+                        Margin="0,0,0,0"
+                        Padding="0,0,0,0"
+                        BackgroundColor="Blue"
+                        Clicked="AddToOrderButton_Clicked"
+                        CornerRadius="10"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        HeightRequest="35"
+                        HorizontalOptions="Center"
+                        Text="     Add To Order     "
+                        TextColor="White"
+                        TextTransform="None" />
+                    <Button
+                        x:Name="UpdateOrderButton"
+                        Margin="0,0,0,0"
+                        Padding="0,0,0,0"
+                        BackgroundColor="Blue"
+                        Clicked="AddToOrderButton_Clicked"
+                        CornerRadius="10"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        HeightRequest="35"
+                        HorizontalOptions="Center"
+                        Text="     Update Qty     "
+                        TextColor="white"
+                        TextTransform="None" />
+                </StackLayout>
+            </ScrollView>
+            <controls:CustomToolbar Grid.Row="2" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
