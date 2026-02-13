@@ -60,6 +60,7 @@
             {
                 String sCategories = response;
                 String[] aCategories = sCategories.Split('~');
+
                 if (aCategories.Length > 1)
                 {
                     //Database db = new Database();
@@ -89,7 +90,7 @@
 
                             try
                             {
-                                //App.g_db.SaveCategory(cat);
+                                App.g_db.SaveCategory(cat);
                             }
                             catch (Exception ex)
                             {
@@ -106,7 +107,7 @@
 
                             try
                             {
-                                //App.g_db.SaveSubcategory(subcat);
+                                App.g_db.SaveSubcategory(subcat);
                             }
                             catch (Exception ex)
                             {
@@ -121,13 +122,13 @@
                     App.g_HomePageCategoryList = App.g_db.GetHomePageCategories();
                 }
 
-                //try
-                //{
-                //    App.g_HomePage.LoadCategories();
-                //}
-                //catch (Exception ex)
-                //{
-                //}
+                try
+                {
+                    //App.g_HomePage.LoadCategories();
+                }
+                catch (Exception ex)
+                {
+                }
 
                 try
                 {
@@ -174,16 +175,19 @@
             Console.WriteLine("Get Categories and Subcategories Cust returned");
 
             try
-            {
-                List<Category> categories = new List<Category>();
-                List<Subcategory> subcategories = new List<Subcategory>();
-                List<Subsubcategory> subsubcategories = new List<Subsubcategory>();
-
+            {   
                 String sCategories = response;
                 String[] aCategories = sCategories.Split('~');
 
                 if (aCategories.Length > 1)
                 {
+                    //Database db = new Database();
+
+                    App.g_db.BeginTransaction();
+
+                    App.g_db.DeleteCategories();
+                    App.g_db.DeleteSubcategories();
+
                     foreach (String s in aCategories)
                     {
                         String[] aCategory = s.Split("|");
@@ -193,17 +197,7 @@
                             continue;
                         }
 
-                        string sSubsubcategory;
-                        try
-                        {
-                            sSubsubcategory = aCategory[5];
-                        }
-                        catch
-                        {
-                            sSubsubcategory = "";
-                        }
-
-                        if (aCategory[1].Length == 0)  // no subcategory, just add category
+                        if (aCategory[1].Length == 0)
                         {
                             Category cat = new Category();
                             cat.Code = aCategory[0];
@@ -211,30 +205,42 @@
                             cat.ImageURL = Constants.CategoryImageUrl + cat.Code + ".png";
                             cat.Rank = Convert.ToInt32(aCategory[3].Trim());
                             cat.HomePage = Convert.ToInt32(aCategory[4].Trim());
-                            categories.Add(cat);
+
+                            try
+                            {
+                                App.g_db.SaveCategory(cat);
+                            }
+                            catch (Exception ex)
+                            {
+                                String sMsg = ex.Message;
+                            }
                         }
-                        else// no subsubcat, just add subcategory
+                        else
                         {
                             Subcategory subcat = new Subcategory();
                             subcat.Category = aCategory[0];
                             subcat.Code = aCategory[1];
                             subcat.Description = aCategory[2].Trim();
                             subcat.Rank = Convert.ToInt32(aCategory[3].Trim());
-                            subcategories.Add(subcat);
-                        }                        
+
+                            try
+                            {
+                                App.g_db.SaveSubcategory(subcat);
+                            }
+                            catch (Exception ex)
+                            {
+                                String sMsg = ex.Message;
+                            }
+                        }
                     }
+
+                    App.g_db.CommitTransaction();
+
+                    App.g_HomePageCategoryList = App.g_db.GetHomePageCategories();
                 }
 
                 try
                 {
-                    App.g_db.BeginTransaction();
-                    App.g_db.DeleteCategories();
-                    App.g_db.DeleteSubcategories();
-                    App.g_db.DeleteSubsubcategories();
-                    App.g_db.SaveCategory(categories);
-                    App.g_db.SaveSubcategory(subcategories);
-                    App.g_db.SaveSubsubcategory(subsubcategories);
-
                     String CustNo = "0";
                     try
                     {
@@ -263,17 +269,13 @@
                     {
                         App.CommManager.GetItems(App.g_Customer.CustNo, sDate);
                     }
-                    App.g_HomePageCategoryList = App.g_db.GetHomePageCategories();
-                    App.g_db.CommitTransaction();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Fetch Items Categories and SubCategories" + ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("SAVE Categories and SubCategories" + ex.Message);
             }
         }
 
@@ -285,6 +287,7 @@
 
                 String sItems = response;
                 String[] aItems = sItems.Split('~');
+
                 if (aItems.Length > 1)
                 {
                     App.g_db.BeginTransaction();
@@ -447,7 +450,6 @@
                             item.MaxOrderQty = 0;
                             item.IsMaxOrderQtyVisible = false;
                         }
-
                         try
                         {
                             item.Keyword1 = aItem[28];
@@ -548,7 +550,7 @@
 
                     App.g_db.UpdateDiscontinuedItems();
 
-                    App.g_db.UpdateOrderDetailLastPurch();
+                    App.g_db.CommitTransaction();
 
                     App.g_db.SaveSetting("LastUpdateItems", DateTime.Now.ToString("1yyMMdd"));
 
@@ -563,8 +565,6 @@
                     catch
                     {
                     }
-
-                    App.g_db.CommitTransaction();
 
                     App.CommManager.GetItemQOH(App.g_Customer.CustNo);
                 }
@@ -897,7 +897,7 @@
                         {
                             MainThread.BeginInvokeOnMainThread(async () =>
                             {
-                                await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Invalid password.  Please try again.", "Ok");
+                                await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Invalid password.  Please try again.", "Ok");
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
@@ -911,7 +911,7 @@
                         {
                             MainThread.BeginInvokeOnMainThread(async () =>
                             {
-                                await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Inactive account.  Please contact Customer Service.", "Ok");
+                                await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Inactive account.  Please contact Customer Service.", "Ok");
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
@@ -925,7 +925,7 @@
                         {
                             MainThread.BeginInvokeOnMainThread(async () =>
                             {
-                                await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Account does not exist.", "Ok");
+                                await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Account does not exist.", "Ok");
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
@@ -939,7 +939,7 @@
                         {
                             MainThread.BeginInvokeOnMainThread(async () =>
                             {
-                                await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
+                                await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
@@ -953,7 +953,7 @@
                         {
                             MainThread.BeginInvokeOnMainThread(async () =>
                             {
-                                await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
+                                await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
@@ -968,7 +968,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
                             App.g_LoginPage.HideAnimation();
                         });
                     }
@@ -983,7 +983,7 @@
                 {
                     MainThread.BeginInvokeOnMainThread(async () =>
                     {
-                        await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
+                        await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error attempting to login.", "Ok");
                         App.g_LoginPage.HideAnimation();
                     });
                 }
@@ -1001,7 +1001,7 @@
             {
                 if (response == "S")
                 {
-                    await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Thank you! Your order has been placed.", "OK");
+                    await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Thank you! Your order has been placed.", "OK");
 
                     //Database db = new Database();
                     App.g_db.ClearCartItems();
@@ -1024,7 +1024,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Account disabled.  Please contact customer support.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Account disabled.  Please contact customer support.", "Ok");
 
                             App.g_IsOrderSubmitting = false;
                             await App.g_Shell.GoToHome();
@@ -1041,7 +1041,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Error submitting order.  Please try again.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error submitting order.  Please try again.", "Ok");
                             App.g_IsOrderSubmitting = false;
                         });
                     }
@@ -1064,13 +1064,13 @@
                     App.g_db.ClearCartItems();
                     App.g_IsOrderSubmitting = false;
 
-                    await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Thank you! Your order has been placed.", "OK");
+                    await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Thank you! Your order has been placed.", "OK");
 
                     try
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            App.g_Shell.GoToHome();
+                            await App.g_Shell.GoToHome();
                         });
                     }
                     catch
@@ -1083,7 +1083,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Account disabled.  Please contact customer support.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Account disabled.  Please contact customer support.", "Ok");
 
                             App.g_IsOrderSubmitting = false;
                             await App.g_Shell.GoToHome();
@@ -1100,7 +1100,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlertAsync("Muswick Wholesale Grocers", "Error submitting order.  Please try again.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error submitting order.  Please try again.", "Ok");
                             App.g_IsOrderSubmitting = false;
                         });
                     }
@@ -1123,13 +1123,13 @@
                     App.g_db.ClearCartItems();
                     App.g_IsOrderSubmitting = false;
 
-                    await App.Current.MainPage.DisplayAlert("Muswick Wholesale Grocers", "Thank you! Your order has been placed.", "OK");
+                    await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Thank you! Your order has been placed.", "OK");
 
                     try
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            App.g_Shell.GoToHome();
+                            await App.g_Shell.GoToHome();
                         });
                     }
                     catch
@@ -1142,7 +1142,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlert("Muswick Wholesale Grocers", "Account disabled.  Please contact customer support.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Account disabled.  Please contact customer support.", "Ok");
 
                             App.g_IsOrderSubmitting = false;
                             await App.g_Shell.GoToHome();
@@ -1190,7 +1190,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlert("Muswick Wholesale Grocers", "Some items in your cart are now out of stock.  Please review your shopping cart.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Some items in your cart are now out of stock.  Please review your shopping cart.", "Ok");
 
                             App.g_IsOrderSubmitting = false;
                             await App.g_Shell.GoToShoppingCart();
@@ -1206,7 +1206,7 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await App.Current.MainPage.DisplayAlert("Muswick Wholesale Grocers", "Error submitting order.  Please try again.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error submitting order.  Please try again.", "Ok");
                             App.g_IsOrderSubmitting = false;
                         });
                     }
@@ -1342,53 +1342,9 @@
                         }
                         od.ImageURL = Constants.ItemImageUrl + od.ItemNo.ToString() + ".jpg";
 
-                        //ReorderItem ri = new ReorderItem();
-                        //ri.ItemNo = Convert.ToInt32(aOrder[7]);
-                        //ri.ItemNoDisplay = aOrder[7];
-                        //ri.LastPurchDate = Convert.ToDateTime(aOrder[2]);
-                        //ri.LastPurchDateDisplay = aOrder[2];
-                        //ri.QtyLastOrder = Convert.ToInt32(aOrder[8]);
-                        //ri.QtyOrderDisplay = aOrder[8];
-                        //ri.Description = aOrder[11];
-                        //ri.Price = Convert.ToDecimal(aOrder[9]);
-                        //ri.PriceDisplay = string.Format("{0:C}", ri.Price);
-                        //ri.ImageURL = Constants.ItemImageUrl + ri.ItemNo.ToString() + ".jpg";
-                        //ri.UPC = aOrder[10];
-                        //if (ri.UPC.Length > 0)
-                        //{
-                        //    ri.ItemNoDisplayUPC = "(" + ri.UPC + ")";
-                        //}
-                        //else
-                        //{
-                        //    ri.ItemNoDisplayUPC = "";
-                        //}
-                        //ri.UOM = aOrder[12];
-                        //ri.SellUnitsInPurch = aOrder[13];
-                        //ri.SizeDisplay = ri.UOM + "/" + ri.SellUnitsInPurch;
-                        //ri.SizeUOM = "/" + ri.UOM;
-                        //ri.Size = aOrder[14];
-                        //ri.Form = aOrder[15];
-                        //ri.CategoryCode = aOrder[16];
-                        //ri.CategoryDesc = aOrder[17];
-                        //ri.SubcategoryCode = aOrder[18];
-                        //ri.SubcategoryDesc = aOrder[19];
-                        //ri.VendorId = aOrder[20];
-                        //ri.VendorName = aOrder[21];
-                        //ri.Status = aOrder[22];
-                        //try
-                        //{
-                        //    ri.QOH = Convert.ToInt32(aOrder[23].Trim());
-                        //}
-                        //catch
-                        //{
-                        //    ri.QOH = 0;
-                        //}
-                        //ri.ImageURL = Constants.ItemImageUrl + ri.ItemNo.ToString() + ".jpg";
-
                         try
                         {
                             App.g_db.SaveOrderDetail(od);
-                            //App.g_db.SaveReorderItem(ri);
                         }
                         catch (Exception ex)
                         {

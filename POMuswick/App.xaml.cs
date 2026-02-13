@@ -190,6 +190,11 @@ namespace POMuswick
                                 App.g_db.RestoreCartItems(App.g_Customer.CustNo);
                             }
                         }
+                        InitializeAllTimer();
+
+                        InitializeOrderHistoryTimer();
+
+                        InitializeQOHTimer();
                     }
                     catch
                     {
@@ -206,24 +211,18 @@ namespace POMuswick
                 {
                     App.CommManager.GetSettings();
                 }
-                catch { }
-
-                RefreshAll();
-                InitializeAllTimer();
-
-                RefreshOrderHistory();
-                InitializeOrderHistoryTimer();
-
-                RefreshQOH();
-                InitializeQOHTimer();
+                catch { }               
 
                 if (g_IsSalesUser)
                 {
                     App.CommManager.GetSalespersonCustomers(g_UserName);
                 }
             }
+        }
 
-            MainPage = new AppShell();
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            return new Window(new AppShell());
         }
 
         public static void UpdateServerLinks()

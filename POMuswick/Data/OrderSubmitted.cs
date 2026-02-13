@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using SQLite;
 
-namespace Profit_Order
+namespace POMuswick
 {
-    public class Category
+    public class OrderSubmitted
     {
         [PrimaryKey]
         public string Code { get; set; }

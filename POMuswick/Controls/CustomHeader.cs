@@ -14,11 +14,11 @@ public class CustomHeader : StackLayout
         HeightRequest = 60;
         BackgroundColor = Colors.White;
 
-        StackContainer = new StackLayout { Orientation = StackOrientation.Horizontal, BackgroundColor = Colors.White, HeightRequest = 60, HorizontalOptions = LayoutOptions.StartAndExpand, VerticalOptions = LayoutOptions.CenterAndExpand };
+        StackContainer = new StackLayout { Orientation = StackOrientation.Horizontal, BackgroundColor = Colors.White, HeightRequest = 60, HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Center };
 
         Children.Add(StackContainer);
 
-        StackBack = new StackLayout { Orientation = StackOrientation.Vertical, BackgroundColor = Colors.White, WidthRequest = 60, HorizontalOptions = LayoutOptions.CenterAndExpand, VerticalOptions = LayoutOptions.CenterAndExpand };
+        StackBack = new StackLayout { Orientation = StackOrientation.Vertical, BackgroundColor = Colors.White, WidthRequest = 60, HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Center };
         StackContainer.Children.Add(StackBack);
         TapBack = new TapGestureRecognizer();
         TapBack.Tapped += (sender, e) =>
@@ -26,12 +26,13 @@ public class CustomHeader : StackLayout
             OnBackTapped(sender, e);
         };
 
-        BackIcon = new Image { BackgroundColor = Colors.White, Margin = new Thickness(0, 0, 0, 0) };
+        BackIcon = new Image { BackgroundColor = Colors.White, Margin = new Thickness(0, 0, 0, 0)};
+        BackIcon.VerticalOptions = LayoutOptions.Center;
         BackIcon.Source = new FontImageSource { Glyph = "\uF060", FontFamily = "FontAwesomeFreeSolid", Size = 20, Color = Colors.Blue };
         BackIcon.GestureRecognizers.Add(TapBack);
         StackBack.Children.Add(BackIcon);
 
-        TitleText = new Label { Margin = new Thickness(12, 0, 0, 0), TextColor = Colors.Blue, FontSize = 21, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.StartAndExpand, HorizontalTextAlignment = TextAlignment.Start, VerticalTextAlignment = TextAlignment.Center };
+        TitleText = new Label { Margin = new Thickness(12, 0, 0, 0), TextColor = Colors.Blue, FontSize = 21, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Fill, HorizontalTextAlignment = TextAlignment.Start, VerticalTextAlignment = TextAlignment.Center };
         TitleText.Text = App.g_HeaderTitle;
         StackContainer.Children.Add(TitleText);
     }

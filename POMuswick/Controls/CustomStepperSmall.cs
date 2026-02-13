@@ -79,19 +79,19 @@ public class CustomStepperSmall : StackLayout
     public CustomStepperSmall()
     {
         Orientation = StackOrientation.Horizontal;
-        HeightRequest = 30;
+        HeightRequest = 40;
 
-        PlusBtn = new ImageButton { WidthRequest = 33, HeightRequest = 40, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent };
+        PlusBtn = new ImageButton { MaximumWidthRequest = 33, MaximumHeightRequest = 40, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent };
         PlusBtn.Clicked += PlusBtn_Clicked;
         PlusBtn.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
 
-        MinusBtn = new ImageButton { WidthRequest = 33, HeightRequest = 40, Source = "blue_minus.png", Margin = new Thickness(5, 0, 0, 0), Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent };
+        MinusBtn = new ImageButton { MaximumWidthRequest = 33, MaximumHeightRequest = 40, Source = "blue_minus.png", Margin = new Thickness(5, 0, 0, 0), Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent };
         MinusBtn.Clicked += MinusBtn_Clicked;
         MinusBtn.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
 
         AddToOrderStack = new StackLayout { Orientation = StackOrientation.Vertical, Margin = new Thickness(0, 5, 0, 0) };
 
-        AddToOrderBtn = new Button { Text = "Add To Order", HeightRequest = 28, WidthRequest = 103, CornerRadius = 15, Margin = new Thickness(5, -4, 0, 5), Padding = new Thickness(0, 0, 0, 0), TextTransform = TextTransform.None, FontSize = 14, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue };
+        AddToOrderBtn = new Button { Text = "Add To Order", MaximumHeightRequest = 30, MinimumWidthRequest = 103, CornerRadius = 15, Margin = new Thickness(5, -4, 0, 5), Padding = new Thickness(0, 0, 0, 0), TextTransform = TextTransform.None, FontSize = 14, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue };
         AddToOrderBtn.Clicked += PlusBtn_Clicked;
         AddToOrderBtn.SetBinding(Button.IsVisibleProperty, new Binding(nameof(IsAddToOrderVisible), BindingMode.TwoWay, source: this));
 
@@ -100,11 +100,11 @@ public class CustomStepperSmall : StackLayout
         
         QtyStack = new StackLayout { Orientation = StackOrientation.Vertical };
 
-        QtyLabel = new Label { WidthRequest = 35, Margin = new Thickness(0, 2, 0, 0), TextColor = Colors.Black, FontSize = 16, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center, HorizontalTextAlignment = TextAlignment.Center };
+        QtyLabel = new Label { WidthRequest = 35, Margin = new Thickness(0, 5, 0, 0), TextColor = Colors.Black, FontSize = 16, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center, HorizontalTextAlignment = TextAlignment.Center, VerticalOptions = LayoutOptions.Center, VerticalTextAlignment = TextAlignment.Center };
         QtyLabel.SetBinding(Label.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source: this));
         QtyLabel.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
 
-        InCartLabel = new Label { Text = "In Cart", WidthRequest = 35, Margin = new Thickness(0, -10, 0, 0), TextColor = Colors.Gray, FontSize = 10, HorizontalOptions = LayoutOptions.Center, HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1 };
+        InCartLabel = new Label { Text = "In Cart", WidthRequest = 35, Margin = new Thickness(0,0, 0, 0), TextColor = Colors.Gray, FontSize = 10, HorizontalOptions = LayoutOptions.Center, HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1 };
         InCartLabel.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
 
         QtyStack.Children.Add(QtyLabel);

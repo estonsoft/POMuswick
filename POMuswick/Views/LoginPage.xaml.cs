@@ -15,11 +15,6 @@ namespace POMuswick.Views
             App.g_LoginPage = this;
         }
 
-        //private async void OnRegisterClicked(object obj)
-        //{
-        //    await App.g_Shell.GoToRegisterVerify();
-        //}
-
         protected override void OnDisappearing()
         {
             base.OnDisappearing();

@@ -35,7 +35,7 @@
                     <Border
                         x:Name="Delivery"
                         Margin="10"
-                        BackgroundColor="Gray"
+                        BackgroundColor="LightGray"
                         HeightRequest="170"
                         Stroke="White"
                         StrokeShape="RoundRectangle 10"
@@ -44,7 +44,7 @@
                             <TapGestureRecognizer Tapped="OnDelivery" />
                         </Border.GestureRecognizers>
 
-                        <VerticalStackLayout>
+                        <VerticalStackLayout Padding="10">
                             <HorizontalStackLayout HeightRequest="60">
                                 <Label
                                     FontFamily="FontAwesomeFreeSolid"
@@ -77,7 +77,7 @@
                     <Border
                         x:Name="Pickup"
                         Margin="10"
-                        BackgroundColor="Gray"
+                        BackgroundColor="LightGray"
                         HeightRequest="170"
                         Stroke="White"
                         StrokeShape="RoundRectangle 10"
@@ -86,7 +86,7 @@
                             <TapGestureRecognizer Tapped="OnPickup" />
                         </Border.GestureRecognizers>
 
-                        <VerticalStackLayout>
+                        <VerticalStackLayout Padding="10">
                             <HorizontalStackLayout HeightRequest="60">
                                 <Label
                                     FontFamily="FontAwesomeFreeSolid"
@@ -160,6 +160,7 @@
                     BackgroundColor="White"
                     FontAttributes="Bold"
                     FontSize="20"
+                    HorizontalOptions="Center"
                     Text="Items"
                     TextColor="Blue" />
 

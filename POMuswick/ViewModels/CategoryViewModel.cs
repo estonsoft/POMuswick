@@ -66,7 +66,7 @@ public class CategoryViewModel : BaseViewModel
         if (category == null)
             return;
 
-        await App.Current.MainPage.DisplayAlert("Muswick Wholesale Grocers", "Category Selected (tapped)", "Ok");
+        await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Category Selected (tapped)", "Ok");
         // This will push the ItemDetailPage onto the navigation stack
         //await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
     }

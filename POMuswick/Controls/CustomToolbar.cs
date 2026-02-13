@@ -41,7 +41,7 @@ public class CustomToolbar : StackLayout
 
     public CustomToolbar()
     {
-        HeightRequest = 80;
+        HeightRequest = 70;
         BackgroundColor = Colors.Blue;
 
         gridContainer = new Grid
@@ -51,7 +51,7 @@ public class CustomToolbar : StackLayout
             HorizontalOptions = LayoutOptions.Fill,
             VerticalOptions = LayoutOptions.Start,
             BackgroundColor = Colors.Blue,
-            HeightRequest = 80,
+            HeightRequest = 70,
         };
         gridContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
         gridContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
@@ -104,7 +104,7 @@ public class CustomToolbar : StackLayout
         {
             BackgroundColor = Colors.Blue,
             //WidthRequest = ColumnWidth,            
-            HeightRequest = 80,
+            HeightRequest = 70,
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };

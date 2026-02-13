@@ -78,17 +78,7 @@ namespace POMuswick.Views
             App.g_Customer.MinOrderAmount = cust.MinOrderAmount;
             App.g_Customer.ShippingFee = cust.ShippingFee;
 
-            App.g_db.SaveCustomer(App.g_Customer);
-
-            App.g_HomePage.SetLoginControls();
-
-            App.g_db.SuspendCartItems(OldCustNo);
-            App.g_db.ClearCartItems();
-            //App.g_db.ClearFavorites();
-            App.g_db.DeleteOrderHistory();
-
-            App.g_db.RestoreCartItems(App.g_Customer.CustNo);
-
+            
             try
             {
                 if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
@@ -100,7 +90,14 @@ namespace POMuswick.Views
             catch
             {
             }
+            App.g_db.SaveCustomer(App.g_Customer);
 
+            App.g_db.SuspendCartItems(OldCustNo);
+            App.g_db.ClearCartItems();
+            App.g_db.DeleteOrderHistory();
+
+            App.g_db.RestoreCartItems(App.g_Customer.CustNo);
+            
             //App.g_Shell.GoToUpdatingPage();
 
             await App.g_Shell.GoToHome();

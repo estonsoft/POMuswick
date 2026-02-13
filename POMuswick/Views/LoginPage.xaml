@@ -42,6 +42,7 @@
                             Clicked="Settings_Clicked"
                             HeightRequest="50"
                             HorizontalOptions="End"
+                            IsVisible="false"
                             Source="settings.png"
                             WidthRequest="50" />
                     </Grid>
@@ -53,12 +54,11 @@
                             x:Name="Logo"
                             Margin="6"
                             Aspect="AspectFit"
-                            HeightRequest="120"
+                            HeightRequest="50"
                             HorizontalOptions="Center"
                             Source="logo.png"
                             StyleClass="FlyoutHeaderStyle"
-                            VerticalOptions="Center"
-                            WidthRequest="300" />
+                            VerticalOptions="Center" />
                         <Label
                             Padding="0,10,0,0"
                             BackgroundColor="White"

@@ -5,15 +5,14 @@
     xmlns:controls="clr-namespace:POMuswick.Controls"
     xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui">
 
-    <Grid
-        Padding="10"
-        ColumnDefinitions="*,*,*"
-        RowDefinitions="*,*,*,*,*">
+    <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*,*,*,*">
 
         <!--  TITLE  -->
         <Label
             Grid.Row="0"
+            Grid.Column="0"
             Grid.ColumnSpan="3"
+            Padding="10"
             FontAttributes="Bold"
             FontSize="16"
             Text="{Binding Description}"
@@ -91,24 +90,43 @@
                     Text="{Binding PriceDisplay}" />
                 <Label
                     BackgroundColor="White"
-                    FontAttributes="Bold"
                     FontSize="16"
                     Text="{Binding SizeUOM}"
                     TextColor="Black" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout WidthRequest="130">
+                <Label
+                    BackgroundColor="White"
+                    FontSize="14"
+                    HorizontalOptions="Start"
+                    Text="Qty: "
+                    TextColor="Gray" />
+                <Label
+                    BackgroundColor="White"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalOptions="Start"
+                    IsVisible="{Binding IsLoggedIn}"
+                    MaxLines="1"
+                    Text="{Binding QtyShipped}"
+                    TextColor="Black"
+                    VerticalOptions="Start" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
 
         <controls:CustomStepper
             x:Name="stepper"
-            Grid.Row="3"
-            Grid.ColumnSpan="3"
-            Margin="0,5,0,0"
+            Grid.Row="1"
+            Grid.Column="2"
+            Margin="10"
+            HorizontalOptions="End"
             IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
             IsStepperVisible="{Binding IsStepperVisible}"
             ItemNo="{Binding ItemNo}"
             MaxOrderQty="{Binding MaxOrderQty}"
             Text="{Binding QtyOrder}"
-            UOM="{Binding UOM}" />
+            UOM="{Binding UOM}"
+            VerticalOptions="End" />
         <!--  DIVIDER  -->
         <BoxView
             Grid.Row="4"

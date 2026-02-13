@@ -183,8 +183,12 @@
         {
             Dispatcher.StartTimer(TimeSpan.FromSeconds(10), () =>
             {
-                MainThread.BeginInvokeOnMainThread(UpdateBanner);
-                return true;
+                try
+                {
+                    MainThread.BeginInvokeOnMainThread(UpdateBanner);
+                    return true;
+                }
+                catch (Exception ex) { return false; }
             });
         }
 
