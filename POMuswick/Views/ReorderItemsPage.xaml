@@ -32,7 +32,7 @@
     </ContentPage.Resources>
 
     <ContentPage.Content>
-        <Grid>
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />

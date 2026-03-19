@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage HideSoftInputOnTapped="True"
+<ContentPage
     x:Class="POMuswick.Views.CheckoutPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -7,10 +7,11 @@
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     x:Name="Checkout"
     Title="Checkout"
+    HideSoftInputOnTapped="True"
     Shell.NavBarIsVisible="False"
     Shell.TabBarIsVisible="False">
 
-    <Grid>
+    <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
