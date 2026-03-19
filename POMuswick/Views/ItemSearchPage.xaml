@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage HideSoftInputOnTapped="True"
+<ContentPage
     x:Class="POMuswick.Views.ItemSearchPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -7,8 +7,8 @@
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Maui"
     xmlns:local="clr-namespace:POMuswick.ViewModels"
-    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     Title="Search Products"
+    HideSoftInputOnTapped="True"
     Shell.NavBarIsVisible="False"
     Shell.TabBarIsVisible="False">
 
@@ -229,6 +229,8 @@
             <CollectionView
                 x:Name="ItemsListSearch"
                 Grid.Row="4"
+                SelectionChanged="ItemsListSearch_SelectionChanged"
+                SelectionMode="Single"
                 VerticalOptions="Fill">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -236,7 +238,25 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
+            <VerticalStackLayout
+                x:Name="ImageOverlay"
+                Grid.Row="0"
+                Grid.RowSpan="5"
+                Grid.Column="0"
+                Padding="20"
+                BackgroundColor="#80000000"
+                IsVisible="False">
+                <ffimageloading:CachedImage
+                    x:Name="FullImage"
+                    ErrorPlaceholder="appicon.png"
+                    HeightRequest="500"
+                    LoadingPlaceholder="appicon.png"
+                    WidthRequest="300" />
+                <Button
+                    Clicked="Button_Clicked"
+                    HorizontalOptions="Center"
+                    Text="Close" />
+            </VerticalStackLayout>
             <controls:CustomToolbar Grid.Row="5" />
         </Grid>
     </ContentPage.Content>

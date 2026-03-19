@@ -1,4 +1,6 @@
-﻿namespace POMuswick.Views
+﻿using System.Diagnostics;
+
+namespace POMuswick.Views
 {
     public partial class ReorderItemsPage : ContentPage
     {
@@ -8,106 +10,101 @@
             BindingContext = this;
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 
             App.g_CurrentPage = "ReorderItemsPage";
 
-            RefreshList();
+            Task.Run(async () =>
+            {
+                await Task.Delay(100); // Wait for page transition to finish
+                await RefreshListAsync();
+            });
         }
 
-        public async void RefreshList()
+        public async Task RefreshListAsync()
         {
-            ReorderItemsList.ItemsSource = null;
-            ReorderItemsList.ItemsSource = App.g_ReorderItemList;
-
-            foreach (Item ri in (List<Item>)ReorderItemsList.ItemsSource)
+            try
             {
-                ri.IsLoggedIn = App.g_IsLoggedIn;
+                // 1. PREPARATION (Fastest possible lookups)
+                // Convert the global list to a Dictionary once. 
+                // This prevents the nested loop lag (N*M becomes N+M).
+                var itemLookup = App.g_ItemList.ToDictionary(i => i.ItemNo);
+                var itemsToProcess = App.g_ReorderItemList.ToList();
 
-                foreach (Item i in App.g_ItemList)
-                {
-                    if (ri.ItemNo == i.ItemNo)
-                    {
-                        ri.QtyOrder = i.QtyOrder;
-                        ri.MaxOrderQty = i.MaxOrderQty;
-                        ri.IsMaxOrderQtyVisible = i.IsMaxOrderQtyVisible;
-                        ri.MaxOrderQtyDisplay = i.MaxOrderQtyDisplay;
-                        break;
-                    }
-                }
+                // Cache global flags to local variables so threads don't "fight" over App object access
+                string qohDisplay = App.g_QOHDisplay;
+                bool isLoggedIn = App.g_IsLoggedIn;
+                bool blockNoQoh = App.g_BlockItemsNoQOH;
 
-                if (ri.QtyOrder == 0)
+                // 2. PARALLEL PROCESSING
+                // This utilizes all CPU cores to process the list simultaneously
+                Parallel.ForEach(itemsToProcess, ri =>
                 {
-                    ri.IsStepperVisible = false;
-                    ri.IsAddToOrderVisible = true;
-                }
-                else
-                {
-                    ri.IsStepperVisible = true;
-                    ri.IsAddToOrderVisible = false;
-                }
+                    ri.IsLoggedIn = isLoggedIn;
 
-                ri.IsQOHRedVisible = false;
-                ri.IsQOHBlackVisible = false;
-                if (App.g_QOHDisplay == "Q")
-                {
-                    ri.IsQOHVisible = true;
-                    ri.IsInStockVisible = false;
-                    ri.IsOutOfStockVisible = false;
-                    if (ri.QOH > 0)
+                    // Instant lookup via Dictionary
+                    if (itemLookup.TryGetValue(ri.ItemNo, out var matchingItem))
                     {
-                        ri.IsQOHBlackVisible = true;
+                        ri.QtyOrder = matchingItem.QtyOrder;
+                        ri.MaxOrderQty = matchingItem.MaxOrderQty;
+                        ri.IsMaxOrderQtyVisible = matchingItem.IsMaxOrderQtyVisible;
+                        ri.MaxOrderQtyDisplay = matchingItem.MaxOrderQtyDisplay;
                     }
-                    else
-                    {
-                        ri.IsQOHRedVisible = true;
-                    }
-                }
-                else if (App.g_QOHDisplay == "I")
-                {
-                    ri.IsQOHVisible = false;
-                    if (ri.QOH > 0)
-                    {
-                        ri.IsInStockVisible = true;
-                        ri.IsOutOfStockVisible = false;
-                    }
-                    else
-                    {
-                        ri.IsInStockVisible = false;
-                        ri.IsOutOfStockVisible = true;
-                    }
-                }
-                else
-                {
-                    ri.IsQOHVisible = false;
-                    ri.IsInStockVisible = false;
-                    ri.IsOutOfStockVisible = false;
-                }
-                if (ri.IsQOHVisible || ri.IsInStockVisible || ri.IsOutOfStockVisible)
-                {
-                    ri.IsStockRowVisible = true;
-                }
-                else
-                {
-                    ri.IsStockRowVisible = false;
-                }
 
-                if (App.g_BlockItemsNoQOH)
-                {
-                    if (ri.QOH == 0)
+                    // Visibility Logic
+                    ri.IsStepperVisible = ri.QtyOrder != 0;
+                    ri.IsAddToOrderVisible = ri.QtyOrder == 0;
+
+                    // Optimized Stock Logic
+                    ProcessStockLogic(ri, qohDisplay);
+
+                    // Global restriction check
+                    if (blockNoQoh && ri.QOH == 0)
                     {
                         ri.IsStepperVisible = false;
                         ri.IsAddToOrderVisible = false;
                     }
-                }
+                });
+
+                // 3. UI UPDATE (Main Thread)
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    // Assigning the fully processed list to the UI
+                    ReorderItemsList.ItemsSource = itemsToProcess;
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Critical Error in RefreshList: {ex.Message}");
             }
         }
 
-        protected override bool OnBackButtonPressed()
+        private void ProcessStockLogic(Item ri, string qohDisplay)
         {
-            return true;
+            // Reset all visibility flags efficiently
+            ri.IsQOHRedVisible = false;
+            ri.IsQOHBlackVisible = false;
+            ri.IsQOHVisible = false;
+            ri.IsInStockVisible = false;
+            ri.IsOutOfStockVisible = false;
+
+            if (qohDisplay == "Q")
+            {
+                ri.IsQOHVisible = true;
+                if (ri.QOH > 0) ri.IsQOHBlackVisible = true;
+                else ri.IsQOHRedVisible = true;
+            }
+            else if (qohDisplay == "I")
+            {
+                if (ri.QOH > 0) ri.IsInStockVisible = true;
+                else ri.IsOutOfStockVisible = true;
+            }
+
+            ri.IsStockRowVisible = ri.IsQOHVisible || ri.IsInStockVisible || ri.IsOutOfStockVisible;
         }
+
+        protected override bool OnBackButtonPressed() => true;
     }
 }

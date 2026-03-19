@@ -1,13 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage HideSoftInputOnTapped="True"
+<ContentPage
     x:Class="POMuswick.Views.ReorderItemsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:POMuswick.Controls"
     xmlns:ffImage="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     xmlns:local="clr-namespace:POMuswick.ViewModels"
+    xmlns:modal="clr-namespace:POMuswick"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-    Title="Reorder Items">
+    Title="Reorder Items"
+    HideSoftInputOnTapped="True">
 
     <NavigationPage.TitleView>
         <StackLayout
@@ -34,255 +36,167 @@
     <ContentPage.Content>
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="60" />
             </Grid.RowDefinitions>
 
             <controls:CustomHeader Grid.Row="0" />
+            <CollectionView
+                x:Name="ReorderItemsList"
+                Grid.Row="1"
+                SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="modal:Item">
+                        <Grid
+                            Padding="0,5"
+                            BackgroundColor="White"
+                            ColumnDefinitions="120, *"
+                            RowDefinitions="Auto, Auto, Auto, Auto, 1">
 
-            <StackLayout Grid.Row="1">
-                <!--
-                <Label Text="Reorder Items" Margin="0,15,0,10" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center"  BackgroundColor="White" TextColor="Blue"/>
-                <BoxView BackgroundColor="gray" Color="lightgray" HeightRequest="3" HorizontalOptions="Fill" VerticalOptions="Fill" />
-                -->
-                <syncfusion:SfListView
-                    x:Name="ReorderItemsList"
-                    AutoFitMode="DynamicHeight"
-                    ItemAppearing="ReorderItemsList_ItemAppearing"
-                    ItemsSourceChangeCachingStrategy="ClearItems"
-                    SelectionMode="None">
-                    <syncfusion:SfListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <StackLayout
-                                    Margin="0,0,0,0"
-                                    Orientation="Vertical"
-                                    Spacing="0"
-                                    VerticalOptions="Fill">
+                            <!--  Header: Description  -->
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Margin="15"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Description}"
+                                TextColor="Blue" />
+
+                            <!--  Image Column  -->
+                            <ffImage:CachedImage
+                                Grid.Row="1"
+                                Grid.RowSpan="2"
+                                Grid.Column="0"
+                                Margin="15"
+                                Aspect="AspectFit"
+                                DownsampleToViewSize="true"
+                                HeightRequest="90"
+                                Source="{Binding ImageURL}"
+                                WidthRequest="90" />
+
+                            <!--  Info Column  -->
+                            <VerticalStackLayout
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Spacing="2"
+                                VerticalOptions="Center">
+                                <HorizontalStackLayout Spacing="10">
                                     <Label
-                                        Margin="40,7,0,0"
-                                        BackgroundColor="White"
                                         FontAttributes="Bold"
                                         FontSize="16"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding Description}"
-                                        TextColor="Blue" />
-                                    <StackLayout
-                                        Margin="0,5,0,0"
-                                        HorizontalOptions="Fill"
-                                        Orientation="Horizontal"
-                                        VerticalOptions="Center">
-                                        <ffImage:CachedImage
-                                            Margin="15,15,15,15"
-                                            Aspect="AspectFit"
-                                            DownsampleToViewSize="true"
-                                            ErrorPlaceholder="placeholder.png"
-                                            HeightRequest="90"
-                                            HorizontalOptions="FillAndExpand"
-                                            RetryCount="100"
-                                            Source="{Binding ImageURL}"
-                                            VerticalOptions="FillAndExpand"
-                                            WidthRequest="90" />
-                                        <StackLayout
-                                            Margin="0,0,0,0"
-                                            HorizontalOptions="Fill"
-                                            Orientation="Vertical"
-                                            VerticalOptions="Center">
-                                            <StackLayout
-                                                Margin="0,0,0,0"
-                                                HorizontalOptions="Fill"
-                                                Orientation="Horizontal"
-                                                VerticalOptions="Fill">
-                                                <Label
-                                                    Margin="5,5,0,0"
-                                                    BackgroundColor="White"
-                                                    FontAttributes="Bold"
-                                                    FontSize="16"
-                                                    HorizontalOptions="Fill"
-                                                    Text="{Binding ItemNoDisplay}"
-                                                    TextColor="Black" />
-                                                <Label
-                                                    Margin="10,8,0,0"
-                                                    BackgroundColor="White"
-                                                    FontSize="12"
-                                                    HorizontalOptions="Fill"
-                                                    Text="{Binding ItemNoDisplayUPC}"
-                                                    TextColor="Black" />
-                                            </StackLayout>
-                                            <Label
-                                                Margin="5,-8,0,0"
-                                                BackgroundColor="White"
-                                                FontSize="14"
-                                                HorizontalOptions="Fill"
-                                                Text="{Binding CategoryDesc}"
-                                                TextColor="Black" />
-                                            <StackLayout
-                                                Margin="0,-8,0,0"
-                                                HorizontalOptions="Fill"
-                                                IsVisible="{Binding IsStockRowVisible}"
-                                                Orientation="Horizontal"
-                                                VerticalOptions="Fill">
-                                                <Label
-                                                    Margin="5,0,0,0"
-                                                    BackgroundColor="White"
-                                                    FontSize="14"
-                                                    HorizontalOptions="Fill"
-                                                    IsVisible="{Binding IsQOHVisible}"
-                                                    Text="QOH:"
-                                                    TextColor="Black"
-                                                    VerticalOptions="Fill" />
-                                                <Label
-                                                    Margin="0,0,0,0"
-                                                    BackgroundColor="White"
-                                                    FontAttributes="Bold"
-                                                    FontSize="14"
-                                                    HorizontalOptions="Fill"
-                                                    IsVisible="{Binding IsQOHRedVisible}"
-                                                    Text="{Binding QOH}"
-                                                    TextColor="Red"
-                                                    VerticalOptions="Fill" />
-                                                <Label
-                                                    Margin="0,0,0,0"
-                                                    BackgroundColor="White"
-                                                    FontAttributes="Bold"
-                                                    FontSize="14"
-                                                    HorizontalOptions="Fill"
-                                                    IsVisible="{Binding IsQOHBlackVisible}"
-                                                    Text="{Binding QOH}"
-                                                    TextColor="Black"
-                                                    VerticalOptions="Fill" />
-                                                <Label
-                                                    Margin="5,0,0,0"
-                                                    BackgroundColor="White"
-                                                    FontSize="12"
-                                                    HorizontalOptions="Fill"
-                                                    IsVisible="{Binding IsInStockVisible}"
-                                                    Text="In Stock"
-                                                    TextColor="{Binding QOHColor}"
-                                                    VerticalOptions="Fill" />
-                                                <Label
-                                                    Margin="5,0,0,0"
-                                                    BackgroundColor="White"
-                                                    FontSize="12"
-                                                    HorizontalOptions="Fill"
-                                                    IsVisible="{Binding IsOutOfStockVisible}"
-                                                    Text="Out Of Stock"
-                                                    TextColor="Red"
-                                                    VerticalOptions="Fill" />
-                                                <Label
-                                                    Margin="5,0,0,0"
-                                                    BackgroundColor="White"
-                                                    FontSize="12"
-                                                    HorizontalOptions="Fill"
-                                                    IsVisible="{Binding IsMaxOrderQtyVisible}"
-                                                    Text="{Binding MaxOrderQtyDisplay}"
-                                                    TextColor="Black"
-                                                    VerticalOptions="Fill" />
-                                            </StackLayout>
-                                            <StackLayout
-                                                Margin="0,0,0,0"
-                                                HorizontalOptions="Fill"
-                                                Orientation="Horizontal"
-                                                VerticalOptions="Fill">
-                                                <StackLayout
-                                                    Margin="0,0,0,0"
-                                                    Orientation="Vertical"
-                                                    Spacing="0"
-                                                    VerticalOptions="Fill">
-                                                    <StackLayout
-                                                        Margin="0,5,0,0"
-                                                        Orientation="Horizontal"
-                                                        WidthRequest="130">
-                                                        <Label
-                                                            Margin="5,0,0,0"
-                                                            BackgroundColor="White"
-                                                            FontAttributes="Bold"
-                                                            FontSize="20"
-                                                            HorizontalOptions="Fill"
-                                                            IsVisible="{Binding IsLoggedIn}"
-                                                            MaxLines="1"
-                                                            Text="{Binding PriceDisplay}"
-                                                            TextColor="Black"
-                                                            VerticalOptions="Fill" />
-                                                        <Label
-                                                            Margin="0,6,0,0"
-                                                            BackgroundColor="White"
-                                                            FontSize="14"
-                                                            HorizontalOptions="Fill"
-                                                            IsVisible="{Binding IsLoggedIn}"
-                                                            Text="{Binding SizeUOM}"
-                                                            TextColor="Black"
-                                                            VerticalOptions="Fill" />
-                                                    </StackLayout>
-                                                </StackLayout>
-                                                <controls:CustomStepper
-                                                    x:Name="stepper"
-                                                    Margin="0,5,0,0"
-                                                    IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
-                                                    IsStepperVisible="{Binding IsStepperVisible}"
-                                                    IsVisible="{Binding IsLoggedIn}"
-                                                    ItemNo="{Binding ItemNo}"
-                                                    MaxOrderQty="{Binding MaxOrderQty}"
-                                                    Text="{Binding QtyOrder}"
-                                                    UOM="{Binding UOM}" />
-                                            </StackLayout>
-                                        </StackLayout>
-                                    </StackLayout>
-                                    <StackLayout
-                                        Margin="0,0,0,0"
-                                        HorizontalOptions="Fill"
-                                        Orientation="Horizontal"
-                                        VerticalOptions="Fill">
+                                        Text="{Binding ItemNoDisplay}"
+                                        TextColor="Black" />
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding ItemNoDisplayUPC}"
+                                        TextColor="Black"
+                                        VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <Label
+                                    Margin="0,-2,0,0"
+                                    FontSize="14"
+                                    Text="{Binding CategoryDesc}"
+                                    TextColor="Black" />
+
+                                <!--  Stock Row  -->
+                                <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}" Spacing="5">
+                                    <Label
+                                        IsVisible="{Binding IsQOHVisible}"
+                                        Text="QOH:"
+                                        TextColor="Black" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        IsVisible="{Binding IsQOHRedVisible}"
+                                        Text="{Binding QOH}"
+                                        TextColor="Red" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        IsVisible="{Binding IsQOHBlackVisible}"
+                                        Text="{Binding QOH}"
+                                        TextColor="Black" />
+                                    <Label
+                                        IsVisible="{Binding IsInStockVisible}"
+                                        Text="In Stock"
+                                        TextColor="{Binding QOHColor}" />
+                                    <Label
+                                        IsVisible="{Binding IsOutOfStockVisible}"
+                                        Text="Out Of Stock"
+                                        TextColor="Red" />
+                                </HorizontalStackLayout>
+
+                                <!--  Price & Stepper  -->
+                                <Grid Margin="0,5,0,0" ColumnDefinitions="Auto, *">
+                                    <HorizontalStackLayout IsVisible="{Binding IsLoggedIn}" Spacing="5">
                                         <Label
-                                            Margin="40,0,0,0"
-                                            BackgroundColor="White"
-                                            FontSize="12"
-                                            HorizontalOptions="Fill"
-                                            Text="Last Purchased On "
-                                            TextColor="Gray"
-                                            WidthRequest="115" />
-                                        <Label
-                                            Margin="0,0,0,0"
-                                            BackgroundColor="White"
-                                            FontSize="12"
-                                            HorizontalOptions="Fill"
-                                            Text="{Binding LastPurchDateDisplay}"
+                                            FontAttributes="Bold"
+                                            FontSize="20"
+                                            Text="{Binding PriceDisplay}"
                                             TextColor="Black" />
-                                    </StackLayout>
-                                    <StackLayout
-                                        Margin="0,0,0,0"
-                                        HorizontalOptions="Fill"
-                                        Orientation="Horizontal"
-                                        VerticalOptions="Fill">
                                         <Label
-                                            Margin="40,0,0,5"
-                                            BackgroundColor="White"
-                                            FontSize="12"
-                                            HorizontalOptions="Fill"
-                                            Text="Last Purchased Qty "
-                                            TextColor="Gray"
-                                            WidthRequest="115" />
-                                        <Label
-                                            Margin="0,0,0,5"
-                                            BackgroundColor="White"
-                                            FontSize="12"
-                                            HorizontalOptions="Fill"
-                                            Text="{Binding QtyLastOrderDisplay}"
-                                            TextColor="Black" />
-                                    </StackLayout>
-                                    <BoxView
-                                        BackgroundColor="gray"
-                                        HeightRequest="3"
-                                        HorizontalOptions="FillAndExpand"
-                                        VerticalOptions="FillAndExpand"
-                                        Color="lightgray" />
-                                </StackLayout>
-                            </ViewCell>
-                        </DataTemplate>
-                    </syncfusion:SfListView.ItemTemplate>
-                </syncfusion:SfListView>
-            </StackLayout>
+                                            Margin="0,0,0,3"
+                                            FontSize="14"
+                                            Text="{Binding SizeUOM}"
+                                            TextColor="Black"
+                                            VerticalOptions="End" />
+                                    </HorizontalStackLayout>
+
+                                    <controls:CustomStepper
+                                        Grid.Column="1"
+                                        Margin="0,0,10,0"
+                                        HorizontalOptions="End"
+                                        IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
+                                        IsStepperVisible="{Binding IsStepperVisible}"
+                                        IsVisible="{Binding IsLoggedIn}"
+                                        ItemNo="{Binding ItemNo}"
+                                        Text="{Binding QtyOrder}" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!--  Footer: Purchase History  -->
+                            <VerticalStackLayout
+                                Grid.Row="3"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Margin="15,0,0,5"
+                                Spacing="0">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label
+                                        FontSize="12"
+                                        Text="Last Purchased On"
+                                        TextColor="Gray"
+                                        WidthRequest="115" />
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding LastPurchDateDisplay}"
+                                        TextColor="Black" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label
+                                        FontSize="12"
+                                        Text="Last Purchased Qty"
+                                        TextColor="Gray"
+                                        WidthRequest="115" />
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding QtyLastOrderDisplay}"
+                                        TextColor="Black" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <!--  Separator  -->
+                            <BoxView
+                                Grid.Row="4"
+                                Grid.ColumnSpan="2"
+                                HeightRequest="1"
+                                Color="LightGray" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <controls:CustomToolbar Grid.Row="2" />
         </Grid>

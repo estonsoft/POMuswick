@@ -37,7 +37,6 @@
                         x:Name="Delivery"
                         Margin="10"
                         BackgroundColor="LightGray"
-                        HeightRequest="170"
                         Stroke="White"
                         StrokeShape="RoundRectangle 10"
                         WidthRequest="180">
@@ -46,24 +45,30 @@
                         </Border.GestureRecognizers>
 
                         <VerticalStackLayout Padding="10">
-                            <HorizontalStackLayout HeightRequest="60">
+                            <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Fill">
                                 <Label
+                                    Margin="5"
                                     FontFamily="FontAwesomeFreeSolid"
                                     FontSize="18"
                                     Text="&#xF0D1;"
-                                    TextColor="Blue" />
+                                    TextColor="Blue"
+                                    VerticalOptions="Center" />
                                 <Label
+                                    Margin="5"
                                     FontSize="16"
                                     Text="Delivery"
-                                    TextColor="Blue" />
+                                    TextColor="Blue"
+                                    VerticalOptions="Center" />
                                 <Label
+                                    Margin="5"
                                     FontFamily="FontAwesomeFreeSolid"
                                     IsVisible="{Binding IsDeliveryHighlighted}"
                                     Text="&#xF00C;"
-                                    TextColor="Blue" />
+                                    TextColor="Blue"
+                                    VerticalOptions="Center" />
                             </HorizontalStackLayout>
 
-                            <VerticalStackLayout Margin="15,10,0,0">
+                            <VerticalStackLayout Margin="5">
                                 <Label FontSize="11" Text="{Binding CompanyName}" />
                                 <Label
                                     x:Name="DeliveryAddress"
@@ -79,7 +84,6 @@
                         x:Name="Pickup"
                         Margin="10"
                         BackgroundColor="LightGray"
-                        HeightRequest="170"
                         Stroke="White"
                         StrokeShape="RoundRectangle 10"
                         WidthRequest="180">
@@ -88,24 +92,30 @@
                         </Border.GestureRecognizers>
 
                         <VerticalStackLayout Padding="10">
-                            <HorizontalStackLayout HeightRequest="60">
+                            <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Fill">
                                 <Label
+                                    Margin="5"
                                     FontFamily="FontAwesomeFreeSolid"
                                     FontSize="18"
                                     Text="&#xF474;"
-                                    TextColor="Blue" />
+                                    TextColor="Blue"
+                                    VerticalOptions="Center" />
                                 <Label
+                                    Margin="5"
                                     FontSize="16"
                                     Text="Pickup"
-                                    TextColor="Blue" />
+                                    TextColor="Blue"
+                                    VerticalOptions="Center" />
                                 <Label
+                                    Margin="5"
                                     FontFamily="FontAwesomeFreeSolid"
                                     IsVisible="{Binding IsPickupHighlighted}"
                                     Text="&#xF00C;"
-                                    TextColor="Blue" />
+                                    TextColor="Blue"
+                                    VerticalOptions="Center" />
                             </HorizontalStackLayout>
 
-                            <VerticalStackLayout Margin="15,10,0,0">
+                            <VerticalStackLayout Margin="5">
                                 <Label FontSize="11" Text="{Binding LocationName}" />
                                 <Label FontSize="11" Text="{Binding LocationAddress}" />
                                 <Label FontSize="11" Text="{Binding LocationCityStateZip}" />
@@ -181,48 +191,49 @@
 
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <VerticalStackLayout Padding="10">
-                                <Label
-                                    FontAttributes="Bold"
-                                    Text="{Binding Description}"
-                                    TextColor="Blue" />
+                            <VerticalStackLayout>
+                                <VerticalStackLayout Padding="10">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        Text="{Binding Description}"
+                                        TextColor="Blue" />
 
-                                <HorizontalStackLayout>
-                                    <ffimageloading:CachedImage
-                                        Margin="5"
-                                        Aspect="AspectFit"
-                                        HeightRequest="90"
-                                        Source="{Binding ImageURL}"
-                                        WidthRequest="90" />
+                                    <HorizontalStackLayout>
+                                        <ffimageloading:CachedImage
+                                            Margin="5"
+                                            Aspect="AspectFit"
+                                            HeightRequest="90"
+                                            Source="{Binding ImageURL}"
+                                            WidthRequest="90" />
 
-                                    <VerticalStackLayout VerticalOptions="Center">
-                                        <HorizontalStackLayout>
-                                            <Label FontAttributes="Bold" Text="{Binding ItemNoDisplay}" />
-                                            <Label Text="{Binding ItemNoDisplayUPC}" />
-                                        </HorizontalStackLayout>
-                                        <Label Text="{Binding CategoryDesc}" />
-                                        <HorizontalStackLayout WidthRequest="150">
-                                            <Label
-                                                Margin="5,0,0,0"
-                                                BackgroundColor="White"
-                                                FontAttributes="Bold"
-                                                FontSize="20"
-                                                IsVisible="{Binding IsLoggedIn}"
-                                                MaxLines="1"
-                                                Text="{Binding PriceDisplay}"
-                                                TextColor="Black" />
-                                            <Label
-                                                Margin="0,5,0,0"
-                                                BackgroundColor="White"
-                                                FontSize="14"
-                                                IsVisible="{Binding IsLoggedIn}"
-                                                Text="{Binding SizeUOM}"
-                                                TextColor="Black" />
-                                        </HorizontalStackLayout>
-                                        <Label Text="{Binding QtyOrder, StringFormat='Qty: {0}'}" />
-                                    </VerticalStackLayout>
-                                </HorizontalStackLayout>
-
+                                        <VerticalStackLayout VerticalOptions="Center">
+                                            <HorizontalStackLayout>
+                                                <Label FontAttributes="Bold" Text="{Binding ItemNoDisplay}" />
+                                                <Label Text="{Binding ItemNoDisplayUPC}" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding CategoryDesc}" />
+                                            <HorizontalStackLayout WidthRequest="150">
+                                                <Label
+                                                    Margin="5,0,0,0"
+                                                    BackgroundColor="White"
+                                                    FontAttributes="Bold"
+                                                    FontSize="20"
+                                                    IsVisible="{Binding IsLoggedIn}"
+                                                    MaxLines="1"
+                                                    Text="{Binding PriceDisplay}"
+                                                    TextColor="Black" />
+                                                <Label
+                                                    Margin="0,5,0,0"
+                                                    BackgroundColor="White"
+                                                    FontSize="14"
+                                                    IsVisible="{Binding IsLoggedIn}"
+                                                    Text="{Binding SizeUOM}"
+                                                    TextColor="Black" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding QtyOrder, StringFormat='Qty: {0}'}" />
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
                                 <BoxView
                                     BackgroundColor="gray"
                                     HeightRequest="3"

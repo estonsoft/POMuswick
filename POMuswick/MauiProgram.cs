@@ -37,6 +37,8 @@ namespace POMuswick
 
                 .ConfigureFonts(fonts =>
                 {
+                    
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("Font Awesome 5 Brands-Regular-400.otf", "FontAwesomeBrandsReg");
                     fonts.AddFont("Font Awesome 5 Free-Regular-400.otf", "FontAwesomeFreeReg");
                     fonts.AddFont("Font Awesome 5 Free-Solid-900.otf", "FontAwesomeFreeSolid");

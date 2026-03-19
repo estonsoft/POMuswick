@@ -284,6 +284,25 @@
             App.g_SearchText = Search.Text;
             RefreshList();
         }
+
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+            ImageOverlay.IsVisible = false;
+            if (ItemsListSearch.SelectedItem != null)
+            {
+                ItemsListSearch.SelectedItem = null;
+            }
+        }
+
+
+        private void ItemsListSearch_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = e.CurrentSelection?.FirstOrDefault() as Item;
+            if (selectedItem == null)
+                return;
+            ImageOverlay.IsVisible = true;
+            FullImage.Source = selectedItem.ImageURL;
+        }
     }
 }
 
