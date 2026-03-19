@@ -75,7 +75,7 @@ public class CustomStepper : StackLayout
 
         AddToOrderStack = new StackLayout { Orientation = StackOrientation.Vertical, Margin = new Thickness(0, 5, 0, 0) };
 
-        AddToOrderBtn = new Button { Text = "Add To Order", MaximumHeightRequest = 33, MaximumWidthRequest = 120, CornerRadius = 15, Margin = new Thickness(0, -5, 0, 0), Padding = new Thickness(0, 0, 0, 0), TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue };
+        AddToOrderBtn = new Button { Text = "Add To Order", MaximumHeightRequest = 33, CornerRadius = 15, Margin = new Thickness(0, -5, 0, 0), Padding = new Thickness(15, 5, 15, 5), TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue };
         AddToOrderBtn.Clicked += PlusBtn_Clicked;
         AddToOrderBtn.SetBinding(Button.IsVisibleProperty, new Binding(nameof(IsAddToOrderVisible), BindingMode.TwoWay, source: this));
 

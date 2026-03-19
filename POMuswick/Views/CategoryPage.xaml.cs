@@ -31,10 +31,12 @@ namespace POMuswick.Views
             App.g_SearchText = "";
             App.g_ScanBarcode = "";
 
-            CategoriesListSearch.ItemsSource = App.g_db.GetCategories();
+            List<Category> categories = App.g_db.GetCategories();
+            CategoriesListSearch.ItemsSource = categories;
             if (App.g_Category.Code != "")
             {
-                CategoriesListSearch.ScrollTo(App.g_Category,ScrollToPosition.Start, false);
+                int index = categories.FindIndex(c => c.Code == App.g_Category.Code);
+                CategoriesListSearch.ScrollTo(index,0,ScrollToPosition.Start, false);
             }
 
             App.g_Category.Code = "";
@@ -49,9 +51,12 @@ namespace POMuswick.Views
             //App.g_Shell.GoToItemSearch();
         }
 
-        private async void CategoriesListSearch_ItemTapped(object sender, Syncfusion.Maui.ListView.ItemTappedEventArgs e)
+        private async void CategoriesListSearch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            App.g_Category = (Category)e.DataItem;
+            var selectedCategory = e.CurrentSelection?.FirstOrDefault() as Category;
+            if (selectedCategory == null)
+                return;
+            App.g_Category = selectedCategory;
             App.g_ScanBarcode = ""; 
             App.g_SearchFromPage = "CategoryPage";
             await App.g_Shell.GoToItemSearch();
