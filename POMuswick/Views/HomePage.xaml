@@ -130,6 +130,24 @@
                         TextColor="black"
                         WidthRequest="500" />
                 </VerticalStackLayout>
+                <Grid
+                    BackgroundColor="white"
+                    HeightRequest="150"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center">
+                    <Border
+                        Padding="0,0,0,0"
+                        BackgroundColor="White"
+                        HorizontalOptions="Fill">
+                        <ffimageloading:CachedImage
+                            x:Name="BannerImage"
+                            Margin="0,0,0,0"
+                            Aspect="Fill"
+                            BackgroundColor="white"
+                            HeightRequest="200"
+                            HorizontalOptions="Fill" />
+                    </Border>
+                </Grid>
                 <Grid HorizontalOptions="Fill">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -235,24 +253,7 @@
                     </Border>
                 </Grid>
 
-                <Grid
-                    BackgroundColor="white"
-                    HeightRequest="150"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Center">
-                    <Border
-                        Padding="0,0,0,0"
-                        BackgroundColor="White"
-                        HorizontalOptions="Fill">
-                        <ffimageloading:CachedImage
-                            x:Name="BannerImage"
-                            Margin="0,0,0,0"
-                            Aspect="Fill"
-                            BackgroundColor="white"
-                            HeightRequest="200"
-                            HorizontalOptions="Fill" />
-                    </Border>
-                </Grid>
+
                 <StackLayout
                     Padding="27,15,0,0"
                     HorizontalOptions="Fill"
