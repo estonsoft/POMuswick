@@ -140,19 +140,23 @@ namespace POMuswick
         {
             sSearch = sSearch.Replace("'", "");
 
-            String sQuery = "select * from [Item] where ";
-            sQuery += " (([Keyword1] like '%" + sSearch + "%' and [Keyword1] > '') or ";
-            sQuery += " ([Keyword2] like '%" + sSearch + "%' and [Keyword2] > '') or ";
-            sQuery += " ([Keyword3] like '%" + sSearch + "%' and [Keyword3] > ''))";
-
-            if (App.g_InStockOnly)
-            {
-                sQuery += " and QOH > 0 ";
-            }
-
-            sQuery += " and Status = 'A' ";
-            sQuery += " order by Description";
-
+            String sQuery = $@"
+                    SELECT * FROM [Item] 
+                    WHERE Status = 'A' 
+                    {(App.g_InStockOnly ? "AND QOH > 0" : "")}
+                    AND (
+                        ([Keyword1] LIKE '%{sSearch}%' AND [Keyword1] > '') OR 
+                        ([Keyword2] LIKE '%{sSearch}%' AND [Keyword2] > '') OR 
+                        ([Keyword3] LIKE '%{sSearch}%' AND [Keyword3] > '')
+                    )
+                    ORDER BY 
+                        CASE 
+                            WHEN [Keyword1] LIKE '{sSearch}%' OR 
+                                 [Keyword2] LIKE '{sSearch}%' OR 
+                                 [Keyword3] LIKE '{sSearch}%' THEN 1 
+                            ELSE 2 
+                        END, 
+                        Description ASC";
             return _database.Query<Item>(sQuery);
         }
 

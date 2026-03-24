@@ -6,7 +6,6 @@
     xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui">
 
     <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*,*,*,*">
-
         <!--  TITLE  -->
         <Label
             Grid.Row="0"
@@ -24,9 +23,9 @@
             Grid.Column="0"
             Margin="10"
             Aspect="AspectFit"
-            ErrorPlaceholder="missing_item.jpg"
+            ErrorPlaceholder="appicon.png"
             HeightRequest="90"
-            LoadingPlaceholder="missing_item.jpg"
+            LoadingPlaceholder="appicon.png"
             Source="{Binding ImageURL}"
             WidthRequest="90" />
 
@@ -94,7 +93,7 @@
                     Text="{Binding SizeUOM}"
                     TextColor="Black" />
             </HorizontalStackLayout>
-            <HorizontalStackLayout WidthRequest="130">
+            <!--<HorizontalStackLayout WidthRequest="130">
                 <Label
                     BackgroundColor="White"
                     FontSize="14"
@@ -111,7 +110,7 @@
                     Text="{Binding QtyShipped}"
                     TextColor="Black"
                     VerticalOptions="Start" />
-            </HorizontalStackLayout>
+            </HorizontalStackLayout>-->
         </VerticalStackLayout>
 
         <controls:CustomStepper
@@ -134,6 +133,20 @@
             BackgroundColor="gray"
             HeightRequest="1"
             Color="LightGray" />
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroupList>
+                <VisualStateGroup Name="CommonStates">
+                    <!--  Normal State  -->
+                    <VisualState Name="Normal" />
 
+                    <!--  Selected State  -->
+                    <VisualState Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="LightGray" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </ContentView>

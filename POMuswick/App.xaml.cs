@@ -87,6 +87,13 @@ namespace POMuswick
             g_NewItemIndex = 0;
 
             g_App = this;
+
+            _= InitializeApp();
+            
+        }
+
+        public async Task<bool> InitializeApp()
+        {
             try
             {
                 if (!g_IsLoggedIn)
@@ -152,8 +159,15 @@ namespace POMuswick
                     g_IsSalesUser = false;
                 }
 
-                g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
-                //g_ServerURL = "http://192.168.1.175:8080";    // g_db.GetSetting("ServerURL");
+                if (App.g_UserName == "app_test")
+                {
+                    App.g_ServerURL = "https://store.qwikpoint.net";
+                }
+                else
+                {
+                    g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
+                }
+
                 UpdateServerLinks();
 
                 g_Category = new Category();
@@ -173,7 +187,7 @@ namespace POMuswick
                 g_Customer = new Customer();
                 g_ShoppingCartItems = App.g_db.GetCartPieces();
 
-                Task.Run(async () =>
+                await Task.Run(async () =>
                 {
                     try
                     {
@@ -211,13 +225,14 @@ namespace POMuswick
                 {
                     App.CommManager.GetSettings();
                 }
-                catch { }               
+                catch { }
 
                 if (g_IsSalesUser)
                 {
                     App.CommManager.GetSalespersonCustomers(g_UserName);
                 }
             }
+            return true;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

@@ -19,10 +19,6 @@
 	</array>
 	<key>MinimumOSVersion</key>
 	<string>10.0</string>
-	<key>CFBundleDisplayName</key>
-	<string>RAM Distributors</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.sales.ramdistributors</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to the camera to take photos of reseller license during user registration and to scan item barcodes for search lookup.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -35,20 +31,14 @@
 	<string>This app needs access to the disk space to determine if images can be downloaded or need to link via web.</string>
 	<key>NSPrivacyAccessedAPICategoryFileTimestamp</key>
 	<string>This app needs access to the file timestamp to internally check for updates.</string>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
 	<string>Profit_Order</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIMainStoryboardFile</key>
-	<string>LaunchScreen</string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.009</string>
-	<key>CFBundleVersion</key>
-	<string>2.009</string>
+	<string>2.101</string>
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>XSAppIconAssets</key>

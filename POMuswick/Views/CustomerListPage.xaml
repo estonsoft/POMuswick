@@ -110,6 +110,7 @@
                                             Text="{Binding CustNo}"
                                             TextColor="RoyalBlue" />
                                         <Label
+                                            Margin="10,0,0,0"
                                             BackgroundColor="White"
                                             FontAttributes="Bold"
                                             FontSize="12"
@@ -163,13 +164,13 @@
                                             Text="{Binding ARBalanceDisplay}"
                                             TextColor="Black"
                                             WidthRequest="80" />
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontAttributes="Bold"
-                                            FontSize="11"
-                                            Text="{Binding TermsDesc}"
-                                            TextColor="Black" />
                                     </HorizontalStackLayout>
+                                    <Label
+                                        BackgroundColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="11"
+                                        Text="{Binding TermsDesc}"
+                                        TextColor="Black" />
                                     <HorizontalStackLayout>
                                         <Label
                                             BackgroundColor="White"

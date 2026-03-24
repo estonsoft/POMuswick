@@ -28,6 +28,29 @@
     <WindowsPackageType>None</WindowsPackageType>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <AssemblyTitle>Muswick Wholesale Grocers</AssemblyTitle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
+    <ApplicationId>com.muswick.sales</ApplicationId>
+    <ApplicationDisplayVersion>2.101</ApplicationDisplayVersion>
+    <ApplicationVersion>2101</ApplicationVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-ios|AnyCPU'">
+    <ApplicationId>com.muswick.sales</ApplicationId>
+    <ApplicationDisplayVersion>2.101</ApplicationDisplayVersion>
+    <ApplicationVersion>2101</ApplicationVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
+    <ApplicationId>com.muswick.sales</ApplicationId>
+    <ApplicationDisplayVersion>2.101</ApplicationDisplayVersion>
+    <ApplicationVersion>2101</ApplicationVersion>
+    <RunAOTCompilation>False</RunAOTCompilation>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-ios|AnyCPU'">
+    <ApplicationId>com.muswick.sales</ApplicationId>
+    <ApplicationDisplayVersion>2.101</ApplicationDisplayVersion>
+    <ApplicationVersion>2101</ApplicationVersion>
   </PropertyGroup>
   
   <ItemGroup>

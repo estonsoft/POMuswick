@@ -73,7 +73,7 @@ public class CustomStepper : StackLayout
         MinusBtn.Clicked += MinusBtn_Clicked;
         MinusBtn.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
 
-        AddToOrderStack = new StackLayout { Orientation = StackOrientation.Vertical, Margin = new Thickness(0, 5, 0, 0) };
+        AddToOrderStack = new StackLayout { Orientation = StackOrientation.Vertical, Margin = new Thickness(0, 5, 5, 0) };
 
         AddToOrderBtn = new Button { Text = "Add To Order", MaximumHeightRequest = 33, CornerRadius = 15, Margin = new Thickness(0, -5, 0, 0), Padding = new Thickness(15, 5, 15, 5), TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue };
         AddToOrderBtn.Clicked += PlusBtn_Clicked;

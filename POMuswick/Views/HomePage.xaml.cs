@@ -623,9 +623,22 @@
             {
                 App.g_SearchText = SearchText.Text;
                 App.g_SearchFromPage = "HomePage";
-
-                //await App.g_Shell.GoToHome();
             }
+        }
+
+        private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                loading.IsVisible = true;
+            });
+            
+            bool isloaded  = await App.g_App.InitializeApp();
+            await Task.Delay(1000);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                loading.IsVisible = false;
+            });
         }
     }
 }

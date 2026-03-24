@@ -26,8 +26,13 @@
             if (User.ToLower() == "app_test")
             {
                 App.g_ServerURL = "https://store.qwikpoint.net";
-                App.UpdateServerLinks();
             }
+            else
+            {
+                App.g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
+            }
+
+            App.UpdateServerLinks();
 
             App.g_IsLoggedIn = true;
             App.g_UserName = User;
