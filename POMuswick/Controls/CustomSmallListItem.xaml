@@ -1,5 +1,5 @@
 ﻿<ContentView
-    x:Class="POMuswick.Controls.CustomListItem"
+    x:Class="POMuswick.Controls.CustomSmallListItem"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:POMuswick.Controls"
@@ -11,9 +11,9 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Padding="10"
+            Padding="5"
             FontAttributes="Bold"
-            FontSize="16"
+            FontSize="12"
             Text="{Binding Description}"
             TextColor="RoyalBlue" />
 
@@ -21,13 +21,13 @@
         <ff:CachedImage
             Grid.Row="1"
             Grid.Column="0"
-            Margin="10"
+            Margin="5"
             Aspect="AspectFit"
             ErrorPlaceholder="appicon.png"
-            HeightRequest="90"
+            HeightRequest="50"
             LoadingPlaceholder="appicon.png"
             Source="{Binding ImageURL}"
-            WidthRequest="90" />
+            WidthRequest="50" />
 
         <!--  DETAILS  -->
         <VerticalStackLayout
@@ -37,41 +37,41 @@
 
             <Label
                 FontAttributes="Bold"
-                FontSize="14"
+                FontSize="10"
                 Text="{Binding ItemNoDisplay}"
                 TextColor="Black" />
-            <Label FontSize="12" Text="{Binding ItemNoDisplayUPC}" />
-            <Label FontSize="14" Text="{Binding CategoryDesc}" />
+            <Label FontSize="10" Text="{Binding ItemNoDisplayUPC}" />
+            <Label FontSize="10" Text="{Binding CategoryDesc}" />
 
             <!--  STOCK  -->
             <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}" Spacing="4">
                 <Label
-                    FontSize="14"
+                    FontSize="12"
                     IsVisible="{Binding IsQOHVisible}"
                     Text="QOH:" />
                 <Label
                     FontAttributes="Bold"
-                    FontSize="14"
+                    FontSize="12"
                     IsVisible="{Binding IsQOHRedVisible}"
                     Text="{Binding QOH}"
                     TextColor="Red" />
                 <Label
                     FontAttributes="Bold"
-                    FontSize="14"
+                    FontSize="12"
                     IsVisible="{Binding IsQOHBlackVisible}"
                     Text="{Binding QOH}" />
                 <Label
-                    FontSize="12"
+                    FontSize="10"
                     IsVisible="{Binding IsInStockVisible}"
                     Text="In Stock" />
                 <Label
-                    FontSize="12"
+                    FontSize="10"
                     IsVisible="{Binding IsOutOfStockVisible}"
                     Text="Out Of Stock"
                     TextColor="Red" />
                 <Label
                     BackgroundColor="White"
-                    FontSize="12"
+                    FontSize="10"
                     IsVisible="{Binding IsMaxOrderQtyVisible}"
                     Text="{Binding MaxOrderQtyDisplay}"
                     TextColor="Black" />
@@ -84,19 +84,19 @@
                 <Label
                     BackgroundColor="White"
                     FontAttributes="Bold"
-                    FontSize="16"
+                    FontSize="14"
                     IsVisible="{Binding IsPriceVisible}"
                     Text="{Binding PriceDisplay}" />
                 <Label
                     BackgroundColor="White"
-                    FontSize="16"
+                    FontSize="14"
                     Text="{Binding SizeUOM}"
                     TextColor="Black" />
             </HorizontalStackLayout>
             <!--<HorizontalStackLayout WidthRequest="130">
                 <Label
                     BackgroundColor="White"
-                    FontSize="14"
+                    FontSize="12"
                     HorizontalOptions="Start"
                     Text="Qty: "
                     TextColor="Gray" />
@@ -113,11 +113,11 @@
             </HorizontalStackLayout>-->
         </VerticalStackLayout>
 
-        <controls:CustomStepper
+        <controls:CustomSmallStepper
             x:Name="stepper"
             Grid.Row="1"
             Grid.Column="2"
-            Margin="0,0,20,20"
+            Margin="0,0,10,10"
             HorizontalOptions="End"
             IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
             IsStepperVisible="{Binding IsStepperVisible}"

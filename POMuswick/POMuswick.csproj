@@ -91,6 +91,9 @@
     <MauiXaml Update="Controls\CustomListCreditItem.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Controls\CustomSmallListItem.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Controls\CustomListItem.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -171,6 +174,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platforms\iOS\Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Controls\CustomSmallListItem.xaml.cs">
+      <DependentUpon>CustomSmallListItem.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <MauiFont Update="C:\Users\ATM\.nuget\packages\syncfusion.maui.core\32.1.25\buildTransitive\..\buildTransitive\Resources\Fonts\MauiMaterialAssets.ttf">

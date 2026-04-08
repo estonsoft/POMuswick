@@ -42,8 +42,22 @@
             <Color x:Key="BannerBackground">White</Color>
             <Color x:Key="Accent">#96d1ff</Color>
         </ResourceDictionary>
-    </ContentPage.Resources>
+        <!--  Template for mobile/small screens  -->
+        <DataTemplate x:Key="SmallScreen">
+            <controls:CustomSmallListItem />
+        </DataTemplate>
 
+        <!--  Template for tablets/large screens  -->
+        <DataTemplate x:Key="LargeScreen">
+            <controls:CustomListItem />
+        </DataTemplate>
+
+        <!--  The selector linking them together  -->
+        <controls:ResponsiveTemplateSelector
+            x:Key="MySelector"
+            LargeTemplate="{StaticResource LargeScreen}"
+            SmallTemplate="{StaticResource SmallScreen}" />
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
@@ -229,15 +243,10 @@
             <CollectionView
                 x:Name="ItemsListSearch"
                 Grid.Row="4"
+                ItemTemplate="{StaticResource MySelector}"
                 SelectionChanged="ItemsListSearch_SelectionChanged"
                 SelectionMode="Single"
-                VerticalOptions="Fill">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <controls:CustomListItem />
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                VerticalOptions="Fill" />
             <VerticalStackLayout
                 x:Name="ImageOverlay"
                 Grid.Row="0"
