@@ -12,11 +12,10 @@ namespace POMuswick.Controls
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
         {
             // Get the current screen width in device-independent units
-            var width = DeviceDisplay.Current.MainDisplayInfo.Width /
-                        DeviceDisplay.Current.MainDisplayInfo.Density;
+            var width = DeviceDisplay.Current.MainDisplayInfo.Width;
 
             // Choose template based on width (e.g., 600 units for tablet/desktop)
-            return width < 720 ? SmallTemplate : LargeTemplate;
+            return width < 721 ? SmallTemplate : LargeTemplate;
         }
     }
 }
