@@ -142,7 +142,7 @@
                         <ffimageloading:CachedImage
                             x:Name="BannerImage"
                             Margin="0,0,0,0"
-                            Aspect="Fill"
+                            Aspect="AspectFit"
                             BackgroundColor="white"
                             HeightRequest="200"
                             HorizontalOptions="Fill" />
@@ -175,7 +175,7 @@
                                 <TapGestureRecognizer Tapped="OnPastPurchases" />
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
-                                Padding="15,10,0,0"
+                                Padding="15,14,0,0"
                                 FontAttributes="Bold"
                                 FontFamily="FontAwesomeFreeSolid"
                                 FontSize="18"
@@ -188,7 +188,7 @@
                             <VerticalStackLayout>
                                 <Label
                                     Margin="0,10,0,0"
-                                    FontSize="16"
+                                    FontSize="15"
                                     HorizontalOptions="Start"
                                     Text="Past Purchases"
                                     TextColor="Blue"
@@ -202,7 +202,7 @@
                                     WidthRequest="180">
                                     <Label
                                         Margin="0,-20,0,0"
-                                        FontSize="12"
+                                        FontSize="11"
                                         HorizontalOptions="Start"
                                         Text="Buy Again"
                                         TextColor="blue"
@@ -236,7 +236,7 @@
                                 <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
-                                Margin="15,23,0,0"
+                                Margin="15,25,0,0"
                                 FontAttributes="Bold"
                                 FontFamily="FontAwesomeFreeSolid"
                                 FontSize="18"
@@ -246,7 +246,7 @@
                                 WidthRequest="45" />
                             <Label
                                 Margin="0,3,0,0"
-                                FontSize="16"
+                                FontSize="15"
                                 Text="Refresh"
                                 TextColor="blue" />
                         </HorizontalStackLayout>

@@ -262,7 +262,7 @@
 
         async void OnPlaceOrderClicked(object sender, EventArgs e)
         {
-             if ((dCartTotal < App.g_Customer.MinOrderAmount) && (IsDeliveryHighlighted))
+            if ((dCartTotal < App.g_Customer.MinOrderAmount) && (IsDeliveryHighlighted))
             {
                 bool bContinue = await DisplayAlertAsync("Muswick Wholesale Grocers", "Your order total must be at least " + string.Format("{0:C}", App.g_Customer.MinOrderAmount) + " to avoid a " + string.Format("{0:C}", App.g_Customer.ShippingFee) + " shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "Yes", "No");
 

@@ -300,7 +300,7 @@
                         FontSize="14"
                         HeightRequest="35"
                         HorizontalOptions="Center"
-                        Text="     Add To Order     "
+                        Text="     Add     "
                         TextColor="White"
                         TextTransform="None" />
                     <Button

@@ -26,6 +26,7 @@
             ErrorPlaceholder="appicon.png"
             HeightRequest="90"
             LoadingPlaceholder="appicon.png"
+            RetryCount="1"
             Source="{Binding ImageURL}"
             WidthRequest="90" />
 

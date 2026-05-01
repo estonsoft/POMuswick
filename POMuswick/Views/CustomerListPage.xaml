@@ -97,7 +97,10 @@
                     SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <controls:CustomerStackLayout CustNo="{Binding CustNo}" Orientation="Vertical">
+                            <controls:CustomerStackLayout
+                                Grid.Row="1"
+                                CustNo="{Binding CustNo}"
+                                Orientation="Vertical">
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnTappedCustomer" />
                                 </StackLayout.GestureRecognizers>
@@ -205,21 +208,6 @@
                                     HorizontalOptions="Fill"
                                     VerticalOptions="Fill"
                                     Color="lightgray" />
-                                <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroupList>
-                                        <VisualStateGroup Name="CommonStates">
-                                            <!--  Normal State  -->
-                                            <VisualState Name="Normal" />
-
-                                            <!--  Selected State  -->
-                                            <VisualState Name="Selected">
-                                                <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="LightGray" />
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateGroupList>
-                                </VisualStateManager.VisualStateGroups>
                             </controls:CustomerStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

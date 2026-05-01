@@ -70,7 +70,6 @@
                 <RowDefinition Height="3" />
                 <!--  Divider  -->
                 <RowDefinition Height="*" />
-                <!--  मुख्य लिस्ट: यह '*' होना अनिवार्य है  -->
                 <RowDefinition Height="Auto" />
                 <!--  Footer  -->
             </Grid.RowDefinitions>
@@ -89,6 +88,8 @@
                     FontSize="14"
                     HeightRequest="36"
                     HorizontalOptions="Start"
+                    IsSpellCheckEnabled="False"
+                    IsTextPredictionEnabled="False"
                     Placeholder="Enter Search Text"
                     PlaceholderColor="Gray"
                     Text="{Binding SearchText}"

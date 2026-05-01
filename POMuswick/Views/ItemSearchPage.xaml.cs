@@ -213,9 +213,7 @@
                     }
                 }
             }
-
-            ItemsListSearch.ItemsSource = lstItems;
-            if (iItems == 0)
+            if (iItems == 0 && App.g_Category.Description != "ALL CATEGORIES")
             {
                 //await Shell.Current.DisplayAlertAsync("Profit Order", "No items found matching search criteria", "Ok");
                 bool answer = await Shell.Current.DisplayAlertAsync(
@@ -242,10 +240,14 @@
                     // User tapped 'No' - Handle cancellation or do nothing
                 }
             }
-            //if (iItems == 0)
-            //{
-            //    await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "No items found matching search criteria", "Ok");
-            //}
+            else if (iItems == 0)
+            {
+                await Shell.Current.DisplayAlertAsync(
+                "Muswik Wholesale Grocers",
+               "No items found in selected category.Please modify your search.",
+               "Cancel");
+            }
+            ItemsListSearch.ItemsSource = lstItems;            
         }
 
         private void OnTappedClearCategory(object sender, EventArgs e)

@@ -71,14 +71,14 @@ public class CustomToolbar : StackLayout
         TapShoppingCart.Tapped += OnShoppingCartTapped;
         AddTap(StackShoppingCart, TapShoppingCart);
 
-        LabelShoppingCartItems = new Label
-        {
-            TextColor = Colors.Black,
-            FontSize = 10,
-            HorizontalTextAlignment = TextAlignment.Center
-        };
-        LabelShoppingCartItems.SetBinding(Label.TextProperty, new Binding(nameof(CartItems), source: this));
-        StackShoppingCart.Children.Add(LabelShoppingCartItems);
+        //LabelShoppingCartItems = new Label
+        //{
+        //    TextColor = Colors.Black,
+        //    FontSize = 10,
+        //    HorizontalTextAlignment = TextAlignment.Center
+        //};
+        //LabelShoppingCartItems.SetBinding(Label.TextProperty, new Binding(nameof(CartItems), source: this));
+        //StackShoppingCart.Children.Add(LabelShoppingCartItems);
 
         StackPurchaseHistory = CreateStack(out LabelPurchaseHistoryIcon, out LabelPurchaseHistoryText, "\uF571", "Order\nHistory");
         TapPurchaseHistory = new TapGestureRecognizer();
@@ -114,12 +114,12 @@ public class CustomToolbar : StackLayout
         glyph = glyph.Replace("/u", "0x");
         icon = new Image
         {
-            Margin = new Thickness(0, 8, 0, 0),
+            Margin = new Thickness(0, 10, 0, 0),
             Source = new FontImageSource
             {
                 Glyph = glyph,
                 FontFamily = font,
-                Size = 24,
+                Size = 22,
                 Color = Colors.White
             }
         };
@@ -127,7 +127,6 @@ public class CustomToolbar : StackLayout
         text = new Label
         {
             Text = label,
-            Margin = new Thickness(5, 5, 5, 5),
             TextColor = Colors.White,
             FontSize = 10,
             HorizontalTextAlignment = TextAlignment.Center

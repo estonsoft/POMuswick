@@ -89,75 +89,118 @@ namespace POMuswick
                 sSearchShort = sSearchShort.Substring(0, 11);
             }
 
-            String sQuery = "select * from [Item] where ";
+            String sQuery = "SELECT * FROM [Item] WHERE ";
 
-            if (sBarcode != "")
+            if (!string.IsNullOrEmpty(sBarcode))
             {
-                sQuery += " ((([UPC_1] like '%" + sBarcode + "%' or [UPC_1] like '%" + sBarcodeShort + "') and [UPC_1] > '') or ";
-                sQuery += " (([UPC_2] like '%" + sBarcode + "%' or [UPC_2] like '%" + sBarcodeShort + "') and [UPC_2] > '') or ";
-                sQuery += " (([UPC_3] like '%" + sBarcode + "%' or [UPC_3] like '%" + sBarcodeShort + "') and [UPC_3] > '') or ";
-                sQuery += " (([UPC_4] like '%" + sBarcode + "%' or [UPC_4] like '%" + sBarcodeShort + "') and [UPC_4] > '') or ";
-                sQuery += " ([ItemNoDisplay] = '" + sBarcode + "' or [ItemNoDisplay] = '" + sBarcodeShort + "')) ";
+                sQuery += " (";
+                sQuery += " [ItemNoDisplay] = '" + sBarcode + "' OR ";
+                sQuery += " [ItemNoDisplay] = '" + sBarcodeShort + "' OR ";
+
+                sQuery += " ([UPC_1] LIKE '%" + sBarcode + "%' OR [UPC_1] LIKE '%" + sBarcodeShort + "') OR ";
+                sQuery += " ([UPC_2] LIKE '%" + sBarcode + "%' OR [UPC_2] LIKE '%" + sBarcodeShort + "') OR ";
+                sQuery += " ([UPC_3] LIKE '%" + sBarcode + "%' OR [UPC_3] LIKE '%" + sBarcodeShort + "') OR ";
+                sQuery += " ([UPC_4] LIKE '%" + sBarcode + "%' OR [UPC_4] LIKE '%" + sBarcodeShort + "') ";
+                sQuery += " ) ";
             }
             else
             {
-                sQuery += " ([SearchDescription] like '%" + sSearch + "%' or [ItemNoDisplay] like '%" + sSearch + "%' or ";
+                sQuery += " (";
+                sQuery += " [SearchDescription] LIKE '%" + sSearch + "%' OR ";
+                sQuery += " [ItemNoDisplay] LIKE '%" + sSearch + "%' ";
+
                 if (dItemNo > 0)
                 {
-                    sQuery += " [ItemNoDisplay] like '%" + dItemNo.ToString() + "%' or ";
+                    sQuery += " OR [ItemNoDisplay] LIKE '%" + dItemNo.ToString() + "%' ";
                 }
 
-                sQuery += " (([UPC_1] like '%" + sSearch + "%' or [UPC_1] like '%" + sSearchShort + "') and [UPC_1] > '') or ";
-                sQuery += " (([UPC_2] like '%" + sSearch + "%' or [UPC_2] like '%" + sSearchShort + "') and [UPC_2] > '') or ";
-                sQuery += " (([UPC_3] like '%" + sSearch + "%' or [UPC_3] like '%" + sSearchShort + "') and [UPC_3] > '') or ";
-                sQuery += " (([UPC_4] like '%" + sSearch + "%' or [UPC_4] like '%" + sSearchShort + "') and [UPC_4] > '')) ";
+                sQuery += " OR ([UPC_1] LIKE '%" + sSearch + "%' OR [UPC_1] LIKE '%" + sSearchShort + "') ";
+                sQuery += " OR ([UPC_2] LIKE '%" + sSearch + "%' OR [UPC_2] LIKE '%" + sSearchShort + "') ";
+                sQuery += " OR ([UPC_3] LIKE '%" + sSearch + "%' OR [UPC_3] LIKE '%" + sSearchShort + "') ";
+                sQuery += " OR ([UPC_4] LIKE '%" + sSearch + "%' OR [UPC_4] LIKE '%" + sSearchShort + "') ";
+                sQuery += " ) ";
             }
 
-            if (category.Code != "")
+            if (!string.IsNullOrEmpty(category.Code))
             {
                 if (category.Code == "NEW ITEMS")
-                {
-                    sQuery += " and NewItem = 'Y' ";
-                }
+                    sQuery += " AND NewItem = 'Y' ";
                 else
-                {
-                    sQuery += " and CategoryCode = '" + category.Code + "' ";
-                }
+                    sQuery += " AND CategoryCode = '" + category.Code + "' ";
             }
 
             if (App.g_InStockOnly)
             {
-                sQuery += " and QOH > 0 ";
+                sQuery += " AND QOH > 0 ";
             }
 
-            sQuery += " and Status = 'A' ";
-            sQuery += " order by SearchDescription";
+            sQuery += " AND Status = 'A' ";
+
+
+            // 🔥 SMART ORDERING
+            if (!string.IsNullOrEmpty(sBarcode))
+            {
+                sQuery += " ORDER BY ";
+                sQuery += " CASE ";
+                sQuery += " WHEN [ItemNoDisplay] = '" + sBarcode + "' THEN 1 ";
+                sQuery += " WHEN [ItemNoDisplay] = '" + sBarcodeShort + "' THEN 1 ";
+                sQuery += " WHEN [UPC_1] LIKE '" + sBarcode + "%' THEN 2 ";
+                sQuery += " WHEN [UPC_2] LIKE '" + sBarcode + "%' THEN 2 ";
+                sQuery += " WHEN [UPC_3] LIKE '" + sBarcode + "%' THEN 2 ";
+                sQuery += " WHEN [UPC_4] LIKE '" + sBarcode + "%' THEN 2 ";
+                sQuery += " ELSE 3 END, ";
+                sQuery += " SearchDescription ";
+            }
+            else
+            {
+                sQuery += " ORDER BY ";
+                sQuery += " CASE ";
+                sQuery += " WHEN [ItemNoDisplay] LIKE '" + sSearch + "%' THEN 1 ";
+                sQuery += " WHEN [SearchDescription] LIKE '" + sSearch + "%' THEN 2 ";
+                sQuery += " WHEN [ItemNoDisplay] LIKE '%" + sSearch + "%' THEN 3 ";
+                sQuery += " WHEN [SearchDescription] LIKE '%" + sSearch + "%' THEN 4 ";
+                sQuery += " ELSE 5 END, ";
+                sQuery += " SearchDescription ";
+            }
 
             return _database.Query<Item>(sQuery);
         }
 
         public List<Item> SearchItemsKeyword(String sSearch)
         {
-            sSearch = sSearch.Replace("'", "");
+            var search = sSearch?.Trim() ?? "";
 
-            String sQuery = $@"
-                    SELECT * FROM [Item] 
-                    WHERE Status = 'A' 
-                    {(App.g_InStockOnly ? "AND QOH > 0" : "")}
-                    AND (
-                        ([Keyword1] LIKE '%{sSearch}%' AND [Keyword1] > '') OR 
-                        ([Keyword2] LIKE '%{sSearch}%' AND [Keyword2] > '') OR 
-                        ([Keyword3] LIKE '%{sSearch}%' AND [Keyword3] > '')
-                    )
-                    ORDER BY 
-                        CASE 
-                            WHEN [Keyword1] LIKE '{sSearch}%' OR 
-                                 [Keyword2] LIKE '{sSearch}%' OR 
-                                 [Keyword3] LIKE '{sSearch}%' THEN 1 
-                            ELSE 2 
-                        END, 
-                        Description ASC";
-            return _database.Query<Item>(sQuery);
+            var query = $@"
+            SELECT * FROM [Item]
+            WHERE Status = 'A'
+            {(App.g_InStockOnly ? "AND QOH > 0" : "")}
+            AND (
+                ([Keyword1] LIKE ? AND [Keyword1] <> '') OR
+                ([Keyword2] LIKE ? AND [Keyword2] <> '') OR
+                ([Keyword3] LIKE ? AND [Keyword3] <> '')
+            )
+            ORDER BY
+                CASE
+                    WHEN [Keyword1] = ? OR [Keyword2] = ? OR [Keyword3] = ? THEN 1
+                    WHEN [Keyword1] LIKE ? OR [Keyword2] LIKE ? OR [Keyword3] LIKE ? THEN 2
+                    ELSE 3
+                END,
+                Description ASC";
+
+            return _database.Query<Item>(
+                query,
+                "%" + search + "%",   // WHERE
+                "%" + search + "%",
+                "%" + search + "%",
+
+                search,               // exact match
+                search,
+                search,
+
+                search + "%",         // starts with
+                search + "%",
+                search + "%"
+            );
         }
 
         public List<Item> SearchItemsQuickEntry(String sSearch)
@@ -301,19 +344,34 @@ namespace POMuswick
             {
                 sSearch = sSearch.Replace("'", "");
 
-                sQuery += "  and ([Description] like '%" + sSearch + "%' or [ItemNoDisplay] like '%" + sSearch + "%' or ";
-                sQuery += " (([UPC_1] like '%" + sSearch + "%') and [UPC_1] > '') or ";
-                sQuery += " (([UPC_2] like '%" + sSearch + "%') and [UPC_2] > '') or ";
-                sQuery += " (([UPC_3] like '%" + sSearch + "%') and [UPC_3] > '') or ";
-                sQuery += " (([UPC_4] like '%" + sSearch + "%') and [UPC_4] > '')) ";
+                sQuery += " AND (";
+                sQuery += " [Description] LIKE '%" + sSearch + "%' OR ";
+                sQuery += " [ItemNoDisplay] LIKE '%" + sSearch + "%' OR ";
+                sQuery += " (([UPC_1] LIKE '%" + sSearch + "%') AND [UPC_1] > '') OR ";
+                sQuery += " (([UPC_2] LIKE '%" + sSearch + "%') AND [UPC_2] > '') OR ";
+                sQuery += " (([UPC_3] LIKE '%" + sSearch + "%') AND [UPC_3] > '') OR ";
+                sQuery += " (([UPC_4] LIKE '%" + sSearch + "%') AND [UPC_4] > '') ";
+                sQuery += ") ";
             }
 
             if (App.g_InStockOnly || bQOHOnly)
             {
-                sQuery += " and QOH > 0 ";
+                sQuery += " AND QOH > 0 ";
             }
 
-            sQuery += " order by DateAdded desc";
+            if (sSearch != "")
+            {
+                sQuery += " ORDER BY ";
+                sQuery += " CASE ";
+                sQuery += " WHEN [Description] LIKE '" + sSearch + "%' THEN 1 ";
+                sQuery += " WHEN [ItemNoDisplay] LIKE '" + sSearch + "%' THEN 1 ";
+                sQuery += " ELSE 2 END, ";
+                sQuery += " DateAdded DESC ";
+            }
+            else
+            {
+                sQuery += " ORDER BY DateAdded DESC ";
+            }
 
             return _database.Query<Item>(sQuery);
         }
