@@ -42,16 +42,20 @@ public class CustomToolbar : StackLayout
     public CustomToolbar()
     {
         HeightRequest = 70;
+        if (DeviceInfo.Platform == DevicePlatform.iOS)
+        {
+            HeightRequest = 80;
+        }
         BackgroundColor = Colors.Blue;
 
         gridContainer = new Grid
         {
-            ColumnSpacing = 10,
-            Padding = 10,
+            ColumnSpacing = 5,
+            Padding = 5,
             HorizontalOptions = LayoutOptions.Fill,
             VerticalOptions = LayoutOptions.Start,
             BackgroundColor = Colors.Blue,
-            HeightRequest = 70,
+            HeightRequest = HeightRequest,
         };
         gridContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
         gridContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
@@ -102,14 +106,15 @@ public class CustomToolbar : StackLayout
     {
         var stack = new VerticalStackLayout
         {
-            BackgroundColor = Colors.Blue,
-            //WidthRequest = ColumnWidth,            
-            HeightRequest = 70,
+            BackgroundColor = Colors.Blue,           
+            HeightRequest = HeightRequest,
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };
         if (DeviceInfo.Platform == DevicePlatform.iOS)
-            stack.Margin = new Thickness(0, 10, 0, 0);
+        {
+            stack.Margin = new Thickness(0, 5, 0, 0);
+        }
 
         glyph = glyph.Replace("/u", "0x");
         icon = new Image

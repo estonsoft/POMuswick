@@ -109,11 +109,9 @@
                 <VerticalStackLayout
                     x:Name="lblLoginInfo"
                     Margin="10"
-                    HeightRequest="50"
                     HorizontalOptions="Center">
                     <Label
                         x:Name="lblWelcome"
-                        Margin="0,0,0,0"
                         FontSize="14"
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
@@ -121,27 +119,21 @@
                         TextColor="black" />
                     <Label
                         x:Name="lblUserName"
-                        Margin="0,-5,0,0"
                         FontAttributes="Bold"
                         FontSize="14"
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
                         Text="Company Name"
-                        TextColor="black"
-                        WidthRequest="500" />
+                        TextColor="black" />
                 </VerticalStackLayout>
                 <Grid
                     BackgroundColor="white"
-                    HeightRequest="150"
+                    HeightRequest="200"
                     HorizontalOptions="Fill"
                     VerticalOptions="Center">
-                    <Border
-                        Padding="0,0,0,0"
-                        BackgroundColor="White"
-                        HorizontalOptions="Fill">
+                    <Border BackgroundColor="White" HorizontalOptions="Fill">
                         <ffimageloading:CachedImage
                             x:Name="BannerImage"
-                            Margin="0,0,0,0"
                             Aspect="AspectFit"
                             BackgroundColor="white"
                             HeightRequest="200"
@@ -156,63 +148,49 @@
 
                     <Border
                         Grid.Column="0"
-                        Padding="10"
                         Background="LightGray"
-                        HeightRequest="60"
                         Stroke="White"
                         StrokeThickness="5">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10" />
+                            <RoundRectangle CornerRadius="7" />
                         </Border.StrokeShape>
                         <HorizontalStackLayout
-                            Margin="0,10,0,10"
-                            Padding="0,0,0,0"
-                            HeightRequest="60"
+                            Margin="5"
                             HorizontalOptions="Center"
-                            VerticalOptions="Center"
-                            WidthRequest="180">
+                            VerticalOptions="Center">
                             <HorizontalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnPastPurchases" />
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
-                                Padding="15,14,0,0"
                                 FontAttributes="Bold"
                                 FontFamily="FontAwesomeFreeSolid"
                                 FontSize="18"
-                                HeightRequest="45"
-                                HorizontalOptions="Center"
+                                HorizontalOptions="Start"
+                                MaximumHeightRequest="45"
+                                MaximumWidthRequest="45"
                                 Text="&#xF571;"
                                 TextColor="blue"
-                                VerticalOptions="Center"
-                                WidthRequest="45" />
-                            <VerticalStackLayout>
+                                VerticalOptions="Center" />
+                            <VerticalStackLayout
+                                Margin="10,0,0,0"
+                                HorizontalOptions="Start"
+                                VerticalOptions="Center">
                                 <Label
-                                    Margin="0,10,0,0"
-                                    FontSize="15"
-                                    HorizontalOptions="Start"
+                                    FontSize="13"
                                     Text="Past Purchases"
-                                    TextColor="Blue"
-                                    VerticalOptions="Center" />
-                                <HorizontalStackLayout
-                                    Margin="0,0,0,0"
-                                    Padding="0,0,0,0"
-                                    HeightRequest="40"
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center"
-                                    WidthRequest="180">
+                                    TextColor="Blue" />
+                                <HorizontalStackLayout VerticalOptions="Center">
                                     <Label
-                                        Margin="0,-20,0,0"
-                                        FontSize="11"
+                                        FontSize="10"
                                         HorizontalOptions="Start"
                                         Text="Buy Again"
                                         TextColor="blue"
-                                        VerticalOptions="Center"
-                                        WidthRequest="70" />
+                                        VerticalOptions="Center" />
                                     <Label
-                                        Margin="-10,-16,0,0"
+                                        Margin="5,0,0,0"
                                         FontAttributes="Bold"
                                         FontFamily="FontAwesomeFreeSolid"
-                                        FontSize="11"
+                                        FontSize="10"
                                         HorizontalOptions="Start"
                                         Text="&#xF061;"
                                         TextColor="blue"
@@ -223,37 +201,39 @@
                     </Border>
                     <Border
                         Grid.Column="1"
-                        Padding="10"
                         Background="LightGray"
-                        HeightRequest="60"
                         Stroke="White"
                         StrokeThickness="5">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10" />
+                            <RoundRectangle CornerRadius="7" />
                         </Border.StrokeShape>
-                        <HorizontalStackLayout WidthRequest="180">
+                        <HorizontalStackLayout
+                            Margin="5"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center">
                             <HorizontalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
-                                Margin="15,25,0,0"
                                 FontAttributes="Bold"
                                 FontFamily="FontAwesomeFreeSolid"
                                 FontSize="18"
-                                HeightRequest="45"
+                                HorizontalOptions="Start"
+                                MaximumHeightRequest="45"
+                                MaximumWidthRequest="45"
                                 Text="&#xf021;"
                                 TextColor="blue"
-                                WidthRequest="45" />
+                                VerticalOptions="Center" />
                             <Label
-                                Margin="0,3,0,0"
-                                FontSize="15"
-                                Text="Refresh"
-                                TextColor="blue" />
+                                Margin="10,0,0,0"
+                                FontSize="13"
+                                HorizontalOptions="Start"
+                                Text="Refresh Data"
+                                TextColor="blue"
+                                VerticalOptions="Center" />
                         </HorizontalStackLayout>
                     </Border>
                 </Grid>
-
-
                 <Grid
                     Padding="15,15,0,0"
                     HorizontalOptions="Fill"
@@ -262,7 +242,7 @@
                         Grid.Row="0"
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
-                        FontSize="22"
+                        FontSize="20"
                         HorizontalOptions="Start"
                         Text="Start Your Cart"
                         TextColor="black"
@@ -304,7 +284,7 @@
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
-                        FontSize="22"
+                        FontSize="20"
                         HorizontalOptions="Start"
                         Text="New Items"
                         TextColor="black"
