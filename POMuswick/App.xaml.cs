@@ -101,9 +101,7 @@ namespace POMuswick
             try
             {
                 if (!g_IsLoggedIn)
-                {
                     g_IsLoggedIn = false;
-                }
             }
             catch
             {
@@ -115,10 +113,7 @@ namespace POMuswick
 
             if (!g_IsLoggedIn)
             {
-                //Database db = new Database();
-
                 g_UserName = "";
-
                 if (g_db.GetSetting("LoggedIn") == "1")
                 {
                     g_IsLoggedIn = true;
@@ -138,59 +133,28 @@ namespace POMuswick
 
                 g_IsCredits = g_db.GetSetting("Credits");
                 g_QOHDisplay = g_db.GetSetting("QOHDisplay");
-                if (g_db.GetSetting("HoldForReview") == "1")
-                {
-                    g_HoldForReview = true;
-                }
-                else
-                {
-                    g_HoldForReview = false;
-                }
-                if (g_db.GetSetting("BlockItemsNoQOH") == "1")
-                {
-                    g_BlockItemsNoQOH = true;
-                }
-                else
-                {
-                    g_BlockItemsNoQOH = false;
-                }
-                if (g_db.GetSetting("IsSalesUser") == "1")
-                {
-                    g_IsSalesUser = true;
-                }
-                else
-                {
-                    g_IsSalesUser = false;
-                }
+                g_HoldForReview = g_db.GetSetting("HoldForReview") == "1";
+                g_BlockItemsNoQOH = g_db.GetSetting("BlockItemsNoQOH") == "1";
+                g_IsSalesUser = g_db.GetSetting("IsSalesUser") == "1";
 
-                if (App.g_UserName == "app_test")
-                {
-                    App.g_ServerURL = "https://store.qwikpoint.net";
-                }
-                else
-                {
-                    g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
-                }
+                g_ServerURL = App.g_UserName == "app_test"
+                    ? "https://store.qwikpoint.net"
+                    : "https://muswicksales.ddns.net";
 
                 UpdateServerLinks();
 
-                g_Category = new Category();
-                g_Category.Code = "";
-                g_Category.Description = "ALL CATEGORIES";
-
-                g_Subcategory = new Subcategory();
-                g_Subcategory.Code = "";
-                g_Subcategory.Description = "ALL SUBCATEGORIES";
-
+                g_Category = new Category { Code = "", Description = "ALL CATEGORIES" };
+                g_Subcategory = new Subcategory { Code = "", Description = "ALL SUBCATEGORIES" };
 
                 Constants.Load();
 
+                // Fix: await if Refresh is async
                 Location location = new Location();
-                location.Refresh();
+                await Task.Run(() => location.Refresh());   // ✅ offload if blocking
 
-                g_Customer = new Customer();
                 g_ShoppingCartItems = App.g_db.GetCartPieces();
 
+                // Background: customer + timers
                 await Task.Run(async () =>
                 {
                     try
@@ -198,20 +162,11 @@ namespace POMuswick
                         g_Customer = new Customer();
                         if (App.g_IsLoggedIn)
                         {
-                            g_Customer = App.g_db.GetCustomer();
-                            if (g_Customer == null)
-                            {
-                                g_Customer = new Customer();
-                            }
-                            else
-                            {
-                                App.g_db.RestoreCartItems(App.g_Customer.CustNo);
-                            }
+                            g_Customer = App.g_db.GetCustomer() ?? new Customer();
+                            App.g_db.RestoreCartItems(App.g_Customer.CustNo);
                         }
                         InitializeAllTimer();
-
                         InitializeOrderHistoryTimer();
-
                         InitializeQOHTimer();
                     }
                     catch
@@ -220,23 +175,32 @@ namespace POMuswick
                     }
                 });
 
-                //g_CategoryList = App.g_db.GetCategories();
-                g_HomePageCategoryList = App.g_db.GetHomePageCategories();
-                g_ItemList = App.g_db.GetItems();
-                g_ReorderItemList = App.g_db.GetReorderItems();
+                // Heavy DB reads — still on background
+                await Task.Run(() =>
+                {
+                    g_HomePageCategoryList = App.g_db.GetHomePageCategories();
+                    g_ItemList = App.g_db.GetItems();
+                    g_ReorderItemList = App.g_db.GetReorderItems();
+                });
 
+                // Network calls — now properly awaited ✅
                 try
                 {
-                    App.CommManager.GetSettings();
+                    await App.CommManager.GetSettings();
                 }
                 catch { }
 
                 if (g_IsSalesUser)
                 {
-                    App.CommManager.GetSalespersonCustomers(g_UserName);
+                    try
+                    {
+                        await App.CommManager.GetSalespersonCustomers(g_UserName);
+                    }
+                    catch { }
                 }
             }
-            return true;
+
+            return true;  // ✅ only reaches here after EVERYTHING is done
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

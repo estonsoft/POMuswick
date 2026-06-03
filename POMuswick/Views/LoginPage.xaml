@@ -57,7 +57,7 @@
                             Aspect="AspectFit"
                             HeightRequest="50"
                             HorizontalOptions="Center"
-                            Source="logoicon.png"
+                            Source="logo.png"
                             StyleClass="FlyoutHeaderStyle"
                             VerticalOptions="Center" />
                         <Label

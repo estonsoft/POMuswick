@@ -58,7 +58,7 @@
             XMLResponseParser.commService_ValidateUserActiveCompletedAsync(response);
         }
 
-        public async void GetSettings()
+        public async Task GetSettings()
         {
             String response = await soapService.GetSettingsAsync();
             XMLResponseParser.commService_GetSettingsCompletedAsync(response);
@@ -88,7 +88,7 @@
             XMLResponseParser.commService_GetOrderHistoryCompletedAsync(response);
         }
 
-        public async void GetSalespersonCustomers(string sUser)
+        public async Task GetSalespersonCustomers(string sUser)
         {
             String response = await soapService.GetSalespersonCustomersAsync(sUser);
             XMLResponseParser.commService_GetSalespersonCustomersCompletedAsync(response);
