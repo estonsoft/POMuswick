@@ -1,14 +1,14 @@
 ﻿namespace POMuswick.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class SubmitOrderPage : ContentPage
+    public partial class ValidateOrderPage : ContentPage
     {
-        public SubmitOrderPage()
+        public ValidateOrderPage()
         {
             InitializeComponent();
             BindingContext = this;
 
-            App.g_CurrentPage = "SubmitOrderPage";
+            App.g_CurrentPage = "ValidateOrderPage";
         }
 
         protected override void OnDisappearing()
@@ -35,24 +35,7 @@
                 catch { }
             }
 
-            String sDeliveryPickup;
-            if (App.g_ShoppingCartPage._IsDeliveryHighlighted)
-            {
-                sDeliveryPickup = "D";
-            }
-            else
-            {
-                sDeliveryPickup = "P";
-            }
-
-            int iHoldForReview = 0;
-            if (App.g_CheckoutPage.HoldForReview)
-            {
-                iHoldForReview = 1;
-            }
-
-            App.CommManager.SubmitOrder2(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
-            //App.CommManager.ValidateOrder(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
+            //App.CommManager.ValidateOrderQOH(App.g_Customer.CustNo, sOrderInfo);
         }
 
         protected override bool OnBackButtonPressed()

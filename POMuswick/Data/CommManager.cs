@@ -76,10 +76,10 @@
             XMLResponseParser.commService_SubmitOrder2CompletedAsync(response);
         }
 
-        public async void ValidateOrder(string sCustNo, string sPO, string sPaymentMethod, string sCCInfo, string sOrderInfo, string sDeliveryPickup, string sUser, string sNotes, int iHoldForReview, string sOrderType)
+        public async Task<ValidateResponse> ValidateOrderQOH(string sCustNo, string sOrderInfo)
         {
-            String response = await soapService.ValidateOrderAsync(sCustNo, sPO, sPaymentMethod, sCCInfo, sOrderInfo, sDeliveryPickup, sUser, sNotes, iHoldForReview, sOrderType);
-            XMLResponseParser.commService_ValidateOrderCompletedAsync(response);
+            String response = await soapService.ValidateOrderQOHAsync(sCustNo, sOrderInfo);
+            return XMLResponseParser.commService_ValidateOrderQOHCompletedAsync(response).Result;
         }
 
         public async void GetOrderHistory(string sCustNo)

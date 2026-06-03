@@ -31,13 +31,18 @@ namespace POMuswick.Views
 
         public async void RefreshList()
         {
+
             CustomerList.ItemsSource = null;
 
+            await Task.Run(() =>
+            {
+                customers =  App.g_db.GetSalesCustomers(CustomerSearch.Text);
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    CustomerList.ItemsSource = customers;
+                });
+            });
             //Database db = new Database();
-            customers = App.g_db.GetSalesCustomers(CustomerSearch.Text);
-
-            CustomerList.ItemsSource = customers;
-
             App.g_CurrentPage = "CustomerListPage";
         }
 

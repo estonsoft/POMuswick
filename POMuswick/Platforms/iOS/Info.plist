@@ -17,8 +17,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>MinimumOSVersion</key>
-	<string>10.0</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to the camera to take photos of reseller license during user registration and to scan item barcodes for search lookup.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -32,16 +30,18 @@
 	<key>NSPrivacyAccessedAPICategoryFileTimestamp</key>
 	<string>This app needs access to the file timestamp to internally check for updates.</string>
 	<key>CFBundleName</key>
-	<string>Profit_Order</string>
+	<string>Muswick Wholesale Grocers</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.101</string>
+	<string>2.107</string>
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>XSAppIconAssets</key>
-	<string>Assets.xcassets/AppIcons.appiconset</string>
+	<string>Assets.xcassets/appicon.appiconset</string>
+	<key>CFBundleIdentifier</key>
+	<string></string>
 </dict>
 </plist>

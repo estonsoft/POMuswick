@@ -23,12 +23,16 @@
             Grid.Column="0"
             Margin="10"
             Aspect="AspectFit"
-            ErrorPlaceholder="appicon.png"
+            ErrorPlaceholder="logoicon.png"
             HeightRequest="90"
-            LoadingPlaceholder="appicon.png"
+            LoadingPlaceholder="logoicon.png"
             RetryCount="1"
             Source="{Binding ImageURL}"
-            WidthRequest="90" />
+            WidthRequest="90">
+            <ff:CachedImage.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+            </ff:CachedImage.GestureRecognizers>
+        </ff:CachedImage>
 
         <!--  DETAILS  -->
         <VerticalStackLayout
@@ -94,24 +98,6 @@
                     Text="{Binding SizeUOM}"
                     TextColor="Black" />
             </HorizontalStackLayout>
-            <!--<HorizontalStackLayout WidthRequest="130">
-                <Label
-                    BackgroundColor="White"
-                    FontSize="14"
-                    HorizontalOptions="Start"
-                    Text="Qty: "
-                    TextColor="Gray" />
-                <Label
-                    BackgroundColor="White"
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    HorizontalOptions="Start"
-                    IsVisible="{Binding IsLoggedIn}"
-                    MaxLines="1"
-                    Text="{Binding QtyShipped}"
-                    TextColor="Black"
-                    VerticalOptions="Start" />
-            </HorizontalStackLayout>-->
         </VerticalStackLayout>
 
         <controls:CustomStepper

@@ -23,11 +23,15 @@
             Grid.Column="0"
             Margin="5"
             Aspect="AspectFit"
-            ErrorPlaceholder="appicon.png"
+            ErrorPlaceholder="logoicon.png"
             HeightRequest="50"
-            LoadingPlaceholder="appicon.png"
+            LoadingPlaceholder="logoicon.png"
             Source="{Binding ImageURL}"
-            WidthRequest="50" />
+            WidthRequest="50">
+            <ff:CachedImage.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+            </ff:CachedImage.GestureRecognizers>
+        </ff:CachedImage>
 
         <!--  DETAILS  -->
         <VerticalStackLayout

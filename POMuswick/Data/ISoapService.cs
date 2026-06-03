@@ -14,7 +14,7 @@
         Task<string> GetSettingsAsync();
         Task<string> SubmitOrderAsync(string sCustNo, string sPO, string sPaymentMethod, string sCCInfo, string sOrderInfo, string sDeliveryPickup, string sUser, string sNotes, int iHoldForReview, string sOrderType);
         Task<string> SubmitOrder2Async(string sCustNo, string sPO, string sPaymentMethod, string sCCInfo, string sOrderInfo, string sDeliveryPickup, string sUser, string sNotes, int iHoldForReview, string sOrderType);
-        Task<string> ValidateOrderAsync(string sCustNo, string sPO, string sPaymentMethod, string sCCInfo, string sOrderInfo, string sDeliveryPickup, string sUser, string sNotes, int iHoldForReview, string sOrderType);
+        Task<string> ValidateOrderQOHAsync(string sCustNo, string sOrderInfo);
         Task<string> SubmitReturnAsync(string sCustNo, string sOrderInfo, string sUser, string sNotes);
         Task<string> GetOrderHistoryAsync(string sCustNo);
         Task<string> GetSalespersonCustomersAsync(string sUser);

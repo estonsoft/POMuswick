@@ -30,19 +30,16 @@
                     Color="Gray" />
 
                 <!--  DELIVERY / PICKUP  -->
-                <HorizontalStackLayout HorizontalOptions="Center">
+                <Grid>
 
                     <!--  DELIVERY  -->
                     <Border
                         x:Name="Delivery"
                         Margin="10"
                         BackgroundColor="LightGray"
+                        IsVisible="{Binding IsDeliveryHighlighted}"
                         Stroke="White"
-                        StrokeShape="RoundRectangle 10"
-                        WidthRequest="180">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnDelivery" />
-                        </Border.GestureRecognizers>
+                        StrokeShape="RoundRectangle 10">
 
                         <VerticalStackLayout Padding="10">
                             <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Fill">
@@ -84,12 +81,9 @@
                         x:Name="Pickup"
                         Margin="10"
                         BackgroundColor="LightGray"
+                        IsVisible="{Binding IsPickupHighlighted}"
                         Stroke="White"
-                        StrokeShape="RoundRectangle 10"
-                        WidthRequest="180">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnPickup" />
-                        </Border.GestureRecognizers>
+                        StrokeShape="RoundRectangle 10">
 
                         <VerticalStackLayout Padding="10">
                             <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Fill">
@@ -123,7 +117,7 @@
                         </VerticalStackLayout>
                     </Border>
 
-                </HorizontalStackLayout>
+                </Grid>
 
                 <BoxView
                     BackgroundColor="gray"

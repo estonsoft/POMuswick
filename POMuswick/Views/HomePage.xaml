@@ -321,29 +321,24 @@
                 </Grid>
                 <CollectionView
                     x:Name="NewItemList"
-                    HeightRequest="310"
+                    Margin="0,20,0,0"
                     ItemsLayout="HorizontalList"
                     SelectionMode="None"
                     VerticalOptions="Fill">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <StackLayout
-                                Margin="0,5,0,0"
-                                HeightRequest="300"
-                                Orientation="Vertical"
-                                VerticalOptions="Fill">
-                                <Border HeightRequest="300" Stroke="LightGray">
+                            <StackLayout Orientation="Vertical" VerticalOptions="Fill">
+                                <Border Stroke="LightGray">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10" />
                                     </Border.StrokeShape>
-                                    <StackLayout Padding="20">
+                                    <StackLayout Padding="10">
                                         <Label
-                                            Margin="0,0,0,0"
                                             FontAttributes="Bold"
+                                            FontSize="18"
                                             Text="{Binding ItemNoDisplay}"
-                                            TextColor="Gray" />
+                                            TextColor="Black" />
                                         <ffimageloading:CachedImage
-                                            Margin="5,0,5,0"
                                             Aspect="AspectFit"
                                             CacheType="All"
                                             DownsampleToViewSize="true"
@@ -351,13 +346,12 @@
                                             HeightRequest="70"
                                             HorizontalOptions="Fill"
                                             LoadingPlaceholder="placeholder.png"
-                                            RetryCount="100"
+                                            RetryCount="1"
                                             Source="{Binding ImageURL}"
                                             TransformPlaceholders="True"
-                                            VerticalOptions="Fill"
+                                            VerticalOptions="Center"
                                             WidthRequest="70" />
                                         <Label
-                                            Margin="0,5,0,0"
                                             BackgroundColor="White"
                                             FontAttributes="Bold"
                                             FontSize="13"
@@ -369,7 +363,6 @@
                                             TextColor="RoyalBlue"
                                             WidthRequest="100" />
                                         <Label
-                                            Margin="5,-8,0,0"
                                             BackgroundColor="White"
                                             FontSize="14"
                                             HorizontalOptions="Fill"
@@ -377,22 +370,19 @@
                                             Text="{Binding CategoryDesc}"
                                             TextColor="Black" />
                                         <StackLayout
-                                            Margin="0,-8,0,0"
                                             HorizontalOptions="Fill"
                                             IsVisible="{Binding IsStockRowVisible}"
                                             Orientation="Horizontal"
-                                            VerticalOptions="Fill">
+                                            VerticalOptions="Center">
                                             <Label
-                                                Margin="5,0,0,0"
                                                 BackgroundColor="White"
                                                 FontSize="14"
                                                 HorizontalOptions="Fill"
                                                 IsVisible="{Binding IsQOHVisible}"
                                                 Text="QOH:"
                                                 TextColor="Black"
-                                                VerticalOptions="Fill" />
+                                                VerticalOptions="Center" />
                                             <Label
-                                                Margin="0,0,0,0"
                                                 BackgroundColor="White"
                                                 FontAttributes="Bold"
                                                 FontSize="14"
@@ -400,9 +390,8 @@
                                                 IsVisible="{Binding IsQOHRedVisible}"
                                                 Text="{Binding QOH}"
                                                 TextColor="Red"
-                                                VerticalOptions="Fill" />
+                                                VerticalOptions="Center" />
                                             <Label
-                                                Margin="0,0,0,0"
                                                 BackgroundColor="White"
                                                 FontAttributes="Bold"
                                                 FontSize="14"
@@ -410,51 +399,42 @@
                                                 IsVisible="{Binding IsQOHBlackVisible}"
                                                 Text="{Binding QOH}"
                                                 TextColor="Black"
-                                                VerticalOptions="Fill" />
+                                                VerticalOptions="Center" />
                                             <Label
-                                                Margin="5,0,0,0"
                                                 BackgroundColor="White"
                                                 FontSize="12"
                                                 HorizontalOptions="Fill"
                                                 IsVisible="{Binding IsInStockVisible}"
                                                 Text="In Stock"
                                                 TextColor="Black"
-                                                VerticalOptions="Fill" />
+                                                VerticalOptions="Center" />
                                             <Label
-                                                Margin="5,0,0,0"
                                                 BackgroundColor="White"
                                                 FontSize="12"
                                                 HorizontalOptions="Fill"
                                                 IsVisible="{Binding IsOutOfStockVisible}"
                                                 Text="Out Of Stock"
                                                 TextColor="Red"
-                                                VerticalOptions="Fill" />
+                                                VerticalOptions="Center" />
                                             <Label
-                                                Margin="5,0,0,0"
                                                 BackgroundColor="White"
                                                 FontSize="12"
                                                 HorizontalOptions="Fill"
                                                 IsVisible="{Binding IsMaxOrderQtyVisible}"
                                                 Text="{Binding MaxOrderQtyDisplay}"
                                                 TextColor="Black"
-                                                VerticalOptions="Fill" />
+                                                VerticalOptions="Center" />
                                         </StackLayout>
                                         <StackLayout
-                                            Margin="0,0,0,0"
                                             HorizontalOptions="Fill"
                                             Orientation="Horizontal"
-                                            VerticalOptions="Fill">
+                                            VerticalOptions="Center">
                                             <StackLayout
-                                                Margin="0,0,0,0"
                                                 Orientation="Vertical"
                                                 Spacing="0"
-                                                VerticalOptions="Fill">
-                                                <StackLayout
-                                                    Margin="0,5,0,0"
-                                                    Orientation="Horizontal"
-                                                    WidthRequest="130">
+                                                VerticalOptions="Center">
+                                                <StackLayout Orientation="Horizontal" WidthRequest="130">
                                                     <Label
-                                                        Margin="5,0,0,0"
                                                         BackgroundColor="White"
                                                         FontAttributes="Bold"
                                                         FontSize="20"
@@ -462,21 +442,19 @@
                                                         MaxLines="1"
                                                         Text="{Binding PriceDisplay}"
                                                         TextColor="Black"
-                                                        VerticalOptions="Fill" />
+                                                        VerticalOptions="Center" />
                                                     <Label
-                                                        Margin="0,6,0,0"
                                                         BackgroundColor="White"
                                                         FontSize="14"
                                                         HorizontalOptions="Fill"
                                                         Text="{Binding SizeUOM}"
                                                         TextColor="Black"
-                                                        VerticalOptions="Fill" />
+                                                        VerticalOptions="Center" />
                                                 </StackLayout>
                                             </StackLayout>
                                         </StackLayout>
                                         <controls:CustomStepperSmall
                                             x:Name="stepper"
-                                            Margin="0,5,0,0"
                                             IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
                                             IsMaxOrderQtyVisible="{Binding IsMaxOrderQtyVisible}"
                                             IsStepperVisible="{Binding IsStepperVisible}"

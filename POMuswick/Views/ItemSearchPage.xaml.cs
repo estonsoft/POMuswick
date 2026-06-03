@@ -73,6 +73,8 @@
         {
             base.OnAppearing();
 
+            App.imageAlertView = ImageAlert;
+
             App.g_CurrentPage = "ItemSearchPage";
 
             App.g_Subcategory.Code = "";
@@ -93,7 +95,6 @@
             Category = App.g_Category.Description;
             Subcategory = App.g_Subcategory.Description;
 
-            //Database db = new Database();
             if (Category == "NEW ITEMS")
             {
                 lstItems = App.g_db.GetNewItems(App.g_SearchText, false);
@@ -101,24 +102,29 @@
             else
             {
                 lstItems = App.g_db.SearchItems(App.g_SearchText, App.g_Category, App.g_ScanBarcode, App.g_Subcategory);
-                lstKeywordItems = App.g_db.SearchItemsKeyword(App.g_SearchText);
 
-                foreach (Item itemKeyword in lstKeywordItems)
+                // ✅ Only merge keyword items if NO specific category is selected
+                if (string.IsNullOrEmpty(App.g_Category.Code) || App.g_Category.Description == "ALL CATEGORIES")
                 {
-                    bool bFound = false;
+                    lstKeywordItems = App.g_db.SearchItemsKeyword(App.g_SearchText);
 
-                    foreach (Item item in lstItems)
+                    foreach (Item itemKeyword in lstKeywordItems)
                     {
-                        if (item.ItemNo == itemKeyword.ItemNo)
+                        bool bFound = false;
+
+                        foreach (Item item in lstItems)
                         {
-                            bFound = true;
-                            break;
+                            if (item.ItemNo == itemKeyword.ItemNo)
+                            {
+                                bFound = true;
+                                break;
+                            }
                         }
-                    }
 
-                    if (!bFound)
-                    {
-                        lstItems.Add(itemKeyword);
+                        if (!bFound)
+                        {
+                            lstItems.Add(itemKeyword);
+                        }
                     }
                 }
             }
@@ -161,6 +167,7 @@
 
                 i.IsQOHBlackVisible = false;
                 i.IsQOHRedVisible = false;
+
                 if (App.g_QOHDisplay == "Q")
                 {
                     i.IsQOHVisible = true;
@@ -195,6 +202,7 @@
                     i.IsInStockVisible = false;
                     i.IsOutOfStockVisible = false;
                 }
+
                 if (i.IsQOHVisible || i.IsInStockVisible || i.IsOutOfStockVisible)
                 {
                     i.IsStockRowVisible = true;
@@ -213,20 +221,18 @@
                     }
                 }
             }
+
             if (iItems == 0 && App.g_Category.Description != "ALL CATEGORIES")
             {
-                //await Shell.Current.DisplayAlertAsync("Profit Order", "No items found matching search criteria", "Ok");
                 bool answer = await Shell.Current.DisplayAlertAsync(
-                "Muswik Wholesale Grocers",
-                "No items found in selected category. Do you want to search in all categories?",
-                "Yes",
-                "No");
+                    "Muswick Wholesale Grocers",
+                    "No items found in selected category. Do you want to search in all categories?",
+                    "Yes",
+                    "No");
 
                 if (answer)
                 {
-                    // User tapped 'Yes' - Call your search method here
                     App.g_SearchText = Search.Text;
-                    //App.g_SearchFromPage = "HomePage";
                     App.g_Category.Code = "";
                     App.g_Category.Description = "ALL CATEGORIES";
 
@@ -237,17 +243,18 @@
                 }
                 else
                 {
-                    // User tapped 'No' - Handle cancellation or do nothing
+                    // User tapped 'No' - do nothing
                 }
             }
             else if (iItems == 0)
             {
                 await Shell.Current.DisplayAlertAsync(
-                "Muswik Wholesale Grocers",
-               "No items found in selected category.Please modify your search.",
-               "Cancel");
+                    "Muswick Wholesale Grocers",
+                    "No items found in selected category. Please modify your search.",
+                    "Cancel");
             }
-            ItemsListSearch.ItemsSource = lstItems;            
+
+            ItemsListSearch.ItemsSource = lstItems;
         }
 
         private void OnTappedClearCategory(object sender, EventArgs e)
@@ -311,25 +318,6 @@
         {
             App.g_SearchText = Search.Text;
             RefreshList();
-        }
-
-        private void Button_Clicked(object sender, EventArgs e)
-        {
-            ImageOverlay.IsVisible = false;
-            if (ItemsListSearch.SelectedItem != null)
-            {
-                ItemsListSearch.SelectedItem = null;
-            }
-        }
-
-
-        private void ItemsListSearch_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedItem = e.CurrentSelection?.FirstOrDefault() as Item;
-            if (selectedItem == null)
-                return;
-            ImageOverlay.IsVisible = true;
-            FullImage.Source = selectedItem.ImageURL;
         }
     }
 }

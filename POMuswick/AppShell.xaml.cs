@@ -30,6 +30,7 @@ namespace POMuswick
             Routing.RegisterRoute(nameof(ShoppingCartPage), typeof(ShoppingCartPage));
             Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
             Routing.RegisterRoute(nameof(SubmitOrderPage), typeof(SubmitOrderPage));
+            Routing.RegisterRoute(nameof(ValidateOrderPage), typeof(ValidateOrderPage));
             Routing.RegisterRoute(nameof(PaymentMethodPage), typeof(PaymentMethodPage));
             Routing.RegisterRoute(nameof(PurchaseHistoryPage), typeof(PurchaseHistoryPage));
             Routing.RegisterRoute(nameof(PurchaseHistoryDetailPage), typeof(PurchaseHistoryDetailPage));
@@ -161,6 +162,14 @@ namespace POMuswick
             await Current.GoToAsync("//HomePage/CategoryPage");
             return 0;
         }
+
+        public async Task<int> GoToSubCategories()
+        {
+            App.g_HeaderTitle = "Product Categories";
+            await Current.GoToAsync("//HomePage/SubcategoryPage");
+            return 0;
+        }
+
         public async Task<int> GoToLocations()
         {
             await Current.GoToAsync("//HomePage/LocationsPage");
@@ -187,6 +196,12 @@ namespace POMuswick
         {
             App.g_HeaderTitle = "Submit Order";
             await Current.GoToAsync("//HomePage/ShoppingCartPage/CheckoutPage/SubmitOrderPage");
+            return 0;
+        }
+        public async Task<int> GoToValidateOrder()
+        {
+            App.g_HeaderTitle = "Validate Order";
+            await Current.GoToAsync("//HomePage/ShoppingCartPage/ValidateOrderPage");
             return 0;
         }
         public async Task<int> GoToCustomerList()

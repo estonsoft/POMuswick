@@ -47,20 +47,23 @@ namespace POMuswick
 
         public List<Item> SearchItems(String sSearch, Category category, String sBarcode, Subcategory subcategory)
         {
-            Decimal dItemNo = 0;
+            // ✅ Save category before any resets
+            String sSavedCategoryCode = category.Code;
+            String sSavedSubcategoryCode = subcategory.Code;
 
+            Decimal dItemNo = 0;
             String sBarcodeShort = sBarcode;
             if (sBarcode.Length > 11)
             {
                 sBarcodeShort = sBarcodeShort.Substring(0, 11);
             }
+
             try
             {
                 if ((sBarcode.Length <= 6) && (sBarcode != ""))
                 {
                     dItemNo = Decimal.Parse(sBarcode);
                     sBarcodeShort = dItemNo.ToString();
-
                     category.Code = "";
                     subcategory.Code = "";
                 }
@@ -75,14 +78,12 @@ namespace POMuswick
                 {
                     dItemNo = Decimal.Parse(sSearch);
                     sBarcodeShort = dItemNo.ToString();
-
                     category.Code = "";
                     subcategory.Code = "";
                 }
             }
 
             sSearch = sSearch.Replace("'", "");
-
             String sSearchShort = sSearch;
             if (sSearch.Length > 11)
             {
@@ -96,7 +97,6 @@ namespace POMuswick
                 sQuery += " (";
                 sQuery += " [ItemNoDisplay] = '" + sBarcode + "' OR ";
                 sQuery += " [ItemNoDisplay] = '" + sBarcodeShort + "' OR ";
-
                 sQuery += " ([UPC_1] LIKE '%" + sBarcode + "%' OR [UPC_1] LIKE '%" + sBarcodeShort + "') OR ";
                 sQuery += " ([UPC_2] LIKE '%" + sBarcode + "%' OR [UPC_2] LIKE '%" + sBarcodeShort + "') OR ";
                 sQuery += " ([UPC_3] LIKE '%" + sBarcode + "%' OR [UPC_3] LIKE '%" + sBarcodeShort + "') OR ";
@@ -108,12 +108,10 @@ namespace POMuswick
                 sQuery += " (";
                 sQuery += " [SearchDescription] LIKE '%" + sSearch + "%' OR ";
                 sQuery += " [ItemNoDisplay] LIKE '%" + sSearch + "%' ";
-
                 if (dItemNo > 0)
                 {
                     sQuery += " OR [ItemNoDisplay] LIKE '%" + dItemNo.ToString() + "%' ";
                 }
-
                 sQuery += " OR ([UPC_1] LIKE '%" + sSearch + "%' OR [UPC_1] LIKE '%" + sSearchShort + "') ";
                 sQuery += " OR ([UPC_2] LIKE '%" + sSearch + "%' OR [UPC_2] LIKE '%" + sSearchShort + "') ";
                 sQuery += " OR ([UPC_3] LIKE '%" + sSearch + "%' OR [UPC_3] LIKE '%" + sSearchShort + "') ";
@@ -121,12 +119,19 @@ namespace POMuswick
                 sQuery += " ) ";
             }
 
-            if (!string.IsNullOrEmpty(category.Code))
+            // ✅ Use saved category code so it's never lost after barcode/search parsing
+            if (!string.IsNullOrEmpty(sSavedCategoryCode))
             {
-                if (category.Code == "NEW ITEMS")
+                if (sSavedCategoryCode == "NEW ITEMS")
                     sQuery += " AND NewItem = 'Y' ";
                 else
-                    sQuery += " AND CategoryCode = '" + category.Code + "' ";
+                    sQuery += " AND CategoryCode = '" + sSavedCategoryCode + "' ";
+            }
+
+            // ✅ Use saved subcategory code if needed
+            if (!string.IsNullOrEmpty(sSavedSubcategoryCode))
+            {
+                sQuery += " AND SubcategoryCode = '" + sSavedSubcategoryCode + "' ";
             }
 
             if (App.g_InStockOnly)
@@ -135,7 +140,6 @@ namespace POMuswick
             }
 
             sQuery += " AND Status = 'A' ";
-
 
             // 🔥 SMART ORDERING
             if (!string.IsNullOrEmpty(sBarcode))
@@ -483,7 +487,7 @@ namespace POMuswick
 
             try
             {
-                Vibration.Vibrate(200);
+                Vibration.Vibrate(100);
             }
             catch (Exception e)
             {
@@ -500,7 +504,7 @@ namespace POMuswick
 
             try
             {
-                Vibration.Vibrate(200);
+                Vibration.Vibrate(100);
             }
             catch (Exception e)
             {

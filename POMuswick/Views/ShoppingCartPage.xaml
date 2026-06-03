@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage HideSoftInputOnTapped="True"
+<ContentPage
     x:Class="POMuswick.Views.ShoppingCartPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:POMuswick.ViewModels"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     Title="Shopping Cart"
+    HideSoftInputOnTapped="True"
     Shell.TabBarIsVisible="False">
 
     <ContentPage.Resources>
@@ -15,14 +16,117 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="40,Auto,*,80">
+    <Grid RowDefinitions="40,Auto,Auto,*,80">
 
         <!--  HEADER  -->
         <controls:CustomHeader Grid.Row="0" />
 
+        <VerticalStackLayout Grid.Row="1">
+
+            <!--  DELIVERY  -->
+            <Border
+                x:Name="Delivery"
+                Margin="5"
+                BackgroundColor="LightGray"
+                HorizontalOptions="Fill"
+                Stroke="White"
+                StrokeShape="RoundRectangle 5">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnDelivery" />
+                </Border.GestureRecognizers>
+
+                <Grid
+                    Padding="5"
+                    ColumnDefinitions="Auto,*,Auto"
+                    VerticalOptions="Center">
+
+                    <!--  Truck icon  -->
+                    <Label
+                        Grid.Column="0"
+                        Margin="5"
+                        FontFamily="FontAwesomeFreeSolid"
+                        FontSize="18"
+                        Text="&#xF0D1;"
+                        TextColor="Blue"
+                        VerticalOptions="Center" />
+
+                    <!--  Label  -->
+                    <Label
+                        Grid.Column="1"
+                        Margin="5"
+                        FontSize="16"
+                        Text="Delivery"
+                        TextColor="Blue"
+                        VerticalOptions="Center" />
+
+                    <!--  Checkmark pinned to right  -->
+                    <Label
+                        Grid.Column="2"
+                        Margin="5"
+                        FontFamily="FontAwesomeFreeSolid"
+                        FontSize="18"
+                        IsVisible="{Binding IsDeliveryHighlighted}"
+                        Text="&#xF00C;"
+                        TextColor="Blue"
+                        VerticalOptions="Center" />
+
+                </Grid>
+            </Border>
+
+            <!--  PICKUP  -->
+            <Border
+                x:Name="Pickup"
+                Margin="5,0,5,0"
+                BackgroundColor="LightGray"
+                HorizontalOptions="Fill"
+                Stroke="White"
+                StrokeShape="RoundRectangle 5">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnPickup" />
+                </Border.GestureRecognizers>
+
+                <Grid
+                    Padding="5"
+                    ColumnDefinitions="Auto,*,Auto"
+                    VerticalOptions="Center">
+
+                    <!--  Pin icon  -->
+                    <Label
+                        Grid.Column="0"
+                        Margin="5"
+                        FontFamily="FontAwesomeFreeSolid"
+                        FontSize="18"
+                        Text="&#xF474;"
+                        TextColor="Blue"
+                        VerticalOptions="Center" />
+
+                    <!--  Label  -->
+                    <Label
+                        Grid.Column="1"
+                        Margin="5"
+                        FontSize="16"
+                        Text="Pickup"
+                        TextColor="Blue"
+                        VerticalOptions="Center" />
+
+                    <!--  Checkmark pinned to right  -->
+                    <Label
+                        Grid.Column="2"
+                        Margin="5"
+                        FontFamily="FontAwesomeFreeSolid"
+                        FontSize="18"
+                        IsVisible="{Binding IsPickupHighlighted}"
+                        Text="&#xF00C;"
+                        TextColor="Blue"
+                        VerticalOptions="Center" />
+
+                </Grid>
+            </Border>
+
+        </VerticalStackLayout>
         <!--  SUMMARY + ACTIONS  -->
         <Grid
-            Grid.Row="1"
+            Grid.Row="2"
             Padding="10"
             ColumnDefinitions="*,Auto">
 
@@ -53,9 +157,9 @@
                     Command="{Binding OpenCheckout}"
                     CornerRadius="10"
                     HeightRequest="35"
-                    Text="Checkout"
+                    Text="Validate Order"
                     TextColor="White"
-                    WidthRequest="130" />
+                    WidthRequest="250" />
 
                 <Button
                     x:Name="btnSignIn"
@@ -72,7 +176,7 @@
         </Grid>
 
         <!--  TITLE BAR  -->
-        <Grid Grid.Row="2" RowDefinitions="Auto,1,*">
+        <Grid Grid.Row="3" RowDefinitions="Auto,1,*">
 
             <HorizontalStackLayout
                 Grid.Row="0"
@@ -94,10 +198,14 @@
                     HeightRequest="28"
                     Source="delete.png"
                     WidthRequest="28" />
-
-
-
             </HorizontalStackLayout>
+
+            <BoxView
+                Grid.Row="1"
+                BackgroundColor="Gray"
+                HeightRequest="1"
+                Color="LightGray" />
+
             <BoxView
                 Grid.Row="1"
                 BackgroundColor="Gray"
@@ -122,11 +230,19 @@
                 </CollectionView.ItemTemplate>
 
             </CollectionView>
-
         </Grid>
 
+        <controls:CustomAlertDialog
+            x:Name="LoadingAlert"
+            Title="Validating"
+            Grid.Row="0"
+            Grid.RowSpan="4"
+            IsLoading="True"
+            IsVisible="False"
+            Message="Please wait while we validating the order…" />
+
         <!--  BOTTOM TOOLBAR (FIXED 80)  -->
-        <controls:CustomToolbar Grid.Row="3" HeightRequest="80" />
+        <controls:CustomToolbar Grid.Row="4" HeightRequest="80" />
 
     </Grid>
 </ContentPage>

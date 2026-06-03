@@ -133,7 +133,7 @@ namespace POMuswick.ViewModels
                 {
                     try
                     {
-                        Vibration.Vibrate();
+                        Vibration.Vibrate(100);
                     }
                     catch (Exception e)
                     {

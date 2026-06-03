@@ -1,4 +1,6 @@
 ﻿using banditoth.MAUI.DeviceId.Interfaces;
+using FFImageLoading.Maui;
+using POMuswick.Controls;
 using POMuswick.Data;
 using POMuswick.ViewModels;
 using POMuswick.Views;
@@ -51,6 +53,8 @@ namespace POMuswick
         public static bool g_IsScannerInit { get; set; }
         public static ScanditViewModelBase g_ScanditViewModel { get; set; }
         public static Boolean g_IsSalesUser { get; set; }
+        
+        public static ImageAlertView imageAlertView;
 
         public static String app_uniqueId { get; set; }
 

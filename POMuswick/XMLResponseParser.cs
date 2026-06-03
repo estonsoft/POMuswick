@@ -1,4 +1,6 @@
-﻿namespace POMuswick
+﻿using POMuswick.Data;
+
+namespace POMuswick
 {
     internal class XMLResponseParser
     {
@@ -862,11 +864,6 @@
 
                         if (App.g_Customer.CustNo != OldCustNo)
                         {
-                            //App.g_db.ClearCartItems();
-                            //App.g_db.DeleteOrderHistory();
-                            //App.g_db.DeleteReorderItems();
-                            //App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
-
                             if (App.g_UserName.ToLower() == "app_test")
                             {
                                 App.g_db.DeleteCategories();
@@ -1100,8 +1097,9 @@
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error submitting order.  Please try again.", "Ok");
+                            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Error submitting order.  Please try again. ", "Ok");
                             App.g_IsOrderSubmitting = false;
+                            await App.g_Shell.GoToHome();
                         });
                     }
                     catch
@@ -1114,7 +1112,76 @@
             }
         }
 
-        public static async void commService_ValidateOrderCompletedAsync(String response)
+        public static async Task<ValidateResponse> commService_ValidateOrderQOHCompletedAsync(String response)
+        {
+            ValidateResponse validateResponse = new ValidateResponse();
+            try
+            {
+                if (response == "V")
+                {
+                    try
+                    {
+                        validateResponse.IsValid = true;
+                        validateResponse.Message = "Order is valid.";
+                        MainThread.BeginInvokeOnMainThread(async () =>
+                        {
+                            await App.g_Shell.GoToCheckout();
+                        });
+                    }
+                    catch
+                    {
+                    }
+                }
+                else if (response.StartsWith("F~"))
+                {
+                    string[] aItems = response.Split("~");
+
+                    foreach (string s in aItems)
+                    {
+                        if (s == "F")
+                        {
+                            continue;
+                        }
+                        string[] aDetails = s.Split("|");
+                        int iItemNo = 0;
+                        int iQOH = 0;
+                        try
+                        {
+                            iItemNo = Convert.ToInt32(aDetails[0]);
+                            iQOH = Convert.ToInt32(aDetails[1]);
+                            App.g_db.UpdateItemQOH(iItemNo, iQOH);
+
+                            if (iQOH == 0)
+                            {
+                                App.g_db.UpdateItemQtySet(iItemNo, -1);
+                            }
+                            else
+                            {
+                                App.g_db.UpdateItemQtySet(iItemNo, iQOH);
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    validateResponse.IsValid = false;
+                    validateResponse.Message = "Some items in your cart are now out of stock.  Please review your shopping cart.";
+                }
+                else
+                {
+                    validateResponse.IsValid = false;
+                    validateResponse.Message = "Error validating order.  Please try again.";                    
+                }
+            }
+            catch (Exception ex)
+            {
+                validateResponse.IsValid = false;
+                validateResponse.Message = "Error validating order.  Please try again.";
+            }
+            return validateResponse;
+        }
+
+        public static async void commService_ValidateOrderCompletedAsyncOld(String response)
         {
             try
             {

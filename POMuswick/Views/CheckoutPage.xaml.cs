@@ -157,7 +157,7 @@
             {
                 App.g_Customer = App.g_db.GetCustomer();
             }
-            if (App.g_Customer.Delivery == 1)
+            if (App.g_ShoppingCartPage._IsDeliveryHighlighted)
             {
                 IsDeliveryHighlighted = true;
                 IsPickupHighlighted = false;
@@ -189,15 +189,6 @@
             catch { }
         }
 
-        private async void OnDeliveryOptionsClicked(object obj)
-        {
-            await Shell.Current.GoToAsync("DeliveryOptionsPage");
-        }
-
-        private async void OnPaymentMethodClicked(object obj)
-        {
-            await Shell.Current.GoToAsync("PaymentMethodPage");
-        }
 
         protected override void OnAppearing()
         {
@@ -262,32 +253,7 @@
 
         async void OnPlaceOrderClicked(object sender, EventArgs e)
         {
-            if ((dCartTotal < App.g_Customer.MinOrderAmount) && (IsDeliveryHighlighted))
-            {
-                bool bContinue = await DisplayAlertAsync("Muswick Wholesale Grocers", "Your order total must be at least " + string.Format("{0:C}", App.g_Customer.MinOrderAmount) + " to avoid a " + string.Format("{0:C}", App.g_Customer.ShippingFee) + " shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "Yes", "No");
-
-                if (!bContinue)
-                {
-                    await App.g_Shell.GoToShoppingCart();
-                    return;
-                }
-            }
             await App.g_Shell.GoToSubmitOrderPage();
-        }
-
-        async void OnDelivery(object sender, EventArgs e)
-        {
-            if (App.g_Customer.Delivery == 1)
-            {
-                IsDeliveryHighlighted = true;
-                IsPickupHighlighted = false;
-            }
-        }
-
-        async void OnPickup(object sender, EventArgs e)
-        {
-            IsDeliveryHighlighted = false;
-            IsPickupHighlighted = true;
         }
 
         protected override bool OnBackButtonPressed()

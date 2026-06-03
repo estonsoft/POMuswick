@@ -245,28 +245,16 @@
                 x:Name="ItemsListSearch"
                 Grid.Row="4"
                 ItemTemplate="{StaticResource MySelector}"
-                SelectionChanged="ItemsListSearch_SelectionChanged"
-                SelectionMode="Single"
+                SelectionMode="None"
                 VerticalOptions="Fill" />
-            <VerticalStackLayout
-                x:Name="ImageOverlay"
+
+            <controls:ImageAlertView
+                x:Name="ImageAlert"
                 Grid.Row="0"
                 Grid.RowSpan="5"
                 Grid.Column="0"
-                Padding="20"
-                BackgroundColor="#80000000"
-                IsVisible="False">
-                <ffimageloading:CachedImage
-                    x:Name="FullImage"
-                    ErrorPlaceholder="appicon.png"
-                    HeightRequest="500"
-                    LoadingPlaceholder="appicon.png"
-                    WidthRequest="300" />
-                <Button
-                    Clicked="Button_Clicked"
-                    HorizontalOptions="Center"
-                    Text="Close" />
-            </VerticalStackLayout>
+                ZIndex="99" />
+
             <controls:CustomToolbar Grid.Row="5" />
         </Grid>
     </ContentPage.Content>
