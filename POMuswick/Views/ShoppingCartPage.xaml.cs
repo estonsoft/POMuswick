@@ -323,34 +323,11 @@ namespace POMuswick.Views
                      "YES",
                      "NO");
 
-                if (App.g_IsSalesUser)
+                if (bContinue)
                 {
-                    // Sales user — YES continues, NO goes back
-                    if (bContinue)
-                    {
-                        await DisplayAlertAsync(
-                            "Muswick Wholesale Grocers",
-                            "Order placed with shipping fee of " + string.Format("{0:C}", App.g_Customer.ShippingFee) + " applied.",
-                            "OK");
-                        validate();
-                        return;
-                    }
-                    else
-                    {
-                        // NO — go back, do nothing
-                        return;
-                    }
-                }
-                else
-                {
-                    // Customer user — not allowed to place order regardless
-                    await DisplayAlertAsync(
-                        "Muswick Wholesale Grocers",
-                        "Your order does not meet the minimum order amount of " + string.Format("{0:C}", App.g_Customer.MinOrderAmount) +
-                        ". Please add more items before placing your order.",
-                        "OK");
-                    return; // block the order
-                }
+                    validate();
+                    return;
+                }              
             }
             else { validate(); }
         }
