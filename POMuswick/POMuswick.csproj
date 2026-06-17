@@ -42,6 +42,8 @@
     <ApplicationId>com.muswick.sales</ApplicationId>
     <ApplicationDisplayVersion>2.107</ApplicationDisplayVersion>
     <ApplicationVersion>2107</ApplicationVersion>
+    <BuildIpa>True</BuildIpa>
+    <IpaIncludeArtwork>True</IpaIncludeArtwork>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
     <ApplicationId>com.muswick.sales</ApplicationId>
@@ -56,13 +58,15 @@
     <ApplicationId>com.muswick.sales</ApplicationId>
     <ApplicationDisplayVersion>2.107</ApplicationDisplayVersion>
     <ApplicationVersion>2107</ApplicationVersion>
+    <BuildIpa>True</BuildIpa>
+    <IpaIncludeArtwork>True</IpaIncludeArtwork>
   </PropertyGroup>
   <PropertyGroup>
     <UseInterpreter>true</UseInterpreter>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios'">
-    <ProvisioningType>manual</ProvisioningType>
-    <CodesignKey>Apple Distribution: RICK GABRIELLI (45MP7CJ25M)</CodesignKey>
+    <ProvisioningType>automatic</ProvisioningType>
+    <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignProvision>Muswick Provisioning Profile App Store 2026</CodesignProvision>
   </PropertyGroup>
   
