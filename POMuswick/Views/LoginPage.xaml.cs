@@ -44,9 +44,29 @@ namespace POMuswick.Views
             }
         }
 
+        public void ShowAnimation()
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                User.IsEnabled = false;
+                Password.IsEnabled = false;
+                RememberMe.IsEnabled = false;
+
+                LoadingAlert.IsVisible = true;
+                LoadingAlert.IsLoading = true;
+            });
+        }
+
         public void HideAnimation()
         {
-            WaitImage.IsVisible = false;
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                User.IsEnabled = true;
+                Password.IsEnabled = true;
+                RememberMe.IsEnabled = true;
+                LoadingAlert.IsVisible = false;
+                LoadingAlert.IsLoading = false;
+            });
         }
 
         protected override bool OnBackButtonPressed()

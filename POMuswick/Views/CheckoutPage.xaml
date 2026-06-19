@@ -196,7 +196,9 @@
                                         <ffimageloading:CachedImage
                                             Margin="5"
                                             Aspect="AspectFit"
+                                            ErrorPlaceholder="logoicon.png"
                                             HeightRequest="90"
+                                            LoadingPlaceholder="logoicon.png"
                                             Source="{Binding ImageURL}"
                                             WidthRequest="90" />
 

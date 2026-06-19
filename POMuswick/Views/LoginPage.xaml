@@ -57,7 +57,7 @@
                             Aspect="AspectFit"
                             HeightRequest="50"
                             HorizontalOptions="Center"
-                            Source="logoicon.png"
+                            Source="logo.jpg"
                             StyleClass="FlyoutHeaderStyle"
                             VerticalOptions="Center" />
                         <Label
@@ -133,15 +133,17 @@
                             Text="       Sign In       "
                             TextColor="White"
                             TextTransform="None" />
-                        <ActivityIndicator
-                            x:Name="WaitImage"
-                            HeightRequest="80"
-                            HorizontalOptions="Center"
-                            IsVisible="{Binding IsLoggingIn}"
-                            VerticalOptions="Center" />
                     </StackLayout>
                 </StackLayout>
             </ScrollView>
+            <controls:CustomAlertDialog
+                x:Name="LoadingAlert"
+                Title="Validating"
+                Grid.Row="0"
+                Grid.RowSpan="0"
+                IsLoading="True"
+                IsVisible="False"
+                Message="Please wait while we validating the credential…" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

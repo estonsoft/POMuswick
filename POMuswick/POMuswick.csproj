@@ -20,7 +20,7 @@
     <!-- Display name -->
     <ApplicationTitle>Muswick Wholesale Grocers</ApplicationTitle>
     <!-- App Identifier -->
-    <ApplicationId>com.muswick.salesmaui</ApplicationId>
+    <ApplicationId>com.muswick.sales</ApplicationId>
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>

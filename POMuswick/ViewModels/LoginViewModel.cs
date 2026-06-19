@@ -23,27 +23,36 @@
 
         private void OnLoginClicked(object obj)
         {
-            if (User.ToLower() == "app_test")
+            App.g_LoginPage.ShowAnimation();
+            Task.Delay(1000).ContinueWith(t =>
             {
-                App.g_ServerURL = "https://store.qwikpoint.net";
-            }
-            else
-            {
-                App.g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
-            }
+                if (User.ToLower() == "app_test")
+                {
+                    App.g_ServerURL = "https://store.qwikpoint.net";
+                }
+                else
+                {
+                    App.g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
+                }
 
-            App.UpdateServerLinks();
+                App.UpdateServerLinks();
 
-            App.g_IsLoggedIn = true;
-            App.g_UserName = User;
+                App.g_IsLoggedIn = true;
+                App.g_UserName = User;
 
-            App.g_Customer.User = User;
-            App.g_Customer.RememberMe = RememberMe;
+                App.g_Customer.User = User;
+                App.g_Customer.RememberMe = RememberMe;
 
-            //Database db = new Database();
-            App.g_db.SaveCustomer(App.g_Customer);
+                //Database db = new Database();
+                App.g_db.SaveCustomer(App.g_Customer);
 
-            App.CommManager.ValidateLogin(User, Password, App.g_Customer.UniqueId);
+                App.CommManager.ValidateLogin(User, Password, App.g_Customer.UniqueId);
+
+                Task.Delay(1500).ContinueWith(t =>
+                {
+                    App.g_LoginPage.HideAnimation();
+                });
+            });
         }
     }
 }

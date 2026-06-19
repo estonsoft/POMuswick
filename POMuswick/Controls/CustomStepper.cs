@@ -87,7 +87,7 @@ public class CustomStepper : StackLayout
         QtyLabel.SetBinding(Label.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source: this));
         QtyLabel.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
 
-        InCartLabel = new Label { Text = "In Cart", WidthRequest = 35, Margin = new Thickness(0, -8, 0, 0), TextColor = Colors.Gray, FontSize = 10, HorizontalOptions = LayoutOptions.Fill, HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1 };
+        InCartLabel = new Label { Text = "In Cart", WidthRequest = 45, Margin = new Thickness(0, 0, 0, 0), TextColor = Colors.Gray, FontSize = 10,FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Fill, HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1 };
         InCartLabel.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
 
         QtyStack.Children.Add(QtyLabel);
