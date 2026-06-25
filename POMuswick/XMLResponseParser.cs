@@ -1260,7 +1260,6 @@ namespace POMuswick
                             await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Some items in your cart are now out of stock.  Please review your shopping cart.", "Ok");
 
                             App.g_IsOrderSubmitting = false;
-                            await App.g_Shell.GoToShoppingCart();
                         });
                     }
                     catch

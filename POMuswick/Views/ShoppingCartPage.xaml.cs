@@ -313,17 +313,7 @@ namespace POMuswick.Views
 
         private async void btnCheckout_Clicked(object sender, EventArgs e)
         {
-            if ((dCartTotal < App.g_Customer.MinOrderAmount) && (IsDeliveryHighlighted))
-            {
-                bool bContinue = await DisplayAlertAsync("Muswick Wholesale Grocers", "Your order total must be at least " + string.Format("{0:C}", App.g_Customer.MinOrderAmount) + " to avoid a " + string.Format("{0:C}", App.g_Customer.ShippingFee) + " shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "NO", "YES");
-
-                if (!bContinue)
-                {
-                    validate();
-                    return;
-                }
-            }
-            else { validate(); }
+            validate();            
         }
 
         private async void validate()
@@ -348,17 +338,30 @@ namespace POMuswick.Views
                 }
 
                 ValidateResponse response = App.CommManager.ValidateOrderQOH(App.g_Customer.CustNo, sOrderInfo).Result;
-                MainThread.InvokeOnMainThreadAsync(() =>
-                {
+                MainThread.BeginInvokeOnMainThread(async () => {
                     if (response.IsValid)
                     {
                         LoadingAlert.IsVisible = false;
-                        App.g_Shell.GoToCheckout();
+                        if ((dCartTotal < App.g_Customer.MinOrderAmount) && (IsDeliveryHighlighted))
+                        {
+                            bool bContinue =  await DisplayAlertAsync("Muswick Wholesale Grocers", "Your order total must be at least " + string.Format("{0:C}", App.g_Customer.MinOrderAmount) + " to avoid a " + string.Format("{0:C}", App.g_Customer.ShippingFee) + " shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "YES", "NO");
+
+                            if (bContinue)
+                            {
+                                await App.g_Shell.GoToCheckout();
+                                return;
+                            }
+                            else 
+                            {
+                                await App.g_Shell.GoToShoppingCart();
+                            }
+                        }
+                        else { await App.g_Shell.GoToCheckout(); }
                     }
                     else
                     {
                         LoadingAlert.IsVisible = false;
-                        Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", response.Message, "Ok");
+                        await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", response.Message, "Ok");
                     }
                 });
             });

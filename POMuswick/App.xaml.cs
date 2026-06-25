@@ -115,126 +115,132 @@ namespace POMuswick
 
             if (!g_IsLoggedIn)
             {
-                //Database db = new Database();
+                await InitializeAppAfterLogin();
+            }
+            return true;
+        }
 
-                g_UserName = "";
+        public async Task<bool> InitializeAppAfterLogin()
+        {
+            //Database db = new Database();
 
-                if (g_db.GetSetting("LoggedIn") == "1")
-                {
-                    g_IsLoggedIn = true;
-                    g_UserName = g_db.GetSetting("UserName");
-                }
+            g_UserName = "";
 
-                g_Company = "";
-                g_SearchText = "";
-                g_SearchFromPage = "";
-                g_ScanBarcode = "";
-                g_SectionName = "";
-                g_CurrentPage = "";
-                g_IsOrderSubmitting = false;
-                g_OrderNo = "";
-                g_HeaderTitle = "";
-                g_CategoryScrollY = 0;
+            if (g_db.GetSetting("LoggedIn") == "1")
+            {
+                g_IsLoggedIn = true;
+                g_UserName = g_db.GetSetting("UserName");
+            }
 
-                g_IsCredits = g_db.GetSetting("Credits");
-                g_QOHDisplay = g_db.GetSetting("QOHDisplay");
-                if (g_db.GetSetting("HoldForReview") == "1")
-                {
-                    g_HoldForReview = true;
-                }
-                else
-                {
-                    g_HoldForReview = false;
-                }
-                if (g_db.GetSetting("BlockItemsNoQOH") == "1")
-                {
-                    g_BlockItemsNoQOH = true;
-                }
-                else
-                {
-                    g_BlockItemsNoQOH = false;
-                }
-                if (g_db.GetSetting("IsSalesUser") == "1")
-                {
-                    g_IsSalesUser = true;
-                }
-                else
-                {
-                    g_IsSalesUser = false;
-                }
+            g_Company = "";
+            g_SearchText = "";
+            g_SearchFromPage = "";
+            g_ScanBarcode = "";
+            g_SectionName = "";
+            g_CurrentPage = "";
+            g_IsOrderSubmitting = false;
+            g_OrderNo = "";
+            g_HeaderTitle = "";
+            g_CategoryScrollY = 0;
 
-                if (App.g_UserName == "app_test")
-                {
-                    App.g_ServerURL = "https://store.qwikpoint.net";
-                }
-                else
-                {
-                    g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
-                }
+            g_IsCredits = g_db.GetSetting("Credits");
+            g_QOHDisplay = g_db.GetSetting("QOHDisplay");
+            if (g_db.GetSetting("HoldForReview") == "1")
+            {
+                g_HoldForReview = true;
+            }
+            else
+            {
+                g_HoldForReview = false;
+            }
+            if (g_db.GetSetting("BlockItemsNoQOH") == "1")
+            {
+                g_BlockItemsNoQOH = true;
+            }
+            else
+            {
+                g_BlockItemsNoQOH = false;
+            }
+            if (g_db.GetSetting("IsSalesUser") == "1")
+            {
+                g_IsSalesUser = true;
+            }
+            else
+            {
+                g_IsSalesUser = false;
+            }
 
-                UpdateServerLinks();
+            if (App.g_UserName == "app_test")
+            {
+                App.g_ServerURL = "https://store.qwikpoint.net";
+            }
+            else
+            {
+                g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
+            }
 
-                g_Category = new Category();
-                g_Category.Code = "";
-                g_Category.Description = "ALL CATEGORIES";
+            UpdateServerLinks();
 
-                g_Subcategory = new Subcategory();
-                g_Subcategory.Code = "";
-                g_Subcategory.Description = "ALL SUBCATEGORIES";
+            g_Category = new Category();
+            g_Category.Code = "";
+            g_Category.Description = "ALL CATEGORIES";
+
+            g_Subcategory = new Subcategory();
+            g_Subcategory.Code = "";
+            g_Subcategory.Description = "ALL SUBCATEGORIES";
 
 
-                Constants.Load();
+            Constants.Load();
 
-                Location location = new Location();
-                location.Refresh();
+            Location location = new Location();
+            location.Refresh();
 
-                g_Customer = new Customer();
-                g_ShoppingCartItems = App.g_db.GetCartPieces();
+            g_Customer = new Customer();
+            g_ShoppingCartItems = App.g_db.GetCartPieces();
 
-                await Task.Run(async () =>
-                {
-                    try
-                    {
-                        g_Customer = new Customer();
-                        if (App.g_IsLoggedIn)
-                        {
-                            g_Customer = App.g_db.GetCustomer();
-                            if (g_Customer == null)
-                            {
-                                g_Customer = new Customer();
-                            }
-                            else
-                            {
-                                App.g_db.RestoreCartItems(App.g_Customer.CustNo);
-                            }
-                        }
-                        InitializeAllTimer();
-
-                        InitializeOrderHistoryTimer();
-
-                        InitializeQOHTimer();
-                    }
-                    catch
-                    {
-                        g_Customer = new Customer();
-                    }
-                });
-
-                //g_CategoryList = App.g_db.GetCategories();
-                g_HomePageCategoryList = App.g_db.GetHomePageCategories();
-                g_ItemList = App.g_db.GetItems();
-                g_ReorderItemList = App.g_db.GetReorderItems();
-
+            await Task.Run(async () =>
+            {
                 try
                 {
-                    App.CommManager.GetSettings();
-                }
-                catch { }
+                    g_Customer = new Customer();
+                    if (App.g_IsLoggedIn)
+                    {
+                        g_Customer = App.g_db.GetCustomer();
+                        if (g_Customer == null)
+                        {
+                            g_Customer = new Customer();
+                        }
+                        else
+                        {
+                            App.g_db.RestoreCartItems(App.g_Customer.CustNo);
+                        }
+                    }
+                    InitializeAllTimer();
 
-                if (g_IsSalesUser)
-                {
-                    App.CommManager.GetSalespersonCustomers(g_UserName);
+                    InitializeOrderHistoryTimer();
+
+                    InitializeQOHTimer();
                 }
+                catch
+                {
+                    g_Customer = new Customer();
+                }
+            });
+
+            //g_CategoryList = App.g_db.GetCategories();
+            g_HomePageCategoryList = App.g_db.GetHomePageCategories();
+            g_ItemList = App.g_db.GetItems();
+            g_ReorderItemList = App.g_db.GetReorderItems();
+
+            try
+            {
+                App.CommManager.GetSettings();
+            }
+            catch { }
+
+            if (g_IsSalesUser)
+            {
+                App.CommManager.GetSalespersonCustomers(g_UserName);
             }
             return true;
         }

@@ -1,14 +1,14 @@
 ﻿namespace POMuswick.Controls;
 
-public class CustomStepper : StackLayout
+public class CustomStepper : Grid
 {
-    public static readonly BindableProperty ItemNoProperty = BindableProperty.Create("ItemNo", typeof(int), typeof(NumericEntryBehavior), 0);
-    public static readonly BindableProperty QtyOrderProperty = BindableProperty.Create("QtyOrder", typeof(int), typeof(NumericEntryBehavior), 0);
-    public static readonly BindableProperty MaxOrderQtyProperty = BindableProperty.Create("MaxOrderQty", typeof(int), typeof(NumericEntryBehavior), 0);
-    public static readonly BindableProperty UOMProperty = BindableProperty.Create("UOM", typeof(string), typeof(string), "");
+    public static readonly BindableProperty ItemNoProperty = BindableProperty.Create("ItemNo", typeof(int), typeof(CustomStepper), 0);
+    public static readonly BindableProperty QtyOrderProperty = BindableProperty.Create("QtyOrder", typeof(int), typeof(CustomStepper), 0);
+    public static readonly BindableProperty MaxOrderQtyProperty = BindableProperty.Create("MaxOrderQty", typeof(int), typeof(CustomStepper), 0);
+    public static readonly BindableProperty UOMProperty = BindableProperty.Create("UOM", typeof(string), typeof(CustomStepper), "");
     public static readonly BindableProperty TextProperty = BindableProperty.Create(propertyName: "Text", returnType: typeof(int), declaringType: typeof(CustomStepper), defaultValue: 0, defaultBindingMode: BindingMode.TwoWay);
-    public static readonly BindableProperty IsStepperVisibleProperty = BindableProperty.Create(propertyName: "IsStepperVisible", returnType: typeof(bool), declaringType: typeof(StackLayout), defaultValue: false, defaultBindingMode: BindingMode.TwoWay);
-    public static readonly BindableProperty IsAddToOrderVisibleProperty = BindableProperty.Create(propertyName: "IsAddToOrderVisible", returnType: typeof(bool), declaringType: typeof(Button), defaultValue: false, defaultBindingMode: BindingMode.TwoWay);
+    public static readonly BindableProperty IsStepperVisibleProperty = BindableProperty.Create(propertyName: "IsStepperVisible", returnType: typeof(bool), declaringType: typeof(CustomStepper), defaultValue: false, defaultBindingMode: BindingMode.TwoWay);
+    public static readonly BindableProperty IsAddToOrderVisibleProperty = BindableProperty.Create(propertyName: "IsAddToOrderVisible", returnType: typeof(bool), declaringType: typeof(CustomStepper), defaultValue: false, defaultBindingMode: BindingMode.TwoWay);
 
     public int ItemNo
     {
@@ -54,146 +54,177 @@ public class CustomStepper : StackLayout
 
     ImageButton PlusBtn;
     ImageButton MinusBtn;
-    StackLayout QtyStack;
-    Label QtyLabel;
+    VerticalStackLayout QtyStack;
+    Entry QtyLabel;
+    Border QtyLabelBorder;
     Label InCartLabel;
-    StackLayout AddToOrderStack;
     Button AddToOrderBtn;
 
     public CustomStepper()
     {
-        Orientation = StackOrientation.Horizontal;
-        HeightRequest = 30;
+        ColumnDefinitions = new ColumnDefinitionCollection
+        {
+            new ColumnDefinition { Width = GridLength.Auto },
+            new ColumnDefinition { Width = GridLength.Auto },
+            new ColumnDefinition { Width = GridLength.Auto },
+            new ColumnDefinition { Width = GridLength.Star }
+        };
 
-        PlusBtn = new ImageButton { MaximumHeightRequest = 40, MaximumWidthRequest = 40, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent };
+        // FIX: Solved the type instantiation error by using RowDefinitionCollection
+        RowDefinitions = new RowDefinitionCollection();
+
+        ColumnSpacing = 4;
+        VerticalOptions = LayoutOptions.Center;
+
+        PlusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
         PlusBtn.Clicked += PlusBtn_Clicked;
-        PlusBtn.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
+        PlusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
 
-        MinusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_minus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent };
+        MinusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_minus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
         MinusBtn.Clicked += MinusBtn_Clicked;
-        MinusBtn.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
+        MinusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
 
-        AddToOrderStack = new StackLayout { Orientation = StackOrientation.Vertical, Margin = new Thickness(0, 5, 5, 0) };
-
-        AddToOrderBtn = new Button { Text = "Add", LineBreakMode = LineBreakMode.WordWrap, FontAutoScalingEnabled = true, MaximumHeightRequest = 33, CornerRadius = 15, Margin = new Thickness(0, -5, 0, 0), Padding = new Thickness(15, 5, 15, 5), TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue };
+        AddToOrderBtn = new Button { Text = "Add", HeightRequest = 40, WidthRequest = 100, CornerRadius = 20, Padding = Thickness.Zero, TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue, VerticalOptions = LayoutOptions.Center };
         AddToOrderBtn.Clicked += PlusBtn_Clicked;
-        AddToOrderBtn.SetBinding(Button.IsVisibleProperty, new Binding(nameof(IsAddToOrderVisible), BindingMode.TwoWay, source: this));
+        AddToOrderBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsAddToOrderVisible), source: this));
 
-        AddToOrderStack.Children.Add(AddToOrderBtn);
+        QtyStack = new VerticalStackLayout { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center, Spacing = 2 };
 
-        QtyStack = new StackLayout { Orientation = StackOrientation.Vertical };
+        QtyLabel = new Entry
+        {
+            WidthRequest = 35,
+            HeightRequest = 30,
+            Margin = Thickness.Zero,
+            TextColor = Colors.Black,
+            FontSize = 20,
+            FontAttributes = FontAttributes.Bold,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center,
+            BackgroundColor = Colors.Transparent,
+            Keyboard = Keyboard.Numeric,
+            MaxLength = 3
+        };
 
-        QtyLabel = new Label { WidthRequest = 35, Margin = new Thickness(0, 0, 0, 0), TextColor = Colors.Black, FontSize = 20, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Fill, HorizontalTextAlignment = TextAlignment.Center };
-        QtyLabel.SetBinding(Label.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source: this));
-        QtyLabel.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
+        QtyLabel.SetBinding(Entry.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source: this));
+        QtyLabel.TextChanged += Entry_TextChanged;
 
-        InCartLabel = new Label { Text = "In Cart", WidthRequest = 45, Margin = new Thickness(0, 0, 0, 0), TextColor = Colors.Gray, FontSize = 10,FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Fill, HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1 };
-        InCartLabel.SetBinding(Label.IsVisibleProperty, new Binding(nameof(IsStepperVisible), BindingMode.TwoWay, source: this));
+        QtyLabelBorder = new Border
+        {
+            Stroke = Colors.LightGray,
+            StrokeThickness = 1,
+            HeightRequest = 32,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 4 },
+            Padding = Thickness.Zero,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = QtyLabel
+        };
 
-        QtyStack.Children.Add(QtyLabel);
+        InCartLabel = new Label { Text = "In Cart", WidthRequest = 45, Margin = Thickness.Zero, TextColor = Colors.Gray, FontSize = 10, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center, HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1 };
+
+        QtyStack.Children.Add(QtyLabelBorder);
         QtyStack.Children.Add(InCartLabel);
+        QtyStack.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
+
+        Grid.SetColumn(MinusBtn, 0);
+        Grid.SetColumn(QtyStack, 1);
+        Grid.SetColumn(PlusBtn, 2);
+        Grid.SetColumn(AddToOrderBtn, 3);
 
         Children.Add(MinusBtn);
         Children.Add(QtyStack);
         Children.Add(PlusBtn);
-        Children.Add(AddToOrderStack);
+        Children.Add(AddToOrderBtn);
     }
 
     private void Entry_TextChanged(object sender, TextChangedEventArgs e)
     {
-        int item = ItemNo;
+        // Prevent infinite loops during binding updates
+        if (string.IsNullOrEmpty(e.NewTextValue)) return;
 
-        if (!string.IsNullOrEmpty(e.NewTextValue))
+        if (int.TryParse(e.NewTextValue, out int newQty))
         {
-            try
+            // 1. Enforce MaxOrderQty bounds check if applicable
+            if (MaxOrderQty > 0 && newQty > MaxOrderQty)
             {
-                this.Text = int.Parse(e.NewTextValue);
-            }
-            catch
-            {
-            }
-        }
-    }
-
-    private async void MinusBtn_Clicked(object sender, EventArgs e)
-    {
-        if (Text > 0)
-        {
-            //Database db = new Database();
-            int iQty = App.g_db.GetItemQty(ItemNo);
-
-            if (iQty > 0)
-            {
-                App.g_db.UpdateItemQty(ItemNo, -1);
+                newQty = MaxOrderQty;
+                QtyLabel.Text = newQty.ToString(); // Force UI to respect the limit
+                return;
             }
 
-            Text--;
-            QtyOrder--;
+            // 2. Calculate the difference between the old quantity and the new quantity
+            int currentDbQty = App.g_db.GetItemQty(ItemNo);
+            int difference = newQty - currentDbQty;
 
+            // 3. Update the database using your existing delta-based system
+            if (difference != 0)
+            {
+                App.g_db.UpdateItemQty(ItemNo, difference);
+            }
+
+            // 4. Update control states and synchronizations
+            this.Text = newQty;
+            this.QtyOrder = newQty;
             App.g_ShoppingCartItems = App.g_db.GetCartPieces();
 
-            try
+            // 5. Safely handle visibility transitions if the user types '0'
+            if (newQty == 0)
             {
-                App.g_ShoppingCartPage.UpdateTotals();
-            }
-            catch { }
-
-            try
-            {
-                App.g_CheckoutPage.UpdateTotals();
-            }
-            catch { }
-
-            if (Text == 0)
-            {
-                try
-                {
-                    App.g_ShoppingCartPage.UpdateTotals();
-                }
-                catch { }
-                try
-                {
-                    App.g_CheckoutPage.UpdateTotals();
-                }
-                catch { }
-
                 IsStepperVisible = false;
                 IsAddToOrderVisible = true;
             }
+            else
+            {
+                IsStepperVisible = true;
+                IsAddToOrderVisible = false;
+            }
+
+            // 6. Refresh pages
+            try { App.g_ShoppingCartPage.UpdateTotals(); } catch { }
+            try { App.g_CheckoutPage.UpdateTotals(); } catch { }
+        }
+    }
+
+
+    private void MinusBtn_Clicked(object sender, EventArgs e)
+    {
+        if (Text <= 0) return;
+
+        int iQty = App.g_db.GetItemQty(ItemNo);
+        if (iQty > 0)
+        {
+            App.g_db.UpdateItemQty(ItemNo, -1);
+        }
+
+        Text--;
+        QtyOrder--;
+        App.g_ShoppingCartItems = App.g_db.GetCartPieces();
+
+        try { App.g_ShoppingCartPage.UpdateTotals(); } catch { }
+        try { App.g_CheckoutPage.UpdateTotals(); } catch { }
+
+        if (Text == 0)
+        {
+            IsStepperVisible = false;
+            IsAddToOrderVisible = true;
         }
     }
 
     private void PlusBtn_Clicked(object sender, EventArgs e)
     {
-        if (Text == 999)
-        {
-            return;
-        }
+        if (Text == 999) return;
+        if ((Text >= MaxOrderQty) && (MaxOrderQty > 0)) return;
 
-        if ((Text >= MaxOrderQty) && (MaxOrderQty > 0))
-        {
-            return;
-        }
-
-        //Database db = new Database();
         App.g_db.UpdateItemQty(ItemNo, 1);
 
         Text++;
         QtyOrder++;
-
         App.g_ShoppingCartItems = App.g_db.GetCartPieces();
 
-        try
-        {
-            App.g_ShoppingCartPage.UpdateTotals();
-        }
-        catch { }
-
-        try
-        {
-            App.g_CheckoutPage.UpdateTotals();
-        }
-        catch { }
+        try { App.g_ShoppingCartPage.UpdateTotals(); } catch { }
+        try { App.g_CheckoutPage.UpdateTotals(); } catch { }
 
         IsStepperVisible = true;
         IsAddToOrderVisible = false;

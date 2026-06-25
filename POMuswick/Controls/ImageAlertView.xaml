@@ -39,15 +39,15 @@
                     <Border
                         Grid.Column="1"
                         BackgroundColor="#F2F2F2"
-                        HeightRequest="32"
+                        HeightRequest="50"
                         HorizontalOptions="End"
                         Stroke="Transparent"
                         StrokeShape="RoundRectangle 20"
                         VerticalOptions="Center"
-                        WidthRequest="32">
+                        WidthRequest="50">
                         <Label
                             FontFamily="FontAwesomeFreeSolid"
-                            FontSize="14"
+                            FontSize="24"
                             HorizontalOptions="Center"
                             Text="&#xF00D;"
                             TextColor="#555555"

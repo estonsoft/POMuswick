@@ -633,7 +633,7 @@
                 loading.IsVisible = true;
             });
             
-            bool isloaded  = await App.g_App.InitializeApp();
+            bool isloaded  = await App.g_App.InitializeAppAfterLogin();
             await Task.Delay(1000);
             MainThread.BeginInvokeOnMainThread(() =>
             {

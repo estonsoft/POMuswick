@@ -25,7 +25,6 @@
             Aspect="AspectFit"
             ErrorPlaceholder="logoicon.png"
             HeightRequest="90"
-            LoadingPlaceholder="logoicon.png"
             RetryCount="1"
             Source="{Binding ImageURL}"
             WidthRequest="90">
@@ -113,6 +112,7 @@
             Text="{Binding QtyOrder}"
             UOM="{Binding UOM}"
             VerticalOptions="End" />
+
         <!--  DIVIDER  -->
         <BoxView
             Grid.Row="4"

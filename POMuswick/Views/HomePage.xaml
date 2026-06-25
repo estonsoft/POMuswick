@@ -104,8 +104,13 @@
                 Color="lightgray" />
         </StackLayout>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
+        <ScrollView Grid.Row="1" Orientation="Vertical">
+
+            <VerticalStackLayout
+                HorizontalOptions="Fill"
+                Spacing="0"
+                VerticalOptions="Start">
+
                 <VerticalStackLayout
                     x:Name="lblLoginInfo"
                     Margin="10"
@@ -126,11 +131,11 @@
                         Text="Company Name"
                         TextColor="black" />
                 </VerticalStackLayout>
+
                 <Grid
                     BackgroundColor="white"
                     HeightRequest="200"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Center">
+                    HorizontalOptions="Fill">
                     <Border BackgroundColor="White" HorizontalOptions="Fill">
                         <ffimageloading:CachedImage
                             x:Name="BannerImage"
@@ -140,6 +145,7 @@
                             HorizontalOptions="Fill" />
                     </Border>
                 </Grid>
+
                 <Grid HorizontalOptions="Fill">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -199,6 +205,7 @@
                             </VerticalStackLayout>
                         </HorizontalStackLayout>
                     </Border>
+
                     <Border
                         Grid.Column="1"
                         Background="LightGray"
@@ -234,12 +241,10 @@
                         </HorizontalStackLayout>
                     </Border>
                 </Grid>
-                <Grid
-                    Padding="15,15,0,0"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Fill">
+
+                <!--  Start Your Cart header  -->
+                <Grid Padding="15,15,0,0" HorizontalOptions="Fill">
                     <Label
-                        Grid.Row="0"
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
                         FontSize="20"
@@ -277,10 +282,9 @@
                         <TapGestureRecognizer Tapped="OnShopNow" />
                     </Grid.GestureRecognizers>
                 </Grid>
-                <Grid
-                    Padding="15,15,0,0"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Fill">
+
+                <!--  New Items header  -->
+                <Grid Padding="15,15,0,0" HorizontalOptions="Fill">
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
@@ -319,12 +323,14 @@
                         <TapGestureRecognizer Tapped="OnNewItemsAll" />
                     </Grid.GestureRecognizers>
                 </Grid>
+
+                <!--  ✅ KEY FIX: CollectionView inside ScrollView needs HeightRequest on iOS  -->
                 <CollectionView
                     x:Name="NewItemList"
-                    Margin="0,20,0,0"
+                    Margin="0,20,0,20"
+                    HeightRequest="300"
                     ItemsLayout="HorizontalList"
-                    SelectionMode="None"
-                    VerticalOptions="Fill">
+                    SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <StackLayout Orientation="Vertical" VerticalOptions="Fill">
@@ -468,6 +474,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
             </VerticalStackLayout>
         </ScrollView>
 
