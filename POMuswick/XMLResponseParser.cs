@@ -32,10 +32,10 @@ namespace POMuswick
                         catch (Exception ex)
                         {
                             String sMsg = ex.Message;
+                            Console.WriteLine("Get Banners Save Banner exception" + sMsg + ex.StackTrace);
                         }
                     }
-
-                    App.g_db.CommitTransaction();
+                    // App.g_db.CommitTransaction();
                 }
                 try
                 {
@@ -44,13 +44,16 @@ namespace POMuswick
                         App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
                     }
                 }
-                catch
+                catch(Exception e)
                 {
+                    Console.WriteLine("Get Categories and Subcategories Cust Exception" + e.Message + e.StackTrace);
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Banners Exception: " + ex.Message + ex.StackTrace);
             }
+            Console.WriteLine("Get Banners Completed");
         }
 
 
@@ -274,11 +277,14 @@ namespace POMuswick
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("Get Categories and Subcategories Cust exception" + ex.Message + ex.StackTrace);
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Categories and Subcategories Cust exception" + ex.Message + ex.StackTrace);
             }
+            Console.WriteLine("Get Categories and Subcategories Cust Completed");
         }
 
         public static async void commService_GetItemsCompletedAsync(String response)
@@ -315,6 +321,7 @@ namespace POMuswick
                         catch (Exception ex)
                         {
                             String sMsg = ex.Message;
+                            Console.WriteLine("Get Items Item No exception" + sMsg + ex.StackTrace);
                             continue;
                         }
                         item.ItemNoDisplay = aItem[0];
@@ -344,9 +351,10 @@ namespace POMuswick
                         {
                             item.RetailPrice = Convert.ToDecimal(aItem[14].Trim());
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.RetailPrice = 0;
+                            Console.WriteLine("Get Items Retail Price exception" + e.Message + e.StackTrace);
                         }
                         item.RetailPriceDisplay = aItem[14].Trim();
                         item.UOM = aItem[15].Trim();
@@ -355,9 +363,10 @@ namespace POMuswick
                         {
                             item.Size = Convert.ToInt32(aItem[16].Trim());
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.Size = 1;
+                            Console.WriteLine("Get Items Size exception" + e.Message + e.StackTrace);
                         }
                         item.SizeDisplay = aItem[16].Trim();
                         item.Form = aItem[17].Trim();
@@ -365,52 +374,58 @@ namespace POMuswick
                         {
                             item.Price = Convert.ToDecimal(aItem[18].Trim());
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.Price = 0;
+                            Console.WriteLine("Get Items Price exception" + e.Message + e.StackTrace);
                         }
                         item.PriceDisplay = string.Format("{0:C}", item.Price);
                         try
                         {
                             item.Tax = Convert.ToDecimal(aItem[19].Trim());
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.Tax = 0;
+                            Console.WriteLine("Get Items Tax exception" + e.Message + e.StackTrace);
                         }
                         item.TaxDisplay = string.Format("{0:C}", item.Tax);
                         try
                         {
                             item.CategoryRank = Convert.ToInt32(aItem[20].Trim());
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.CategoryRank = 0;
+                            Console.WriteLine("Get Items Category Rank exception" + e.Message + e.StackTrace);
                         }
                         try
                         {
                             item.SellUnitsInPurchaseUnit = Convert.ToInt32(aItem[21].Trim());
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.SellUnitsInPurchaseUnit = 1;
+                            Console.WriteLine("Get Items Sell Units in Purchase Unit exception" + e.Message + e.StackTrace);
                         }
                         item.Status = aItem[22];
                         try
                         {
                             item.QOH = Convert.ToInt32(aItem[23].Trim());
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.QOH = 0;
+                            Console.WriteLine("Get Items QOH exception" + e.Message + e.StackTrace);
                         }
                         try
                         {
                             item.NewItem = aItem[24].Trim();
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.NewItem = "N";
+                            Console.WriteLine("Get Items New Item exception" + e.Message + e.StackTrace);
                         }
                         try
                         {
@@ -429,10 +444,11 @@ namespace POMuswick
                                 item.DateAddedDisplay = "";
                             }
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.DateAdded = new DateTime(2001, 1, 1);
                             item.DateAddedDisplay = "";
+                            Console.WriteLine("Get Items Date Added exception" + e.Message + e.StackTrace);
                         }
                         try
                         {
@@ -447,10 +463,11 @@ namespace POMuswick
                                 item.IsMaxOrderQtyVisible = true;
                             }
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.MaxOrderQty = 0;
                             item.IsMaxOrderQtyVisible = false;
+                            Console.WriteLine("Get Items Max Order Qty exception" + e.Message + e.StackTrace);
                         }
                         try
                         {
@@ -458,20 +475,22 @@ namespace POMuswick
                             item.Keyword2 = aItem[29];
                             item.Keyword3 = aItem[30];
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.Keyword1 = "";
                             item.Keyword2 = "";
                             item.Keyword3 = "";
+                            Console.WriteLine("Get Items Keywords exception" + e.Message + e.StackTrace);
                         }
 
                         try
                         {
                             item.LastPurchDateDisplay = aItem[31];
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.LastPurchDateDisplay = "";
+                            Console.WriteLine("Get Items Last Purch Date exception" + e.Message + e.StackTrace);
                         }
                         if (item.LastPurchDateDisplay == "")
                         {
@@ -479,8 +498,9 @@ namespace POMuswick
                             {
                                 item.LastPurchDate = Convert.ToDateTime(item.LastPurchDateDisplay);
                             }
-                            catch
+                            catch(Exception e)
                             {
+                                Console.WriteLine("Get Items Last Purch Date exception" + e.Message + e.StackTrace);
                             }
                         }
                         try
@@ -495,9 +515,10 @@ namespace POMuswick
                                 item.QtyLastOrderDisplay = item.QtyLastOrder.ToString();
                             }
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.QtyLastOrder = 0;
+                            Console.WriteLine("Get Items Qty Last Order exception" + e.Message + e.StackTrace);
                         }
                         // 33 subsubcat
                         // 34 subsubcat desc
@@ -516,15 +537,17 @@ namespace POMuswick
                                     item.SearchDescription = item.Description;
                                 }
                             }
-                            catch
+                            catch(Exception e)
                             {
                                 item.SearchDescription = item.Description;
+                                Console.WriteLine("Get Items Search Description exception" + e.Message + e.StackTrace);
                             }
                         }
-                        catch
+                        catch(Exception e)
                         {
                             item.LongDescription = "";
                             item.SearchDescription = item.Description;
+                            Console.WriteLine("Get Items Long Description exception" + e.Message + e.StackTrace);
                         }
 
                         item.QtyOrder = 0;
@@ -547,6 +570,7 @@ namespace POMuswick
                         catch (Exception ex)
                         {
                             String sMsg = ex.Message;
+                            Console.WriteLine("Get Items saving exception: " + sMsg);
                         }
                     }
 
@@ -564,8 +588,9 @@ namespace POMuswick
                             App.g_HomePage.RefreshNewItemsList();
                         });
                     }
-                    catch
+                    catch(Exception e)
                     {
+                        Console.WriteLine("Refresh list get items exeception" + e.Message + e.StackTrace);
                     }
 
                     App.CommManager.GetItemQOH(App.g_Customer.CustNo);
@@ -574,7 +599,9 @@ namespace POMuswick
             catch (Exception ex)
             {
                 String sMsg = ex.Message + ex.StackTrace;
+                Console.WriteLine(DateTime.Now.ToString() + " - Get Items exception: " + sMsg);
             }
+            Console.WriteLine("Get Items Completed");
         }
 
 
@@ -654,7 +681,7 @@ namespace POMuswick
 
                 if (aItems.Length > 1)
                 {
-                    App.g_db.BeginTransaction();
+                    // App.g_db.BeginTransaction();
 
                     foreach (String s in aItems)
                     {
@@ -685,13 +712,15 @@ namespace POMuswick
                         }
                     }
 
-                    App.g_db.CommitTransaction();
+                    // App.g_db.CommitTransaction();
                 }
             }
             catch (Exception ex)
             {
                 String sMsg = ex.Message + ex.StackTrace;
+                Console.WriteLine("Get Item QOH 2 Exception: " + sMsg);
             }
+            Console.WriteLine("Get Item QOH 2 Completed");
         }
 
         public static async void commService_ValidateLoginCompletedAsync(String response)
@@ -1288,7 +1317,7 @@ namespace POMuswick
 
         public static async void commService_GetOrderHistoryCompletedAsync(String response)
         {
-            Console.WriteLine("Get Order History Complete");
+            Console.WriteLine("Get Order History Returned");
 
             try
             {
@@ -1425,7 +1454,9 @@ namespace POMuswick
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Order History Exception: " + ex.Message + ex.StackTrace);
             }
+            Console.WriteLine("Get Order History Complete");
         }
 
         public static async void commService_GetSettingsCompletedAsync(String response)

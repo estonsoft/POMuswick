@@ -32,17 +32,17 @@ namespace POMuswick
 
         public void BeginTransaction()
         {
-            _database.BeginTransaction();
+            // _database.BeginTransaction();
         }
 
         public void CommitTransaction()
         {
-            _database.Commit();
+            // _database.Commit();
         }
 
         public void RollbackTransaction()
         {
-            _database.Rollback();
+            // _database.Rollback();
         }
 
         public List<Item> SearchItems(String sSearch, Category category, String sBarcode, Subcategory subcategory)
