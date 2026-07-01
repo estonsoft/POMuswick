@@ -234,15 +234,9 @@
             BannerImage.Source = ImageSource.FromUri(new Uri(banner.BannerURL));
         }
 
-        protected async override void OnNavigatedTo(NavigatedToEventArgs args)
+        protected async override void OnAppearing()
         {
-            base.OnNavigatedTo(args);
-        //    // This fires reliably on iOS when navigating to a tab
-        //    RefreshData();
-        //}
-        //protected async override void OnAppearing()
-        //{
-            //base.OnAppearing();
+            base.OnAppearing();
 
             if (!App.g_IsLoggedIn)
             {
