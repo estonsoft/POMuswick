@@ -56,7 +56,7 @@ public class CustomSmallStepper : Grid
     ImageButton PlusBtn;
     ImageButton MinusBtn;
     VerticalStackLayout QtyStack; // Upgraded to avoid vertical truncation/clipping anomalies
-    Entry QtyLabel;
+    Label QtyLabel;
     Border QtyLabelBorder;
     Label InCartLabel;
     Button AddToOrderBtn;
@@ -108,7 +108,7 @@ public class CustomSmallStepper : Grid
         QtyStack = new VerticalStackLayout { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center, Spacing = 1 };
 
         // OPTIMIZED: Form-fitted centered entries equipped with MaxLength = 3 input limits
-        QtyLabel = new Entry
+        QtyLabel = new Label
         {
             WidthRequest = 35,
             HeightRequest = 26, // Constrained to display comfortably within a 28px outer border
@@ -120,13 +120,10 @@ public class CustomSmallStepper : Grid
             VerticalOptions = LayoutOptions.Center,
             HorizontalTextAlignment = TextAlignment.Center,
             VerticalTextAlignment = TextAlignment.Center,
-            BackgroundColor = Colors.Transparent,
-            Keyboard = Keyboard.Numeric,
-            MaxLength = 3 // FIXED: Hard block typing limit set to 3 characters maximum
+            BackgroundColor = Colors.Transparent
         };
-        QtyLabel.SetBinding(Entry.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source:this));
-        QtyLabel.TextChanged += Entry_TextChanged;
-
+        QtyLabel.SetBinding(Label.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source:this));
+        
         QtyLabelBorder = new Border
         {
             Stroke = Colors.LightGray,
@@ -156,56 +153,7 @@ public class CustomSmallStepper : Grid
         Children.Add(PlusBtn);
         Children.Add(AddToOrderBtn);
     }
-
-    private void Entry_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        // Prevent infinite loops during binding updates
-        if (string.IsNullOrEmpty(e.NewTextValue)) return;
-
-        if (int.TryParse(e.NewTextValue, out int newQty))
-        {
-            // 1. Enforce MaxOrderQty bounds check if applicable
-            if (MaxOrderQty > 0 && newQty > MaxOrderQty)
-            {
-                newQty = MaxOrderQty;
-                QtyLabel.Text = newQty.ToString(); // Force UI to respect the limit
-                return;
-            }
-
-            // 2. Calculate the difference between the old quantity and the new quantity
-            int currentDbQty = App.g_db.GetItemQty(ItemNo);
-            int difference = newQty - currentDbQty;
-
-            // 3. Update the database using your existing delta-based system
-            if (difference != 0)
-            {
-                App.g_db.UpdateItemQty(ItemNo, difference);
-            }
-
-            // 4. Update control states and synchronizations
-            this.Text = newQty;
-            this.QtyOrder = newQty;
-            App.g_ShoppingCartItems = App.g_db.GetCartPieces();
-
-            // 5. Safely handle visibility transitions if the user types '0'
-            if (newQty == 0)
-            {
-                IsStepperVisible = false;
-                IsAddToOrderVisible = true;
-            }
-            else
-            {
-                IsStepperVisible = true;
-                IsAddToOrderVisible = false;
-            }
-
-            // 6. Refresh pages
-            try { App.g_ShoppingCartPage.UpdateTotals(); } catch { }
-            try { App.g_CheckoutPage.UpdateTotals(); } catch { }
-        }
-    }
-
-
+    
     private async void MinusBtn_Clicked(object sender, EventArgs e)
     {
         if (Text <= 0) return;

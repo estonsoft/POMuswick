@@ -55,7 +55,7 @@ public class CustomStepper : Grid
     ImageButton PlusBtn;
     ImageButton MinusBtn;
     VerticalStackLayout QtyStack;
-    Entry QtyLabel;
+    Label QtyLabel;
     Border QtyLabelBorder;
     Label InCartLabel;
     Button AddToOrderBtn;
@@ -90,7 +90,7 @@ public class CustomStepper : Grid
 
         QtyStack = new VerticalStackLayout { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center, Spacing = 2 };
 
-        QtyLabel = new Entry
+        QtyLabel = new Label
         {
             WidthRequest = 35,
             HeightRequest = 30,
@@ -103,13 +103,10 @@ public class CustomStepper : Grid
             HorizontalTextAlignment = TextAlignment.Center,
             VerticalTextAlignment = TextAlignment.Center,
             BackgroundColor = Colors.Transparent,
-            Keyboard = Keyboard.Numeric,
-            MaxLength = 3
         };
 
-        QtyLabel.SetBinding(Entry.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source: this));
-        QtyLabel.TextChanged += Entry_TextChanged;
-
+        QtyLabel.SetBinding(Label.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source: this));
+        
         QtyLabelBorder = new Border
         {
             Stroke = Colors.LightGray,
@@ -138,55 +135,6 @@ public class CustomStepper : Grid
         Children.Add(PlusBtn);
         Children.Add(AddToOrderBtn);
     }
-
-    private void Entry_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        // Prevent infinite loops during binding updates
-        if (string.IsNullOrEmpty(e.NewTextValue)) return;
-
-        if (int.TryParse(e.NewTextValue, out int newQty))
-        {
-            // 1. Enforce MaxOrderQty bounds check if applicable
-            if (MaxOrderQty > 0 && newQty > MaxOrderQty)
-            {
-                newQty = MaxOrderQty;
-                QtyLabel.Text = newQty.ToString(); // Force UI to respect the limit
-                return;
-            }
-
-            // 2. Calculate the difference between the old quantity and the new quantity
-            int currentDbQty = App.g_db.GetItemQty(ItemNo);
-            int difference = newQty - currentDbQty;
-
-            // 3. Update the database using your existing delta-based system
-            if (difference != 0)
-            {
-                App.g_db.UpdateItemQty(ItemNo, difference);
-            }
-
-            // 4. Update control states and synchronizations
-            this.Text = newQty;
-            this.QtyOrder = newQty;
-            App.g_ShoppingCartItems = App.g_db.GetCartPieces();
-
-            // 5. Safely handle visibility transitions if the user types '0'
-            if (newQty == 0)
-            {
-                IsStepperVisible = false;
-                IsAddToOrderVisible = true;
-            }
-            else
-            {
-                IsStepperVisible = true;
-                IsAddToOrderVisible = false;
-            }
-
-            // 6. Refresh pages
-            try { App.g_ShoppingCartPage.UpdateTotals(); } catch { }
-            try { App.g_CheckoutPage.UpdateTotals(); } catch { }
-        }
-    }
-
 
     private void MinusBtn_Clicked(object sender, EventArgs e)
     {
