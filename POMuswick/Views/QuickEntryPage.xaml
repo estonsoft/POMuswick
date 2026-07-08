@@ -234,13 +234,12 @@
                                     WidthRequest="130">
                                     <Label
                                         x:Name="PriceDisplay"
-                                        Margin="5,0,0,0"
                                         BackgroundColor="White"
                                         FontAttributes="Bold"
                                         FontSize="20"
                                         HorizontalOptions="Fill"
                                         MaxLines="1"
-                                        TextColor="Black"
+                                        TextColor="Red"
                                         VerticalOptions="Fill" />
                                     <Label
                                         x:Name="SizeUOM"
@@ -248,7 +247,7 @@
                                         BackgroundColor="White"
                                         FontSize="14"
                                         HorizontalOptions="Fill"
-                                        TextColor="Black"
+                                        TextColor="Red"
                                         VerticalOptions="Fill" />
                                 </StackLayout>
                             </StackLayout>

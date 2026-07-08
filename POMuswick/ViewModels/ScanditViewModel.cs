@@ -133,14 +133,6 @@ namespace POMuswick.ViewModels
                 {
                     try
                     {
-                        Vibration.Vibrate(100);
-                    }
-                    catch (Exception e)
-                    {
-                    }
-
-                    try
-                    {
                         ScannerPage.SetScanItem(barcode.Data);
                         ScannerPage.ScanComplete();
                         //ScannerPage.FindItem(barcode.Data);
