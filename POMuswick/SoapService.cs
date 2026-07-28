@@ -25,7 +25,6 @@ namespace POMuswick.Data
             var response = await _httpClient.PostAsync(SoapUrl, content);
             //response.EnsureSuccessStatusCode();
             string responseValue = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("Login Response" + responseValue);
             responseValue = ExtractSoapResult(responseValue);
             return responseValue;
         }

@@ -1,63 +1,53 @@
-﻿using POMuswick.Data;
+﻿using System.Collections.Concurrent;
+using System.Globalization;
+using POMuswick.Data;
 
 namespace POMuswick
 {
     internal class XMLResponseParser
     {
-        public static async void commService_GetBannersCompleted(String response)
+        public static async Task commService_GetBannersCompleted(String response)
         {
             try
             {
                 Console.WriteLine("Get Banners returned");
-
                 String sBanners = response;
                 String[] aBanners = sBanners.Split('|');
+                ConcurrentBag<Banner> lstBanners = new ConcurrentBag<Banner>();
                 if (aBanners.Length >= 1)
                 {
-                    //Database db = new Database();
-
-                    App.g_db.BeginTransaction();
-                    App.g_db.DeleteBannersAsync();
-
-                    foreach (String s in aBanners)
-                    {
+                    // foreach (String s in aBanners)
+                    // {
+                    Parallel.ForEach(aBanners, s =>{
                         Banner banner = new Banner();
                         banner.BannerName = s;
                         banner.BannerURL = Constants.BannerUrl + banner.BannerName;
-
-                        try
-                        {
-                            App.g_db.SaveBannerAsync(banner);
-                        }
-                        catch (Exception ex)
-                        {
-                            String sMsg = ex.Message;
-                            Console.WriteLine("Get Banners Save Banner exception" + sMsg + ex.StackTrace);
-                        }
-                    }
-                    // App.g_db.CommitTransaction();
+                        lstBanners.Add(banner);
+                    });
                 }
                 try
                 {
-                    if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
-                    {
-                        App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
-                    }
+                    App.g_db.BeginTransaction();
+                    App.g_db.DeleteBannersAsync();
+                    App.g_db.SaveBannerAsync(lstBanners.ToList());
+                    App.g_db.CommitTransaction();
+                    Console.WriteLine("Get Banners returned Completed");
                 }
-                catch(Exception e)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Get Categories and Subcategories Cust Exception" + e.Message + e.StackTrace);
+                    Console.WriteLine("Error occurred while saving banners: " + ex.Message);
                 }
+                await App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Get Banners Exception: " + ex.Message + ex.StackTrace);
+                Console.WriteLine("Get Banners Error");
+                Console.WriteLine(ex.Message);
             }
-            Console.WriteLine("Get Banners Completed");
         }
 
 
-        public static async void commService_GetCategoriesAndSubcategoriesCompleted(String response)
+        public static async Task commService_GetCategoriesAndSubcategoriesCompleted(String response)
         {
             Console.WriteLine("Get Categories and Subcategories returned");
 
@@ -65,23 +55,18 @@ namespace POMuswick
             {
                 String sCategories = response;
                 String[] aCategories = sCategories.Split('~');
-
+                ConcurrentBag<Category> lstCategories = new ConcurrentBag<Category>();
+                ConcurrentBag<Subcategory> lstSubcategories = new ConcurrentBag<Subcategory>();
+                
                 if (aCategories.Length > 1)
                 {
-                    //Database db = new Database();
-
-                    App.g_db.BeginTransaction();
-
-                    App.g_db.DeleteCategories();
-                    App.g_db.DeleteSubcategories();
-
-                    foreach (String s in aCategories)
+                    Parallel.ForEach(aCategories, s =>
                     {
                         String[] aCategory = s.Split("|");
 
                         if (aCategory.Count() < 4)
                         {
-                            continue;
+                            return;
                         }
 
                         if (aCategory[1].Length == 0)
@@ -90,17 +75,9 @@ namespace POMuswick
                             cat.Code = aCategory[0];
                             cat.Description = aCategory[2].Trim();
                             cat.ImageURL = Constants.CategoryImageUrl + cat.Code + ".png";
-                            cat.Rank = Convert.ToInt32(aCategory[3].Trim());
-                            cat.HomePage = Convert.ToInt32(aCategory[4].Trim());
-
-                            try
-                            {
-                                App.g_db.SaveCategory(cat);
-                            }
-                            catch (Exception ex)
-                            {
-                                String sMsg = ex.Message;
-                            }
+                            cat.Rank = GetIntegerValue("Category Rank", aCategory[3].Trim(), 0);
+                            cat.HomePage = GetIntegerValue("Category Home Page", aCategory[4].Trim(), 0);
+                            lstCategories.Add(cat);
                         }
                         else
                         {
@@ -108,31 +85,26 @@ namespace POMuswick
                             subcat.Category = aCategory[0];
                             subcat.Code = aCategory[1];
                             subcat.Description = aCategory[2].Trim();
-                            subcat.Rank = Convert.ToInt32(aCategory[3].Trim());
-
-                            try
-                            {
-                                App.g_db.SaveSubcategory(subcat);
-                            }
-                            catch (Exception ex)
-                            {
-                                String sMsg = ex.Message;
-                            }
+                            subcat.Rank = GetIntegerValue("Subcategory Rank", aCategory[3].Trim(), 0);
+                            lstSubcategories.Add(subcat);
                         }
+                    });
+
+                    try
+                    {
+                        App.g_db.BeginTransaction();
+                        App.g_db.DeleteAllCategory();
+                        App.g_db.DeleteAllSubcategory();
+                        App.g_db.SaveCategory(lstCategories.ToList());
+                        App.g_db.SaveSubcategory(lstSubcategories.ToList());
+                        App.g_db.CommitTransaction();
+                        Console.WriteLine("Get Categories and Subcategories returned Completed");
+                        App.g_HomePageCategoryList = App.g_db.GetHomePageCategories();
                     }
-
-                    App.g_db.CommitTransaction();
-
-                    //App.g_CategoryList = App.g_db.GetCategories();
-                    App.g_HomePageCategoryList = App.g_db.GetHomePageCategories();
-                }
-
-                try
-                {
-                    //App.g_HomePage.LoadCategories();
-                }
-                catch (Exception ex)
-                {
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error occurred while parsing categories and subcategories: " + ex.Message);
+                    }
                 }
 
                 try
@@ -159,23 +131,25 @@ namespace POMuswick
                     sDate = "0";
                     if (App.g_Customer.CustNo == "0")
                     {
-                        App.CommManager.GetItems("0", sDate);
+                        await App.CommManager.GetItems("0", sDate);
                     }
                     else
                     {
-                        App.CommManager.GetItems(App.g_Customer.CustNo, sDate);
+                        await App.CommManager.GetItems(App.g_Customer.CustNo, sDate);
                     }
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("Get Categories and Subcategories exception" + ex.Message + ex.StackTrace);
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Categories and Subcategories exception" + ex.Message + ex.StackTrace);
             }
         }
 
-        public static async void commService_GetCategoriesAndSubcategoriesCustCompleted(String response)
+        public static async Task commService_GetCategoriesAndSubcategoriesCustCompleted(String response)
         {
             Console.WriteLine("Get Categories and Subcategories Cust returned");
 
@@ -183,23 +157,18 @@ namespace POMuswick
             {   
                 String sCategories = response;
                 String[] aCategories = sCategories.Split('~');
-
+                ConcurrentBag<Category> lstCategories = new ConcurrentBag<Category>();
+                ConcurrentBag<Subcategory> lstSubcategories = new ConcurrentBag<Subcategory>();
+                
                 if (aCategories.Length > 1)
                 {
-                    //Database db = new Database();
-
-                    App.g_db.BeginTransaction();
-
-                    App.g_db.DeleteCategories();
-                    App.g_db.DeleteSubcategories();
-
-                    foreach (String s in aCategories)
+                    Parallel.ForEach(aCategories, s =>
                     {
                         String[] aCategory = s.Split("|");
 
                         if (aCategory.Count() < 4)
                         {
-                            continue;
+                            return;
                         }
 
                         if (aCategory[1].Length == 0)
@@ -208,17 +177,9 @@ namespace POMuswick
                             cat.Code = aCategory[0];
                             cat.Description = aCategory[2].Trim();
                             cat.ImageURL = Constants.CategoryImageUrl + cat.Code + ".png";
-                            cat.Rank = Convert.ToInt32(aCategory[3].Trim());
-                            cat.HomePage = Convert.ToInt32(aCategory[4].Trim());
-
-                            try
-                            {
-                                App.g_db.SaveCategory(cat);
-                            }
-                            catch (Exception ex)
-                            {
-                                String sMsg = ex.Message;
-                            }
+                            cat.Rank = GetIntegerValue("Category Rank", aCategory[3].Trim(), 0);
+                            cat.HomePage = GetIntegerValue("Category Home Page", aCategory[4].Trim(), 0);
+                            lstCategories.Add(cat);
                         }
                         else
                         {
@@ -226,22 +187,26 @@ namespace POMuswick
                             subcat.Category = aCategory[0];
                             subcat.Code = aCategory[1];
                             subcat.Description = aCategory[2].Trim();
-                            subcat.Rank = Convert.ToInt32(aCategory[3].Trim());
-
-                            try
-                            {
-                                App.g_db.SaveSubcategory(subcat);
-                            }
-                            catch (Exception ex)
-                            {
-                                String sMsg = ex.Message;
-                            }
+                            subcat.Rank = GetIntegerValue("Subcategory Rank", aCategory[3].Trim(), 0);
+                            lstSubcategories.Add(subcat);
                         }
+                    });
+
+                    try
+                    {
+                        App.g_db.BeginTransaction();
+                        App.g_db.DeleteAllCategory();
+                        App.g_db.DeleteAllSubcategory();
+                        App.g_db.SaveCategory(lstCategories.ToList());
+                        App.g_db.SaveSubcategory(lstSubcategories.ToList());
+                        App.g_db.CommitTransaction();
+                        Console.WriteLine("Get Categories Subcategories and Subsubcategories returned Completed");
+                        App.g_HomePageCategoryList = App.g_db.GetHomePageCategories();
                     }
-
-                    App.g_db.CommitTransaction();
-
-                    App.g_HomePageCategoryList = App.g_db.GetHomePageCategories();
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error occurred while parsing categories subcategories and subsubcategories: " + ex.Message);
+                    }
                 }
 
                 try
@@ -268,11 +233,11 @@ namespace POMuswick
                     sDate = "0";
                     if (App.g_Customer.CustNo == "0")
                     {
-                        App.CommManager.GetItems("0", sDate);
+                        await App.CommManager.GetItems("0", sDate);
                     }
                     else
                     {
-                        App.CommManager.GetItems(App.g_Customer.CustNo, sDate);
+                        await App.CommManager.GetItems(App.g_Customer.CustNo, sDate);
                     }
                 }
                 catch (Exception ex)
@@ -287,7 +252,7 @@ namespace POMuswick
             Console.WriteLine("Get Categories and Subcategories Cust Completed");
         }
 
-        public static async void commService_GetItemsCompletedAsync(String response)
+        public static async Task commService_GetItemsCompletedAsync(String response)
         {
             try
             {
@@ -298,289 +263,222 @@ namespace POMuswick
 
                 if (aItems.Length > 1)
                 {
-                    App.g_db.BeginTransaction();
-
-                    App.g_db.InsertDiscontinuedItems();
+                    var sw = System.Diagnostics.Stopwatch.StartNew();
 
                     List<Item> lstCartItems = App.g_db.GetCartItems();
+                    var cartDict = lstCartItems.ToDictionary(c => c.ItemNo); // O(1) lookup instead of nested loop
 
-                    foreach (String s in aItems)
+                    var itemsToSave = new ConcurrentBag<Item>();
+                    var processedItemNos = new ConcurrentBag<int>();
+                    
+                    Parallel.ForEach(aItems, s =>
                     {
-                        String[] aItem = s.Split("|");
+                        try
+                        {
+                            String[] aItem = s.Split("|");
 
-                        if (aItem.Count() < 20)
-                        {
-                            continue;
-                        }
-
-                        Item item = new Item();
-                        try
-                        {
-                            item.ItemNo = Convert.ToInt32(aItem[0]);
-                        }
-                        catch (Exception ex)
-                        {
-                            String sMsg = ex.Message;
-                            Console.WriteLine("Get Items Item No exception" + sMsg + ex.StackTrace);
-                            continue;
-                        }
-                        item.ItemNoDisplay = aItem[0];
-                        item.Description = aItem[1].Trim();
-                        item.ImageURL = Constants.ItemImageUrl + item.ItemNo.ToString() + ".jpg";
-                        item.CategoryCode = aItem[2].Trim();
-                        item.CategoryDesc = aItem[3].Trim();
-                        item.SubcategoryCode = aItem[4].Trim();
-                        item.SubcategoryDesc = aItem[5].Trim();
-                        item.VendorCode = aItem[6].Trim();
-                        item.VendorName = aItem[7].Trim();
-                        item.UPC_1 = aItem[8].Trim();
-                        if (item.UPC_1.Length > 0)
-                        {
-                            item.ItemNoDisplayUPC = "(" + item.UPC_1 + ")";
-                        }
-                        else
-                        {
-                            item.ItemNoDisplayUPC = "";
-                        }
-                        item.UPC_2 = aItem[9].Trim();
-                        item.UPC_3 = aItem[10].Trim();
-                        item.UPC_4 = aItem[11].Trim();
-                        item.RetailUOM = aItem[12].Trim();
-                        item.RetailSize = aItem[13].Trim();
-                        try
-                        {
-                            item.RetailPrice = Convert.ToDecimal(aItem[14].Trim());
-                        }
-                        catch(Exception e)
-                        {
-                            item.RetailPrice = 0;
-                            Console.WriteLine("Get Items Retail Price exception" + e.Message + e.StackTrace);
-                        }
-                        item.RetailPriceDisplay = aItem[14].Trim();
-                        item.UOM = aItem[15].Trim();
-                        item.SizeUOM = "/" + item.UOM;
-                        try
-                        {
-                            item.Size = Convert.ToInt32(aItem[16].Trim());
-                        }
-                        catch(Exception e)
-                        {
-                            item.Size = 1;
-                            Console.WriteLine("Get Items Size exception" + e.Message + e.StackTrace);
-                        }
-                        item.SizeDisplay = aItem[16].Trim();
-                        item.Form = aItem[17].Trim();
-                        try
-                        {
-                            item.Price = Convert.ToDecimal(aItem[18].Trim());
-                        }
-                        catch(Exception e)
-                        {
-                            item.Price = 0;
-                            Console.WriteLine("Get Items Price exception" + e.Message + e.StackTrace);
-                        }
-                        item.PriceDisplay = string.Format("{0:C}", item.Price);
-                        try
-                        {
-                            item.Tax = Convert.ToDecimal(aItem[19].Trim());
-                        }
-                        catch(Exception e)
-                        {
-                            item.Tax = 0;
-                            Console.WriteLine("Get Items Tax exception" + e.Message + e.StackTrace);
-                        }
-                        item.TaxDisplay = string.Format("{0:C}", item.Tax);
-                        try
-                        {
-                            item.CategoryRank = Convert.ToInt32(aItem[20].Trim());
-                        }
-                        catch(Exception e)
-                        {
-                            item.CategoryRank = 0;
-                            Console.WriteLine("Get Items Category Rank exception" + e.Message + e.StackTrace);
-                        }
-                        try
-                        {
-                            item.SellUnitsInPurchaseUnit = Convert.ToInt32(aItem[21].Trim());
-                        }
-                        catch(Exception e)
-                        {
-                            item.SellUnitsInPurchaseUnit = 1;
-                            Console.WriteLine("Get Items Sell Units in Purchase Unit exception" + e.Message + e.StackTrace);
-                        }
-                        item.Status = aItem[22];
-                        try
-                        {
-                            item.QOH = Convert.ToInt32(aItem[23].Trim());
-                        }
-                        catch(Exception e)
-                        {
-                            item.QOH = 0;
-                            Console.WriteLine("Get Items QOH exception" + e.Message + e.StackTrace);
-                        }
-                        try
-                        {
-                            item.NewItem = aItem[24].Trim();
-                        }
-                        catch(Exception e)
-                        {
-                            item.NewItem = "N";
-                            Console.WriteLine("Get Items New Item exception" + e.Message + e.StackTrace);
-                        }
-                        try
-                        {
-                            int iAddedDate = Convert.ToInt32(aItem[25].Trim());
-                            if (iAddedDate > 0)
+                            if (aItem.Count() < 20)
                             {
-                                int yy = 2000 + Convert.ToInt32(iAddedDate.ToString().Substring(1, 2));
-                                int mm = Convert.ToInt32(iAddedDate.ToString().Substring(3, 2));
-                                int dd = Convert.ToInt32(iAddedDate.ToString().Substring(5, 2));
-                                item.DateAdded = new DateTime(yy, mm, dd);
-                                item.DateAddedDisplay = item.DateAdded.ToString("MM/dd/yy");
+                                return;
+                            }
+
+                            Item item = new Item();
+                            item.ItemNo = GetIntegerValue("Items",aItem[0],0);
+                            item.ItemNoDisplay = aItem[0];
+                            item.Description = aItem[1].Trim();
+                            item.ImageURL = Constants.ItemImageUrl + item.ItemNo.ToString() + ".jpg";
+                            item.CategoryCode = aItem[2].Trim();
+                            item.CategoryDesc = aItem[3].Trim();
+                            item.SubcategoryCode = aItem[4].Trim();
+                            item.SubcategoryDesc = aItem[5].Trim();
+                            item.VendorCode = aItem[6].Trim();
+                            item.VendorName = aItem[7].Trim();
+                            item.UPC_1 = aItem[8].Trim();
+                            if (item.UPC_1.Length > 0)
+                            {
+                                item.ItemNoDisplayUPC = "(" + item.UPC_1 + ")";
                             }
                             else
                             {
-                                item.DateAdded = new DateTime(2001, 1, 1);
-                                item.DateAddedDisplay = "";
+                                item.ItemNoDisplayUPC = "";
                             }
-                        }
-                        catch(Exception e)
-                        {
-                            item.DateAdded = new DateTime(2001, 1, 1);
-                            item.DateAddedDisplay = "";
-                            Console.WriteLine("Get Items Date Added exception" + e.Message + e.StackTrace);
-                        }
-                        try
-                        {
-                            item.MaxOrderQty = Convert.ToInt32(aItem[26]);
-                            if ((item.MaxOrderQty == 0) || (item.MaxOrderQty >= 9999))
-                            {
-                                item.IsMaxOrderQtyVisible = false;
-                            }
-                            else
-                            {
-                                item.MaxOrderQtyDisplay = "Max " + aItem[26];
-                                item.IsMaxOrderQtyVisible = true;
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            item.MaxOrderQty = 0;
-                            item.IsMaxOrderQtyVisible = false;
-                            Console.WriteLine("Get Items Max Order Qty exception" + e.Message + e.StackTrace);
-                        }
-                        try
-                        {
-                            item.Keyword1 = aItem[28];
-                            item.Keyword2 = aItem[29];
-                            item.Keyword3 = aItem[30];
-                        }
-                        catch(Exception e)
-                        {
-                            item.Keyword1 = "";
-                            item.Keyword2 = "";
-                            item.Keyword3 = "";
-                            Console.WriteLine("Get Items Keywords exception" + e.Message + e.StackTrace);
-                        }
-
-                        try
-                        {
-                            item.LastPurchDateDisplay = aItem[31];
-                        }
-                        catch(Exception e)
-                        {
-                            item.LastPurchDateDisplay = "";
-                            Console.WriteLine("Get Items Last Purch Date exception" + e.Message + e.StackTrace);
-                        }
-                        if (item.LastPurchDateDisplay == "")
-                        {
+                            item.UPC_2 = aItem[9].Trim();
+                            item.UPC_3 = aItem[10].Trim();
+                            item.UPC_4 = aItem[11].Trim();
+                            item.RetailUOM = aItem[12].Trim();
+                            item.RetailSize = aItem[13].Trim();
+                            item.RetailPrice = GetDecimalValue("Retail Price", aItem[14].Trim(), 0);
+                            item.RetailPriceDisplay = aItem[14].Trim();
+                            item.UOM = aItem[15].Trim();
+                            item.SizeUOM = "/" + item.UOM;
+                            item.Size = GetIntegerValue("Size",aItem[16],1);
+                            item.SizeDisplay = aItem[16].Trim();
+                            item.Form = aItem[17].Trim();
+                            item.Price = GetIntegerValue("Price Value",aItem[18],0);
+                            item.PriceDisplay = string.Format("{0:C}", item.Price);
+                            item.Tax = GetDecimalValue("Tax", aItem[19].Trim(), 0);
+                            item.TaxDisplay = string.Format("{0:C}", item.Tax);
+                            item.CategoryRank = GetIntegerValue("Category Rank", aItem[20].Trim(), 0);
+                            item.SellUnitsInPurchaseUnit = GetIntegerValue("Sell Units in Purchase Unit", aItem[21].Trim(), 1);
+                            item.Status = aItem[22];
+                            item.QOH = GetIntegerValue("Item QOH",aItem[23].Trim(),0);
+                            
                             try
                             {
-                                item.LastPurchDate = Convert.ToDateTime(item.LastPurchDateDisplay);
+                                item.NewItem = aItem[24].Trim();
                             }
                             catch(Exception e)
                             {
-                                Console.WriteLine("Get Items Last Purch Date exception" + e.Message + e.StackTrace);
+                                item.NewItem = "N";
+                                Console.WriteLine("Get Items New Item exception" + e.Message + e.StackTrace);
                             }
-                        }
-                        try
-                        {
-                            if (aItem[32] == "")
-                            {
-                                item.QtyLastOrder = 0;
-                            }
-                            else
-                            {
-                                item.QtyLastOrder = Convert.ToInt32(aItem[32]);
-                                item.QtyLastOrderDisplay = item.QtyLastOrder.ToString();
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            item.QtyLastOrder = 0;
-                            Console.WriteLine("Get Items Qty Last Order exception" + e.Message + e.StackTrace);
-                        }
-                        // 33 subsubcat
-                        // 34 subsubcat desc
-                        // 35 ref no
-                        try
-                        {
-                            item.LongDescription = aItem[36];
                             try
                             {
-                                if (item.LongDescription != "")
+                                int iAddedDate = GetIntegerValue("Added Date", aItem[25].Trim(), 0);
+                                if (iAddedDate > 0)
                                 {
-                                    item.SearchDescription = item.LongDescription;
+                                    int yy = 2000 + GetIntegerValue("Added Date Year", iAddedDate.ToString().Substring(1, 2), 0);
+                                    int mm = GetIntegerValue("Added Date Month", iAddedDate.ToString().Substring(3, 2), 0);
+                                    int dd = GetIntegerValue("Added Date Day", iAddedDate.ToString().Substring(5, 2), 0);
+                                    item.DateAdded = new DateTime(yy, mm, dd);
+                                    item.DateAddedDisplay = item.DateAdded.ToString("MM/dd/yy");
                                 }
                                 else
                                 {
-                                    item.SearchDescription = item.Description;
+                                    item.DateAdded = new DateTime(2001, 1, 1);
+                                    item.DateAddedDisplay = "";
                                 }
                             }
                             catch(Exception e)
                             {
-                                item.SearchDescription = item.Description;
-                                Console.WriteLine("Get Items Search Description exception" + e.Message + e.StackTrace);
+                                item.DateAdded = new DateTime(2001, 1, 1);
+                                item.DateAddedDisplay = "";
+                                Console.WriteLine("Get Items Date Added exception" + e.Message + e.StackTrace);
                             }
-                        }
-                        catch(Exception e)
-                        {
-                            item.LongDescription = "";
-                            item.SearchDescription = item.Description;
-                            Console.WriteLine("Get Items Long Description exception" + e.Message + e.StackTrace);
-                        }
+                            try
+                            {
+                                item.MaxOrderQty = GetIntegerValue("Max Order Qty", aItem[26], 0);
+                                if ((item.MaxOrderQty == 0) || (item.MaxOrderQty >= 9999))
+                                {
+                                    item.IsMaxOrderQtyVisible = false;
+                                }
+                                else
+                                {
+                                    item.MaxOrderQtyDisplay = "Max " + aItem[26];
+                                    item.IsMaxOrderQtyVisible = true;
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                item.MaxOrderQty = 0;
+                                item.IsMaxOrderQtyVisible = false;
+                                Console.WriteLine("Get Items Max Order Qty exception" + e.Message + e.StackTrace);
+                            }
+                            try
+                            {
+                                item.Keyword1 = aItem[28];
+                                item.Keyword2 = aItem[29];
+                                item.Keyword3 = aItem[30];
+                            }
+                            catch(Exception e)
+                            {
+                                item.Keyword1 = "";
+                                item.Keyword2 = "";
+                                item.Keyword3 = "";
+                                Console.WriteLine("Get Items Keywords exception" + e.Message + e.StackTrace);
+                            }
 
-                        item.QtyOrder = 0;
+                            try
+                            {
+                                item.LastPurchDateDisplay = aItem[31];
+                            }
+                            catch(Exception e)
+                            {
+                                item.LastPurchDateDisplay = "";
+                                Console.WriteLine("Get Items Last Purch Date exception" + e.Message + e.StackTrace);
+                            }
+                            item.LastPurchDate = GetDateTime("Last Purchase Date",item.LastPurchDateDisplay);
+                            item.QtyLastOrder = GetIntegerValue("last order",aItem[32],0);
+                            item.QtyLastOrderDisplay = item.QtyLastOrder.ToString();
+                            try
+                            {
+                                item.LongDescription = aItem[36];
+                                try
+                                {
+                                    if (item.LongDescription != "")
+                                    {
+                                        item.SearchDescription = item.LongDescription;
+                                    }
+                                    else
+                                    {
+                                        item.SearchDescription = item.Description;
+                                    }
+                                }
+                                catch(Exception e)
+                                {
+                                    item.SearchDescription = item.Description;
+                                    Console.WriteLine("Get Items Search Description exception" + e.Message + e.StackTrace);
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                item.LongDescription = "";
+                                item.SearchDescription = item.Description;
+                                Console.WriteLine("Get Items Long Description exception" + e.Message + e.StackTrace);
+                            }
 
-                        foreach (Item ci in lstCartItems)
-                        {
-                            if (item.ItemNo == ci.ItemNo)
+                            item.QtyOrder = 0;
+
+                            if (cartDict.TryGetValue(item.ItemNo, out var ci))
                             {
                                 item.QtyOrder = ci.QtyOrder;
-
-                                break;
                             }
+                            itemsToSave.Add(item);
+                            processedItemNos.Add(item.ItemNo);
                         }
+                        catch(Exception pe)
+                        {
+                            Console.WriteLine("Parse Items exception" + pe.Message + pe.StackTrace);
+                        }
+                    });
 
-                        try
-                        {
-                            App.g_db.SaveItem(item);
-                            App.g_db.DeleteDiscontinuedItem(item.ItemNo.ToString());
-                        }
-                        catch (Exception ex)
-                        {
-                            String sMsg = ex.Message;
-                            Console.WriteLine("Get Items saving exception: " + sMsg);
-                        }
+                    Console.WriteLine($"Parse loop: {sw.ElapsedMilliseconds}ms"); sw.Restart();
+
+                    try
+                    {
+                        App.g_db.BeginTransaction();
+                        App.g_db.InsertDiscontinuedItems();
+                        App.g_db.DeleteItems();
+                        App.g_db.SaveItems(itemsToSave.ToList());
+                        Console.WriteLine("Items saves Successfully");
                     }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error occurred while bulk-saving items: " + ex.Message);
+                    }
+                    try
+                    {   
+                        App.g_db.DeleteDiscontinuedItems(processedItemNos.ToList());
+                    
+                        Console.WriteLine($"Delete discontinued: {sw.ElapsedMilliseconds}ms"); sw.Restart();
 
-                    App.g_db.UpdateDiscontinuedItems();
+                        App.g_db.UpdateDiscontinuedItems();
+                        Console.WriteLine("Update Discontinued Items completed");
+                        
+                        App.g_db.SaveSetting("LastUpdateItems", DateTime.Now.ToString("1yyMMdd"));
 
-                    App.g_db.CommitTransaction();
+                        App.g_ItemList = App.g_db.GetItems();
 
-                    App.g_db.SaveSetting("LastUpdateItems", DateTime.Now.ToString("1yyMMdd"));
+                        App.g_db.CommitTransaction();
 
-                    App.g_ItemList = App.g_db.GetItems();
+                        Console.WriteLine($"Finalize + commit: {sw.ElapsedMilliseconds}ms");
+                
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error occurred while removing discontinued items: " + ex.Message);
+                    }
+                    
                     try
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
@@ -593,7 +491,7 @@ namespace POMuswick
                         Console.WriteLine("Refresh list get items exeception" + e.Message + e.StackTrace);
                     }
 
-                    App.CommManager.GetItemQOH(App.g_Customer.CustNo);
+                    await App.CommManager.GetItemQOH(App.g_Customer.CustNo);
                 }
             }
             catch (Exception ex)
@@ -605,7 +503,7 @@ namespace POMuswick
         }
 
 
-        public static async void commService_GetItemQOHCompletedAsync(String response)
+        public static async Task commService_GetItemQOHCompletedAsync(String response)
         {
             try
             {
@@ -635,8 +533,8 @@ namespace POMuswick
 
                         try
                         {
-                            iItemNo = Convert.ToInt32(aItem[0]);
-                            iQOH = Convert.ToInt32(aItem[1]);
+                            iItemNo = GetIntegerValue("Item Number", aItem[0], 0);
+                            iQOH = GetIntegerValue("QOH", aItem[1], 0);
                         }
                         catch (Exception ex)
                         {
@@ -649,7 +547,7 @@ namespace POMuswick
                         }
                         catch (Exception ex)
                         {
-                            String sMsg = ex.Message;
+                            Console.WriteLine("Get Item QOH exception: " + ex.Message + ex.StackTrace);
                         }
                     }
 
@@ -658,11 +556,11 @@ namespace POMuswick
             }
             catch (Exception ex)
             {
-                String sMsg = ex.Message + ex.StackTrace;
+                Console.WriteLine("Get Item QOH Exception: " + ex.Message + ex.StackTrace);
             }
         }
 
-        public static async void commService_GetItemQOH2CompletedAsync(String response)
+        public static async Task commService_GetItemQOH2CompletedAsync(String response)
         {
             Console.WriteLine("Get Item QOH 2 returned");
 
@@ -681,7 +579,7 @@ namespace POMuswick
 
                 if (aItems.Length > 1)
                 {
-                    // App.g_db.BeginTransaction();
+                    App.g_db.BeginTransaction();
 
                     foreach (String s in aItems)
                     {
@@ -694,11 +592,12 @@ namespace POMuswick
 
                         try
                         {
-                            iItemNo = Convert.ToInt32(aItem[0]);
-                            iQOH = Convert.ToInt32(aItem[1]);
+                            iItemNo = GetIntegerValue("Item Number", aItem[0], 0);
+                            iQOH = GetIntegerValue("QOH", aItem[1], 0);
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("Get Item QOH 2 exception: " + ex.Message + ex.StackTrace);
                             continue;
                         }
 
@@ -708,30 +607,24 @@ namespace POMuswick
                         }
                         catch (Exception ex)
                         {
-                            String sMsg = ex.Message;
+                            Console.WriteLine("Get Item QOH 2 exception: " + ex.Message + ex.StackTrace);
                         }
                     }
-
-                    // App.g_db.CommitTransaction();
                 }
             }
             catch (Exception ex)
             {
-                String sMsg = ex.Message + ex.StackTrace;
-                Console.WriteLine("Get Item QOH 2 Exception: " + sMsg);
+                Console.WriteLine("Get Item QOH 2 Exception: " + ex.Message + ex.StackTrace);
             }
             Console.WriteLine("Get Item QOH 2 Completed");
         }
 
-        public static async void commService_ValidateLoginCompletedAsync(String response)
+        public static async Task commService_ValidateLoginCompletedAsync(String response)
         {
             Console.WriteLine("ValidateLogin Complete");
             try
             {
                 String sUser = response;
-
-                //Database db = new Database();
-                //await db.SaveCustomerAsync(App.g_Customer);
 
                 String[] aInfo = sUser.Split("~");
 
@@ -777,19 +670,21 @@ namespace POMuswick
                                 }
                                 App.g_db.SaveSetting("ForceSubmit", aUser[4]);
                             }
-                            catch
+                            catch(Exception ex)
                             {
                                 App.g_ForceSubmit = false;
                                 App.g_db.SaveSetting("ForceSubmit", "0");
+                                Console.WriteLine("Get Validate Login Force Submit exception: " + ex.Message + ex.StackTrace);
                             }
 
                             try
                             {
                                 App.g_QOHDisplay = aUser[5];
                             }
-                            catch
+                            catch(Exception ex)
                             {
                                 App.g_QOHDisplay = "X";
+                                Console.WriteLine("Get Validate Login QOH Display exception: " + ex.Message + ex.StackTrace);
                             }
                             App.g_db.SaveSetting("QOHDisplay", App.g_QOHDisplay);
 
@@ -805,10 +700,11 @@ namespace POMuswick
                                 }
                                 App.g_db.SaveSetting("BlockItemsNoQOH", aUser[6]);
                             }
-                            catch
+                            catch(Exception ex)
                             {
                                 App.g_BlockItemsNoQOH = false;
                                 App.g_db.SaveSetting("BlockItemsNoQOH", "0");
+                                Console.WriteLine("Get Validate Login Block Items No QOH exception: " + ex.Message + ex.StackTrace);
                             }
                             try
                             {
@@ -822,17 +718,18 @@ namespace POMuswick
                                 }
                                 App.g_db.SaveSetting("IsSalesUser", aUser[8]);
                             }
-                            catch
+                            catch(Exception ex)
                             {
                                 App.g_IsSalesUser = false;
                                 App.g_db.SaveSetting("IsSalesUser", "0");
+                                Console.WriteLine("Get Validate Login Is Sales User exception: " + ex.Message + ex.StackTrace);
                             }
 
                             if (!App.g_IsSalesUser)
                             {
                                 App.g_Customer.Status = "9";
                                 App.g_Customer.CompanyName = aCust[1];
-                                App.g_Customer.Warehouse = Convert.ToInt32(aCust[3]);
+                                App.g_Customer.Warehouse = GetIntegerValue("Warehouse", aCust[3], 0);
                                 App.g_Customer.Address1 = aCust[4];
                                 App.g_Customer.City = aCust[5];
                                 App.g_Customer.State = aCust[6];
@@ -840,27 +737,13 @@ namespace POMuswick
                                 App.g_Customer.CityStateZip = aCust[5] + ", " + aCust[6] + "  " + aCust[7];
                                 App.g_Customer.Phone = aCust[8];
                                 App.g_Customer.Contact = aCust[9];
-                                App.g_Customer.Delivery = Convert.ToInt32(aCust[10]);
-                                App.g_Customer.Pickup = Convert.ToInt32(aCust[11]);
-                                App.g_Customer.CreditLimit = Convert.ToDecimal(aCust[12]);
-                                App.g_Customer.ARBalance = Convert.ToDecimal(aCust[13]);
+                                App.g_Customer.Delivery = GetIntegerValue("Delivery", aCust[10], 0);
+                                App.g_Customer.Pickup = GetIntegerValue("Pickup", aCust[11], 0);
+                                App.g_Customer.CreditLimit = GetDecimalValue("Credit Limit", aCust[12], 0);
+                                App.g_Customer.ARBalance = GetDecimalValue("AR Balance", aCust[13], 0);
 
-                                try
-                                {
-                                    App.g_Customer.MinOrderAmount = Convert.ToDecimal(aCust[20]);
-                                }
-                                catch
-                                {
-                                    App.g_Customer.MinOrderAmount = 0;
-                                }
-                                try
-                                {
-                                    App.g_Customer.ShippingFee = Convert.ToDecimal(aCust[21]);
-                                }
-                                catch
-                                {
-                                    App.g_Customer.ShippingFee = 0;
-                                }
+                                App.g_Customer.MinOrderAmount = GetDecimalValue("Min Order Amount", aCust[20], 0);
+                                App.g_Customer.ShippingFee = GetDecimalValue("Shipping Fee", aCust[21], 0);
 
                                 Location loc = new Location();
                                 loc.LocationId = 1;
@@ -881,11 +764,12 @@ namespace POMuswick
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
 
                         if (App.g_IsSalesUser)
                         {
-                            App.CommManager.GetSalespersonCustomers(App.g_UserName);
+                            await App.CommManager.GetSalespersonCustomers(App.g_UserName);
                         }
                         else
                         {
@@ -898,10 +782,10 @@ namespace POMuswick
                                 App.g_db.DeleteCategories();
                                 App.g_db.DeleteItems();
                             }
-                            App.RefreshAll();
+                            await App.RefreshAll();
                         }
 
-                        App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
+                        await App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
 
                         App.g_db.SaveSetting("LoggedIn", "1");
                         App.g_db.SaveSetting("UserName", App.g_UserName);
@@ -913,8 +797,9 @@ namespace POMuswick
                                 _ = await App.g_Shell.GoToHome();
                             });
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
                     else if (aUser[0] == "P")
@@ -927,8 +812,9 @@ namespace POMuswick
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
                     else if (aUser[0] == "I")
@@ -941,8 +827,9 @@ namespace POMuswick
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
                     else if (aUser[0] == "U")
@@ -955,8 +842,9 @@ namespace POMuswick
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
                     else if (aUser[0] == "X")
@@ -969,8 +857,9 @@ namespace POMuswick
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
                     else
@@ -983,8 +872,9 @@ namespace POMuswick
                                 App.g_LoginPage.HideAnimation();
                             });
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
                 }
@@ -998,8 +888,9 @@ namespace POMuswick
                             App.g_LoginPage.HideAnimation();
                         });
                     }
-                    catch
+                    catch(Exception e)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + e.Message + e.StackTrace);
                     }
                 }
             }
@@ -1013,15 +904,14 @@ namespace POMuswick
                         App.g_LoginPage.HideAnimation();
                     });
                 }
-                catch
+                catch(Exception e)
                 {
+                    Console.WriteLine("Get Validate Login exception: " + e.Message + e.StackTrace);
                 }
             }
-
-            //await AppShell.Current.Navigation.PopAsync(true);
         }
 
-        public static async void commService_SubmitOrderCompletedAsync(String response)
+        public static async Task commService_SubmitOrderCompletedAsync(String response)
         {
             try
             {
@@ -1040,8 +930,9 @@ namespace POMuswick
                             App.g_Shell.GoToHome();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else if (response == "X")
@@ -1057,8 +948,9 @@ namespace POMuswick
                             App.g_Shell.Logout();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else
@@ -1071,17 +963,19 @@ namespace POMuswick
                             App.g_IsOrderSubmitting = false;
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
             }
         }
 
-        public static async void commService_SubmitOrder2CompletedAsync(String response)
+        public static async Task commService_SubmitOrder2CompletedAsync(String response)
         {
             try
             {
@@ -1099,8 +993,9 @@ namespace POMuswick
                             await App.g_Shell.GoToHome();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else if (response == "X")
@@ -1116,8 +1011,9 @@ namespace POMuswick
                             App.g_Shell.Logout();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else
@@ -1131,13 +1027,15 @@ namespace POMuswick
                             await App.g_Shell.GoToHome();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
             }
         }
 
@@ -1157,8 +1055,9 @@ namespace POMuswick
                             await App.g_Shell.GoToCheckout();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else if (response.StartsWith("F~"))
@@ -1176,9 +1075,16 @@ namespace POMuswick
                         int iQOH = 0;
                         try
                         {
-                            iItemNo = Convert.ToInt32(aDetails[0]);
-                            iQOH = Convert.ToInt32(aDetails[1]);
-                            App.g_db.UpdateItemQOH(iItemNo, iQOH);
+                            iItemNo = GetIntegerValue("Item Number", aDetails[0], 0);
+                            iQOH = GetIntegerValue("QOH", aDetails[1], 0);
+                            try
+                            {
+                                App.g_db.UpdateItemQOH(iItemNo, iQOH);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Get Item QOH exception: " + ex.Message + ex.StackTrace);
+                            }
 
                             if (iQOH == 0)
                             {
@@ -1189,8 +1095,9 @@ namespace POMuswick
                                 App.g_db.UpdateItemQtySet(iItemNo, iQOH);
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
                     validateResponse.IsValid = false;
@@ -1210,7 +1117,7 @@ namespace POMuswick
             return validateResponse;
         }
 
-        public static async void commService_ValidateOrderCompletedAsyncOld(String response)
+        public static async Task commService_ValidateOrderCompletedAsyncOld(String response)
         {
             try
             {
@@ -1228,8 +1135,9 @@ namespace POMuswick
                             await App.g_Shell.GoToHome();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else if (response == "X")
@@ -1245,8 +1153,9 @@ namespace POMuswick
                             App.g_Shell.Logout();
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else if (response.StartsWith("F~"))
@@ -1264,9 +1173,16 @@ namespace POMuswick
                         int iQOH = 0;
                         try
                         {
-                            iItemNo = Convert.ToInt32(aDetails[0]);
-                            iQOH = Convert.ToInt32(aDetails[1]);
-                            App.g_db.UpdateItemQOH(iItemNo, iQOH);
+                            iItemNo = GetIntegerValue("Item Number", aDetails[0], 0);
+                            iQOH = GetIntegerValue("QOH", aDetails[1], 0);
+                            try
+                            {
+                                App.g_db.UpdateItemQOH(iItemNo, iQOH);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Get Item QOH exception: " + ex.Message + ex.StackTrace);
+                            }
 
                             if (iQOH == 0)
                             {
@@ -1277,8 +1193,9 @@ namespace POMuswick
                                 App.g_db.UpdateItemQtySet(iItemNo, iQOH);
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
 
@@ -1291,8 +1208,9 @@ namespace POMuswick
                             App.g_IsOrderSubmitting = false;
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
                 else
@@ -1305,17 +1223,19 @@ namespace POMuswick
                             App.g_IsOrderSubmitting = false;
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     }
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
             }
         }
 
-        public static async void commService_GetOrderHistoryCompletedAsync(String response)
+        public static async Task commService_GetOrderHistoryCompletedAsync(String response)
         {
             Console.WriteLine("Get Order History Returned");
 
@@ -1372,25 +1292,25 @@ namespace POMuswick
 
                             OrderHeader oh = new OrderHeader();
                             oh.OrderNo = aOrder[0];
-                            oh.CustId = Convert.ToInt32(aOrder[1]);
-                            oh.OrderDate = Convert.ToDateTime(aOrder[2]);
+                            oh.CustId = GetIntegerValue("Customer ID", aOrder[1], 0);
+                            oh.OrderDate = GetDateTime("Order Date",aOrder[2]);
                             oh.OrderDateDisplay = aOrder[2];
-                            oh.Total = Convert.ToDecimal(aOrder[3]);
+                            oh.Total = GetDecimalValue("Order Total", aOrder[3], 0);
                             oh.TotalDisplay = string.Format("{0:C}", oh.Total);
-                            oh.Items = Convert.ToInt32(aOrder[4]);
-                            oh.Pieces = Convert.ToInt32(aOrder[5]);
+                            oh.Items = GetIntegerValue("Order Items", aOrder[4], 0);
+                            oh.Pieces = GetIntegerValue("Order Pieces", aOrder[5], 0);
 
                             App.g_db.SaveOrderHeader(oh);
                         }
 
                         OrderDetail od = new OrderDetail();
                         od.OrderNo = aOrder[0];
-                        od.LineNo = Convert.ToInt32(aOrder[6]);
-                        od.ItemNo = Convert.ToInt32(aOrder[7]);
+                        od.LineNo = GetIntegerValue("Line Number", aOrder[6], 0);
+                        od.ItemNo = GetIntegerValue("Item Number", aOrder[7], 0);
                         od.ItemNoDisplay = aOrder[7];
-                        od.QtyOrdered = Convert.ToInt32(aOrder[8]);
-                        od.QtyShipped = Convert.ToInt32(aOrder[8]);
-                        od.Price = Convert.ToDecimal(aOrder[9]);
+                        od.QtyOrdered = GetIntegerValue("Quantity Ordered", aOrder[8], 0);
+                        od.QtyShipped = GetIntegerValue("Quantity Shipped", aOrder[8], 0);
+                        od.Price = GetDecimalValue("Price", aOrder[9], 0);
                         od.PriceDisplay = string.Format("{0:C}", od.Price);
                         od.UPC = aOrder[10];
                         if (od.UPC.Length > 0)
@@ -1423,14 +1343,7 @@ namespace POMuswick
                         {
                             od.IsAvailable = false;
                         }
-                        try
-                        {
-                            od.QOH = Convert.ToInt32(aOrder[23].Trim());
-                        }
-                        catch
-                        {
-                            od.QOH = 0;
-                        }
+                        od.QOH = GetIntegerValue("QOH", aOrder[23].Trim(), 0);
                         if (od.QOH == 0)
                         {
                             od.IsAvailable = false;
@@ -1443,7 +1356,7 @@ namespace POMuswick
                         }
                         catch (Exception ex)
                         {
-                            String sMsg = ex.Message;
+                            Console.WriteLine("Get Order History Exception: " + ex.Message + ex.StackTrace);
                         }
                     }
 
@@ -1459,7 +1372,7 @@ namespace POMuswick
             Console.WriteLine("Get Order History Complete");
         }
 
-        public static async void commService_GetSettingsCompletedAsync(String response)
+        public static async Task commService_GetSettingsCompletedAsync(String response)
         {
             Console.WriteLine("GetSettings Complete");
 
@@ -1491,8 +1404,9 @@ namespace POMuswick
                     }
                     App.g_db.SaveSetting("ForceSubmit", aSettings[1]);
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     App.g_ForceSubmit = false;
                     App.g_db.SaveSetting("ForceSubmit", "0");
                 }
@@ -1501,8 +1415,9 @@ namespace POMuswick
                 {
                     App.g_QOHDisplay = aSettings[2];
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     App.g_QOHDisplay = "X";
                 }
                 App.g_db.SaveSetting("QOHDisplay", App.g_QOHDisplay);
@@ -1519,18 +1434,20 @@ namespace POMuswick
                     }
                     App.g_db.SaveSetting("BlockItemsNoQOH", aSettings[3]);
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                     App.g_BlockItemsNoQOH = false;
                     App.g_db.SaveSetting("BlockItemsNoQOH", "0");
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
             }
         }
 
-        public static async void commService_GetSalespersonCustomersCompletedAsync(String response)
+        public static async Task commService_GetSalespersonCustomersCompletedAsync(String response)
         {
             try
             {
@@ -1564,18 +1481,10 @@ namespace POMuswick
                         c.Zip = aCust[5];
                         c.CityStateZip = c.City.Trim() + ", " + c.State.Trim() + " " + c.Zip.Trim();
                         c.ARBalance = 0;
-                        try
-                        {
-                            c.ARBalance = Convert.ToDecimal(aCust[6]);
-                        }
-                        catch { }
+                        c.ARBalance = GetDecimalValue("AR Balance",aCust[6],0);
+                        
                         c.ARBalanceDisplay = string.Format("{0:C2}", c.ARBalance);
-                        c.CreditLimit = 0;
-                        try
-                        {
-                            c.CreditLimit = Convert.ToDecimal(aCust[7]);
-                        }
-                        catch { }
+                        c.CreditLimit = GetDecimalValue("Credit Limit",aCust[7],0);
                         if (c.CreditLimit > 0)
                         {
                             c.CreditLimitDisplay = string.Format("{0:C2}", c.CreditLimit);
@@ -1602,7 +1511,10 @@ namespace POMuswick
                                 c.LastPaymentDate += aCust[13].Substring(1, 2);
                             }
                         }
-                        catch { }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
+                        }
                         try
                         {
                             if ((aCust[14] == "0") || (aCust[14] == ""))
@@ -1616,32 +1528,20 @@ namespace POMuswick
                                 c.LastOrderDate += aCust[14].Substring(1, 2);
                             }
                         }
-                        catch { }
-
-                        try
+                        catch(Exception ex)
                         {
-                            c.MinOrderAmount = Convert.ToDecimal(aCust[15]);
-                        }
-                        catch
-                        {
-                            c.MinOrderAmount = 0;
-                        }
-                        try
-                        {
-                            c.ShippingFee = Convert.ToDecimal(aCust[16]);
-                        }
-                        catch
-                        {
-                            c.ShippingFee = 0;
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
 
+                        c.MinOrderAmount = GetDecimalValue("Min Order Amount",aCust[15],0);
+                        c.ShippingFee = GetDecimalValue("Shipping Fee",aCust[16],0);
                         try
                         {
                             App.g_db.SaveSalesCustomer(c);
                         }
                         catch (Exception ex)
                         {
-                            String sMsg = ex.Message;
+                            Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
                     }
 
@@ -1650,10 +1550,11 @@ namespace POMuswick
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
             }
         }
 
-        public static async void commService_GetFlyerItemsPDFCompleted(String response)
+        public static async Task commService_GetFlyerItemsPDFCompleted(String response)
         {
             Console.WriteLine("GetFlyerItemsPDFCompleted");
 
@@ -1730,7 +1631,7 @@ namespace POMuswick
             //{
             //}
         }
-        public static async void commService_ValidateUserActiveCompletedAsync(String response)
+        public static async Task commService_ValidateUserActiveCompletedAsync(String response)
         {
             String sUser = response;
             if (sUser == "0")
@@ -1753,7 +1654,94 @@ namespace POMuswick
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                 }
+            }
+        }
+
+        public static DateTime GetDateTime(string key, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return DateTime.MinValue;
+
+            value = value.Trim();
+
+            // First try exact formats
+            string[] formats =
+            {
+                "M/d/yyyy",
+                "MM/dd/yyyy",
+                "yyyy-MM-dd",
+                "yyyyMMdd",
+                "M/d/yy",
+                "MM/dd/yy"
+            };
+
+            if (DateTime.TryParseExact(
+                    value,
+                    formats,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var date))
+            {
+                return date;
+            }
+
+            // Fallback to normal parsing
+            if (DateTime.TryParse(
+                    value,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out date))
+            {
+                return date;
+            }
+
+            Console.WriteLine($"{key} Invalid Date: '{value}'");
+
+            return DateTime.MinValue;
+        }
+        public static int GetIntegerValue(String key,String value,int defaultValue)
+        {
+            try
+            {
+                string sizeValue = value.Trim();
+                if(sizeValue.Length>0)
+                {
+                    string digits = new string(sizeValue
+                    .TakeWhile(char.IsDigit)
+                    .ToArray());
+
+                    return int.TryParse(digits, out var size)
+                        ? size
+                        : defaultValue;
+                }
+                else
+                {
+                    return defaultValue;
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(key+"Converting string to int"+e.Message);
+                return defaultValue;
+            }
+        }
+
+        public static Decimal GetDecimalValue(String key,String value,Decimal defaultValue)
+        {
+            try
+            {
+                string sizeValue = value.Trim();
+                if(sizeValue.Length != 0)
+                    return Convert.ToDecimal(sizeValue);
+                else
+                    return defaultValue;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(key+"Converting string to Decimal "+e.Message);
+                return defaultValue;
             }
         }
     }

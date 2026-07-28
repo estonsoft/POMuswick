@@ -32,17 +32,30 @@ namespace POMuswick
 
         public void BeginTransaction()
         {
-            // _database.BeginTransaction();
+            if (DeviceInfo.Platform == DevicePlatform.iOS)
+            {
+                while (_database.IsInTransaction)
+                {
+                    SpinWait.SpinUntil(() => !_database.IsInTransaction, 50); // Checks every 50ms
+                }
+                _database.BeginTransaction();
+            }
         }
 
         public void CommitTransaction()
         {
-            // _database.Commit();
+            if (DeviceInfo.Platform == DevicePlatform.iOS)
+            {
+                _database.Commit();
+            }
         }
 
         public void RollbackTransaction()
         {
-            // _database.Rollback();
+            if (DeviceInfo.Platform == DevicePlatform.iOS)
+            {
+                _database.Rollback();
+            }
         }
 
         public List<Item> SearchItems(String sSearch, Category category, String sBarcode, Subcategory subcategory)
@@ -389,6 +402,20 @@ namespace POMuswick
             return _database.Execute(sQuery);
         }
 
+        public void DeleteDiscontinuedItems(List<int> itemNos)
+        {
+            if (itemNos == null || itemNos.Count == 0) return;
+
+            const int chunkSize = 500; // stay under SQLite's default variable/expression limits
+
+            for (int i = 0; i < itemNos.Count; i += chunkSize)
+            {
+                var chunk = itemNos.Skip(i).Take(chunkSize);
+                string idList = string.Join(",", chunk); // ints only — no injection risk
+                _database.Execute($"delete from DiscontinuedItem where ItemNo in ({idList})");
+            }
+        }
+
         public int DeleteDiscontinuedItem(string ItemNo)
         {
             String sQuery = "delete from [DiscontinuedItem] where ItemNo = " + ItemNo;
@@ -436,9 +463,9 @@ namespace POMuswick
             return _database.Find<Item>(s => s.ItemNo == item_no);
         }
 
-        public int SaveItem(Item item)
+        public int SaveItems(List<Item> items)
         {
-            return _database.InsertOrReplace(item);
+            return _database.InsertAll(items);
         }
 
         public int SaveItemReplace(Item item)
@@ -543,6 +570,10 @@ namespace POMuswick
 
         public int UpdateItemQOH(int iItem, int iQOH)
         {
+            while (_database.IsInTransaction)
+            {
+                    SpinWait.SpinUntil(() => !_database.IsInTransaction, 50); // Checks every 50ms
+            }
             _database.Execute("update Item set QOH = " + iQOH.ToString() + " where ItemNo = " + iItem.ToString());
             _database.Execute("update ReorderItem set QOH = " + iQOH.ToString() + " where ItemNo = " + iItem.ToString());
             _database.Execute("update OrderDetail set QOH = " + iQOH.ToString() + " where ItemNo = " + iItem.ToString());
@@ -575,9 +606,14 @@ namespace POMuswick
             return _database.Find<Category>(s => s.Code == sCategoryCode);
         }
 
-        public int SaveCategory(Category categorys)
+        public int DeleteAllCategory()
         {
-            return _database.Insert(categorys);
+            return _database.DeleteAll<Category>();
+        }
+
+        public int SaveCategory(List<Category> categorys)
+        {
+            return _database.InsertAll(categorys);
         }
 
         public int DeleteCategory(Category category)
@@ -601,9 +637,14 @@ namespace POMuswick
             return _database.Query<Subcategory>(sQuery);
         }
 
-        public int SaveSubcategory(Subcategory subcategorys)
+        public int DeleteAllSubcategory()
         {
-            return _database.Insert(subcategorys);
+            return _database.DeleteAll<Subcategory>();
+        }
+
+        public int SaveSubcategory(List<Subcategory> subcategorys)
+        {
+            return _database.InsertAll(subcategorys);
         }
 
         public int DeleteSubcategory(Subcategory subcategory)
@@ -621,9 +662,9 @@ namespace POMuswick
             return _database.Execute("delete from Banner");
         }
 
-        public int SaveBannerAsync(Banner banner)
+        public int SaveBannerAsync(List<Banner> banners)
         {
-            return _database.Insert(banner);
+            return _database.InsertAll(banners);
         }
 
         public List<Banner> GetBanners()
