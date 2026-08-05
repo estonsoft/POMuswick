@@ -51,7 +51,6 @@ namespace POMuswick
         public static int g_NewItemIndex { get; set; }
         public static double g_CategoryScrollY { get; set; }
         public static bool g_IsScannerInit { get; set; }
-        public static ScanditViewModelBase g_ScanditViewModel { get; set; }
         public static Boolean g_IsSalesUser { get; set; }
         
         public static ImageAlertView imageAlertView;
@@ -111,7 +110,6 @@ namespace POMuswick
             }
 
             g_IsScannerInit = false;
-            g_ScanditViewModel = null;
 
             if (!g_IsLoggedIn)
             {

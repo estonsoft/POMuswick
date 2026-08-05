@@ -25,7 +25,10 @@
             Aspect="AspectFit"
             ErrorPlaceholder="logoicon.png"
             HeightRequest="90"
-            RetryCount="1"
+            RetryCount="0"
+            CacheType="All"
+            CacheDuration="30.00:00:00"
+            DownsampleToViewSize="True"
             Source="{Binding ImageURL}"
             WidthRequest="90">
             <ff:CachedImage.GestureRecognizers>

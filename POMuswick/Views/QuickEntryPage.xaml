@@ -6,8 +6,7 @@
     xmlns:controls="clr-namespace:POMuswick.Controls"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:ffImage="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
-    xmlns:scanditBarcode="clr-namespace:Scandit.DataCapture.Barcode.Ar.UI.Maui;assembly=ScanditBarcodeCaptureMaui"
-    xmlns:scanditCore="clr-namespace:Scandit.DataCapture.Core.UI.Maui;assembly=ScanditCaptureCoreMaui"
+    xmlns:barcode="clr-namespace:BarcodeScanning;assembly=BarcodeScanning.Native.Maui"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     Title="Quick Entry"
     BackgroundColor="White"
@@ -30,12 +29,14 @@
                     BackgroundColor="White"
                     VerticalOptions="Start">
                     <Grid>
-                        <scanditCore:DataCaptureView
-                            x:Name="ScannerView"
-                            DataCaptureContext="{Binding DataCaptureContext}"
-                            HeightRequest="180"
+                        <barcode:CameraView
+                            x:Name="ScannerControl"
+                            CameraEnabled="True"
+                            HeightRequest="200"
                             HorizontalOptions="Center"
+                            OnDetectionFinished="OnBarcodeDetected"
                             VerticalOptions="Center"
+                            VibrationOnDetected="True"
                             WidthRequest="200" />
                         <!--<Label Text="" TextDecorations="Underline" Margin="0,-105,0,0" HeightRequest="2" WidthRequest="200" FontSize="14" HorizontalOptions="Fill" BackgroundColor="RoyalBlue" TextColor="RoyalBlue"/>-->
                         <StackLayout

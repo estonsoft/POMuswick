@@ -1,4 +1,5 @@
-﻿using POMuswick.ViewModels;
+﻿using BarcodeScanning;
+using POMuswick.ViewModels;
 
 
 namespace POMuswick.Views
@@ -7,46 +8,20 @@ namespace POMuswick.Views
     public partial class QuickEntryPage : ContentPage
     {
         int iQty = 1;
-        string sQty = "";
         int iItemNo = 0;
         int iMaxQty = 0;
 
-        public ScanditViewModelBase viewModel = null;
-
-        public string Qty
-        {
-            get { return iQty.ToString(); }
-            set
-            {
-                sQty = value;
-                OnPropertyChanged();
-            }
-        }
-
         public QuickEntryPage()
         {
-            try
-            {
-                this.InitializeComponent();
-            }
-            catch
-            {
-            }
-
-            if (App.g_ScanditViewModel == null)
-            {
-                App.g_ScanditViewModel = new ScanditViewModelBase();
-            }
-
-            this.viewModel = App.g_ScanditViewModel;
-            BindingContext = viewModel;
-            viewModel.ScannerPage = this;
+           this.InitializeComponent();
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-
+            
+            await Methods.AskForRequiredPermissionAsync();
+            
             App.g_CurrentPage = "QuickEntryPage";
 
             ClearItemInfo();
@@ -80,16 +55,34 @@ namespace POMuswick.Views
             }
 
             await Task.Delay(100);
-            EntryFocus();
-
-            _ = this.viewModel.OnResumeAsync();
+            ScanItem.Text = "";
+             RequestCameraPermission();
         }
 
+        async void RequestCameraPermission()
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.Camera>();
+            }
+
+            if (status == PermissionStatus.Granted)
+            {
+                // Explicitly switch the hardware feed on after permission is secure
+                ScannerControl.CameraEnabled = true; //
+            }
+            else
+            {
+                await DisplayAlertAsync("Permission Denied", "Camera access is required to scan.", "OK");
+            }
+        }
         protected override void OnDisappearing()
         {
+            ScannerControl.CameraEnabled = false;
             try
             {
-                _ = this.viewModel.OnSleep();
                 base.OnDisappearing();
                 Content = null;
             }
@@ -148,15 +141,7 @@ namespace POMuswick.Views
 
             //ClearItemInfo();
 
-            EntryFocus();
-        }
-
-        private void EntryFocus()
-        {
-            //ScanItem.Text = "";
-
-            //Task.Delay(600);
-            //ScanItem.Focus();
+            ScanItem.Text = "";
         }
 
         private void ShowItemInfo(Item item)
@@ -295,9 +280,10 @@ namespace POMuswick.Views
             Message.IsVisible = true;
         }
 
-        public void ScanComplete()
+        public void ScanComplete(String barcode)
         {
-            viewModel.OnSleep();
+            ClearItemInfo();
+            ScanItem.Text = barcode;
 
             TapToScan.IsVisible = true;
 
@@ -309,7 +295,6 @@ namespace POMuswick.Views
                 Description.Text = "";
                 SetMessage("Item Not Found " + ScanItem.Text);
                 ScanItem.Text = "";
-                EntryFocus();
                 return;
             }
 
@@ -319,11 +304,12 @@ namespace POMuswick.Views
             }
 
             ShowItemInfo(item);
+            ScanItem.Unfocus();
         }
 
         private void ScanItem_Completed(object sender, EventArgs e)
         {
-            ScanComplete();
+            ScanComplete(ScanItem.Text.Trim());
         }
 
         public void SetScanItem(string barcode)
@@ -334,35 +320,7 @@ namespace POMuswick.Views
         private void EnterButton_Clicked(object sender, EventArgs e)
         {
             Message.Text = "";
-            ScanComplete();
-        }
-
-        private void ScanItem_CompletedOld(object sender, EventArgs e)
-        {
-            Item item = FindItem();
-
-            if (item == null)
-            {
-                ClearItemInfo();
-                Description.Text = "";
-                SetMessage("Item Not Found " + ScanItem.Text);
-                ScanItem.Text = "";
-                EntryFocus();
-                return;
-            }
-
-            //Database db = new Database();
-
-            if (App.g_db.GetItemQty(item.ItemNo) > 0)
-            {
-                ClearItemInfo();
-                //Description.Text = item.LongDescription;
-                SetMessage("Item Already In Shopping Cart");
-                EntryFocus();
-                return;
-            }
-
-            ShowItemInfo(item);
+            ScanComplete(ScanItem.Text.Trim());
         }
 
         private Item FindItem()
@@ -397,11 +355,29 @@ namespace POMuswick.Views
             return item;
         }
 
+private void OnBarcodeDetected(object sender, OnDetectionFinishedEventArg e)
+        {
+            // Check if anything was read in the current frame
+            if (e.BarcodeResults.Count == 0) return;
+
+            // The engine processes frames on a background threat thread; route to UI thread
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                // Pause camera processing to handle the logic flow
+                ScannerControl.CameraEnabled = false;
+
+                var primaryItem = e.BarcodeResults.First();
+                ScanComplete(primaryItem.DisplayValue.Trim());
+                //await DisplayAlertAsync("Native Scan Match",
+                //    $"Value: {primaryItem.DisplayValue}\nType: {primaryItem.BarcodeFormat}",
+                //    "OK");
+            });
+        }
+
         async void OnScannerEnable(object sender, EventArgs e)
         {
             ClearItemInfo();
             TapToScan.IsVisible = false;
-            _ = this.viewModel.OnResumeAsync();
             ScanItem.Text = "";
             Description.Text = "";
             Message.Text = "";
@@ -411,15 +387,9 @@ namespace POMuswick.Views
         {
             ClearItemInfo();
             TapToScan.IsVisible = false;
-            _ = this.viewModel.OnResumeAsync();
             ScanItem.Text = "";
             Description.Text = "";
             Message.Text = "";
-        }
-
-        void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
-        {
-            // Handle the pinch
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using banditoth.MAUI.DeviceId;
+using BarcodeScanning;
 using FFImageLoading.Maui;
 using Microsoft.Extensions.Logging;
 using POMuswick.Data;
@@ -19,6 +20,7 @@ namespace POMuswick
                 .UseMauiApp<App>()
                 .ConfigureSyncfusionCore()
                 .UseFFImageLoading()
+                .UseBarcodeScanning() 
                 .UseScanditCore()
                 .UseScanditBarcode(configure =>
                 {

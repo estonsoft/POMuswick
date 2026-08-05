@@ -26,8 +26,6 @@ public partial class ImageAlertView : ContentView
     }
 
     // Events
-    public event EventHandler? OkTapped;
-    public event EventHandler? CancelTapped;
     public event EventHandler? Closed;
 
     public ImageAlertView()
