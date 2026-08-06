@@ -53,6 +53,7 @@ namespace POMuswick.Views
 
         async void OnTappedCustomer(object sender, EventArgs args)
         {
+            LoadingAlert.IsVisible = true;
             string OldCustNo = App.g_Customer.CustNo;
 
             var c = sender as CustomerStackLayout;
@@ -88,9 +89,9 @@ namespace POMuswick.Views
             {
                 if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
                 {
-                    App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
+                    await App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
                 }
-                App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
+                await App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
             }
             catch
             {
@@ -104,7 +105,7 @@ namespace POMuswick.Views
             App.g_db.RestoreCartItems(App.g_Customer.CustNo);
             
             //App.g_Shell.GoToUpdatingPage();
-
+            LoadingAlert.IsVisible = false;
             await App.g_Shell.GoToHome();
         }
 
