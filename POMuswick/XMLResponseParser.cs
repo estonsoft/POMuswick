@@ -129,14 +129,14 @@ namespace POMuswick
 
                     // for now always refresh all items
                     sDate = "0";
-                    // if (App.g_Customer.CustNo == "0")
-                    // {
+                    if (App.g_Customer.CustNo == "0")
+                    {
                         await App.CommManager.GetItems("0", sDate);
-                    // }
-                    // else
-                    // {
-                    //     await App.CommManager.GetItems(App.g_Customer.CustNo, sDate);
-                    // }
+                    }
+                    else
+                    {
+                        await App.CommManager.GetItems(App.g_Customer.CustNo, sDate);
+                    }
                 }
                 catch (Exception ex)
                 {
