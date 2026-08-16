@@ -97,15 +97,15 @@ namespace POMuswick.Data
                     $"<sOrderType>{sOrderType}</sOrderType>"));
 
         public Task<string> SubmitOrder2Async(string sCustNo, string sPO, string sPaymentMethod,
-            string sCCInfo, string sOrderInfo, string sDeliveryPickup,
-            string sUser, string sNotes, int iHoldForReview, string sOrderType)
-            => SendSoapRequestAsync("http://turningpointremotephoneapp.com/SubmitOrder",
-                SoapEnvelope("SubmitOrder2",
-                    $"<sCustNo>{sCustNo}</sCustNo><sPO>{sPO}</sPO><sPaymentMethod>{sPaymentMethod}</sPaymentMethod>" +
-                    $"<sCCInfo>{sCCInfo}</sCCInfo><sOrderInfo>{sOrderInfo}</sOrderInfo>" +
-                    $"<sDeliveryPickup>{sDeliveryPickup}</sDeliveryPickup><sUser>{sUser}</sUser>" +
-                    $"<sNotes>{sNotes}</sNotes><iHoldForReview>{iHoldForReview}</iHoldForReview>" +
-                    $"<sOrderType>{sOrderType}</sOrderType>"));
+           string sCCInfo, string sOrderInfo, string sDeliveryPickup,
+           string sUser, string sNotes, int iHoldForReview, string sOrderType)
+           => SendSoapRequestAsync("http://turningpointremotephoneapp.com/SubmitOrder2",
+               SoapEnvelope("SubmitOrder2",
+                   $"<sCustNo>{sCustNo}</sCustNo><sPO>{sPO}</sPO><sPaymentMethod>{sPaymentMethod}</sPaymentMethod>" +
+                   $"<sCCInfo>{sCCInfo}</sCCInfo><sOrderInfo>{sOrderInfo}</sOrderInfo>" +
+                   $"<sDeliveryPickup>{sDeliveryPickup}</sDeliveryPickup><sUser>{sUser}</sUser>" +
+                   $"<sNotes>{sNotes}</sNotes><iHoldForReview>{iHoldForReview}</iHoldForReview>" +
+                   $"<sOrderType>{sOrderType}</sOrderType>"));
 
 
         public Task<string> ValidateOrderQOHAsync(string sCustNo, string sOrderInfo)

@@ -29,7 +29,7 @@ public class CategoryViewModel : BaseViewModel
             //Database db = new Database();
 
             Categories.Clear();
-            var items = App.g_db.GetCategories();
+            var items = await App.g_db.GetCategories();
             foreach (var item in items)
             {
                 Categories.Add(item);

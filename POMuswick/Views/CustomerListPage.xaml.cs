@@ -34,10 +34,10 @@ namespace POMuswick.Views
 
             CustomerList.ItemsSource = null;
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                customers =  App.g_db.GetSalesCustomers(CustomerSearch.Text);
-                MainThread.InvokeOnMainThreadAsync(() =>
+                customers = await App.g_db.GetSalesCustomers(CustomerSearch.Text);
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     CustomerList.ItemsSource = customers;
                 });
@@ -58,7 +58,7 @@ namespace POMuswick.Views
 
             var c = sender as CustomerStackLayout;
 
-            SalesCustomer cust = App.g_db.FindSalesCustomer(c.CustNo);
+            SalesCustomer cust = await App.g_db.FindSalesCustomer(c.CustNo);
 
             App.g_Customer.CustId = -1;
             App.g_Customer.CustNo = cust.CustNo;
@@ -84,7 +84,7 @@ namespace POMuswick.Views
             App.g_Customer.MinOrderAmount = cust.MinOrderAmount;
             App.g_Customer.ShippingFee = cust.ShippingFee;
 
-            
+
             try
             {
                 if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
@@ -96,14 +96,14 @@ namespace POMuswick.Views
             catch
             {
             }
-            App.g_db.SaveCustomer(App.g_Customer);
+            await App.g_db.SaveCustomer(App.g_Customer);
 
-            App.g_db.SuspendCartItems(OldCustNo);
-            App.g_db.ClearCartItems();
-            App.g_db.DeleteOrderHistory();
+            await App.g_db.SuspendCartItems(OldCustNo);
+            await App.g_db.ClearCartItems();
+            await App.g_db.DeleteOrderHistory();
 
-            App.g_db.RestoreCartItems(App.g_Customer.CustNo);
-            
+            await App.g_db.RestoreCartItems(App.g_Customer.CustNo);
+
             //App.g_Shell.GoToUpdatingPage();
             LoadingAlert.IsVisible = false;
             await App.g_Shell.GoToHome();
@@ -117,6 +117,6 @@ namespace POMuswick.Views
         private void CustomerSearch_Completed(object sender, EventArgs e)
         {
             RefreshList();
-        }        
+        }
     }
 }

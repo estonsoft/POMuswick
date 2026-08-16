@@ -31,12 +31,12 @@ namespace POMuswick.Views
             App.g_SearchText = "";
             App.g_ScanBarcode = "";
 
-            List<Category> categories = App.g_db.GetCategories();
+            List<Category> categories = await App.g_db.GetCategories();
             CategoriesListSearch.ItemsSource = categories;
             if (App.g_Category.Code != "")
             {
                 int index = categories.FindIndex(c => c.Code == App.g_Category.Code);
-                CategoriesListSearch.ScrollTo(index,0,ScrollToPosition.Start, false);
+                CategoriesListSearch.ScrollTo(index, 0, ScrollToPosition.Start, false);
             }
 
             App.g_Category.Code = "";
@@ -57,10 +57,10 @@ namespace POMuswick.Views
             if (selectedCategory == null)
                 return;
             App.g_Category = selectedCategory;
-            App.g_ScanBarcode = ""; 
+            App.g_ScanBarcode = "";
             App.g_SearchFromPage = "CategoryPage";
             await App.g_Shell.GoToItemSearch();
-        }        
+        }
 
         protected override bool OnBackButtonPressed()
         {

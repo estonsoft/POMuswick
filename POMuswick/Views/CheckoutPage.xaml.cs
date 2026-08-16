@@ -155,7 +155,7 @@
             HoldForReview = App.g_HoldForReview;
             if (App.g_Customer.Delivery != 1)
             {
-                App.g_Customer = App.g_db.GetCustomer();
+                App.g_Customer = App.g_db.GetCustomer().Result;
             }
             if (App.g_ShoppingCartPage._IsDeliveryHighlighted)
             {
@@ -178,7 +178,7 @@
             }
 
             //Database db = new Database();
-            _Location = App.g_db.GetLocation(App.g_Customer.Warehouse);
+            _Location = App.g_db.GetLocation(App.g_Customer.Warehouse).Result;
 
             try
             {
@@ -239,7 +239,7 @@
             ItemsListCart.ItemsSource = null;
 
             //Database db = new Database();
-            ItemsListCart.ItemsSource = App.g_db.GetCheckoutItems();
+            ItemsListCart.ItemsSource = await App.g_db.GetCheckoutItems();
 
             foreach (Item i in (List<Item>)ItemsListCart.ItemsSource)
             {

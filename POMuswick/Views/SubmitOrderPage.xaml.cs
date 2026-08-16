@@ -16,12 +16,12 @@
             base.OnDisappearing();
         }
 
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
             base.OnAppearing();
 
             //Database db = new Database();
-            List<Item> lstCartItems = App.g_db.GetCartItems();
+            List<Item> lstCartItems = await App.g_db.GetCartItems();
             String sOrderInfo = "";
 
             foreach (Item item in lstCartItems)
@@ -51,7 +51,7 @@
                 iHoldForReview = 1;
             }
 
-            App.CommManager.SubmitOrder2(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
+            await App.CommManager.SubmitOrder2(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
             //App.CommManager.ValidateOrder(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
         }
 

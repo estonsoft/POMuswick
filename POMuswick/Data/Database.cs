@@ -30,35 +30,7 @@ namespace POMuswick
             _database.CreateTable<SalesCustomer>();
         }
 
-        public void BeginTransaction()
-        {
-            if (DeviceInfo.Platform == DevicePlatform.iOS)
-            {
-                while (_database.IsInTransaction)
-                {
-                    SpinWait.SpinUntil(() => !_database.IsInTransaction, 50); // Checks every 50ms
-                }
-                _database.BeginTransaction();
-            }
-        }
-
-        public void CommitTransaction()
-        {
-            if (DeviceInfo.Platform == DevicePlatform.iOS)
-            {
-                _database.Commit();
-            }
-        }
-
-        public void RollbackTransaction()
-        {
-            if (DeviceInfo.Platform == DevicePlatform.iOS)
-            {
-                _database.Rollback();
-            }
-        }
-
-        public List<Item> SearchItems(String sSearch, Category category, String sBarcode, Subcategory subcategory)
+        public async Task<List<Item>> SearchItems(String sSearch, Category category, String sBarcode, Subcategory subcategory)
         {
             // ✅ Save category before any resets
             String sSavedCategoryCode = category.Code;
@@ -183,7 +155,7 @@ namespace POMuswick
             return _database.Query<Item>(sQuery);
         }
 
-        public List<Item> SearchItemsKeyword(String sSearch)
+        public async Task<List<Item>> SearchItemsKeyword(String sSearch)
         {
             var search = sSearch?.Trim() ?? "";
 
@@ -220,7 +192,7 @@ namespace POMuswick
             );
         }
 
-        public List<Item> SearchItemsQuickEntry(String sSearch)
+        public async Task<List<Item>> SearchItemsQuickEntry(String sSearch)
         {
             Decimal dItemNo = 0;
             try
@@ -353,7 +325,7 @@ namespace POMuswick
             return sUPCExpand;
         }
 
-        public List<Item> GetNewItems(String sSearch, bool bQOHOnly)
+        public async Task<List<Item>> GetNewItems(String sSearch, bool bQOHOnly)
         {
             String sQuery = "select * from [Item] where NewItem = 'Y' and Status = 'A' ";
 
@@ -393,7 +365,7 @@ namespace POMuswick
             return _database.Query<Item>(sQuery);
         }
 
-        public int InsertDiscontinuedItems()
+        public async Task<int> InsertDiscontinuedItems()
         {
             String sQuery = "delete from [DiscontinuedItem]";
             _database.Execute(sQuery);
@@ -402,7 +374,7 @@ namespace POMuswick
             return _database.Execute(sQuery);
         }
 
-        public void DeleteDiscontinuedItems(List<int> itemNos)
+        public async Task DeleteDiscontinuedItems(List<int> itemNos)
         {
             if (itemNos == null || itemNos.Count == 0) return;
 
@@ -416,101 +388,84 @@ namespace POMuswick
             }
         }
 
-        public int DeleteDiscontinuedItem(string ItemNo)
+        public async Task<int> DeleteDiscontinuedItem(string ItemNo)
         {
             String sQuery = "delete from [DiscontinuedItem] where ItemNo = " + ItemNo;
             return _database.Execute(sQuery);
         }
 
-        public int UpdateDiscontinuedItems()
+        public async Task<int> UpdateDiscontinuedItems()
         {
             String sQuery = "update [Item] set Status = 'D' where ItemNo in (select ItemNo from [DiscontinuedItem])";
             return _database.Execute(sQuery);
         }
 
-        public List<Item> GetCartItems()
+        public async Task<List<Item>> GetCartItems()
         {
             String sQuery = "select * from [Item] where QtyOrder <> 0 order by Description";
             return _database.Query<Item>(sQuery);
         }
 
-        public List<Item> GetCheckoutItems()
+        public async Task<List<Item>> GetCheckoutItems()
         {
             String sQuery = "select * from [Item] where QtyOrder > 0 order by Description";
             return _database.Query<Item>(sQuery);
         }
 
-        public int GetCartPieces()
+        public async Task<int> GetCartPieces()
         {
             String sQuery = "select sum(QtyOrder) from [Item] where QtyOrder > 0";
             return _database.ExecuteScalar<int>(sQuery);
         }
 
-        public int ClearCartItems()
+        public async Task<int> ClearCartItems()
         {
             String sQuery = "update [Item] set QtyOrder = 0, PriceOrder = 0";
             return _database.Execute(sQuery);
         }
 
-        public int GetItemCount()
+        public async Task<int> GetItemCount()
         {
             String sQuery = "select count(*) from [Item]";
             return _database.ExecuteScalar<int>(sQuery);
         }
 
-        public Item FindItem(int item_no)
+        public async Task<Item> FindItem(int item_no)
         {
             return _database.Find<Item>(s => s.ItemNo == item_no);
         }
 
-        public int SaveItems(List<Item> items)
+        public async Task<int> SaveItems(List<Item> items)
         {
             return _database.InsertAll(items);
         }
 
-        public int SaveItemReplace(Item item)
+        public async Task<int> SaveItemReplace(Item item)
         {
             return _database.InsertOrReplace(item);
-            /*
-            Item _item = FindItem(item.ItemNo);
-
-            if (_item == null)
-            {
-                return _database.Insert(item);
-            }
-            else
-            {
-                item.QtyOrder = _item.QtyOrder;
-                _database.Update(item);
-
-                UpdateItemPriceOrder(item.ItemNo);
-
-                return 1;
-            }
-            */
         }
 
-        public int UpdateItem(Item item)
+        public async Task<int> UpdateItem(Item item)
         {
             return _database.Update(item);
         }
 
-        public int DeleteItems()
+        public async Task<int> DeleteItems()
         {
             return _database.Execute("delete from Item");
         }
 
-        public List<Item> GetItems()
+        public async Task<List<Item>> GetItems()
         {
             String sQuery = "select * from [Item] ";
             return _database.Query<Item>(sQuery);
         }
 
-        public int UpdateItemQty(int iItem, int iQty)
+        public async Task<int> UpdateItemQty(int iItem, int iQty)
         {
             _database.Execute("update Item set QtyOrder = QtyOrder + " + iQty.ToString() + " where ItemNo = " + iItem.ToString());
 
-            UpdateItemPriceOrder(iItem);
+            await UpdateItemPriceOrder(iItem);
 
             try
             {
@@ -523,11 +478,11 @@ namespace POMuswick
             return 1;
         }
 
-        public int UpdateItemQtySet(int iItem, int iQty)
+        public async Task<int> UpdateItemQtySet(int iItem, int iQty)
         {
             _database.Execute("update Item set QtyOrder = " + iQty.ToString() + " where ItemNo = " + iItem.ToString());
 
-            UpdateItemPriceOrder(iItem);
+            await UpdateItemPriceOrder(iItem);
 
             try
             {
@@ -540,40 +495,13 @@ namespace POMuswick
             return 1;
         }
 
-        public int UpdateItemPriceOrder(int iItem)
+        public async Task<int> UpdateItemPriceOrder(int iItem)
         {
-            /*
-            Item item = _database.Find<Item>(s => s.ItemNo == iItem);
-
-            if (item.QtyBreak3 >= item.QtyOrder)
-            {
-                item.PriceOrder = item.PriceBreak3;
-            }
-            else if (item.QtyBreak2 >= item.QtyOrder)
-            {
-                item.PriceOrder = item.PriceBreak2;
-            }
-            else if (item.QtyBreak1 >= item.QtyOrder)
-            {
-                item.PriceOrder = item.PriceBreak1;
-            }
-            else
-            {
-                item.PriceOrder = item.Price;
-            }
-            item.PriceOrderDisplay = string.Format("{0:C}", item.PriceOrder);
-
-            SaveItem(item);
-            */
             return 1;
         }
 
-        public int UpdateItemQOH(int iItem, int iQOH)
+        public async Task<int> UpdateItemQOH(int iItem, int iQOH)
         {
-            while (_database.IsInTransaction)
-            {
-                    SpinWait.SpinUntil(() => !_database.IsInTransaction, 50); // Checks every 50ms
-            }
             _database.Execute("update Item set QOH = " + iQOH.ToString() + " where ItemNo = " + iItem.ToString());
             _database.Execute("update ReorderItem set QOH = " + iQOH.ToString() + " where ItemNo = " + iItem.ToString());
             _database.Execute("update OrderDetail set QOH = " + iQOH.ToString() + " where ItemNo = " + iItem.ToString());
@@ -581,12 +509,12 @@ namespace POMuswick
             return 1;
         }
 
-        public int GetItemQty(int iItem)
+        public async Task<int> GetItemQty(int iItem)
         {
             return _database.ExecuteScalar<int>("select QtyOrder from Item where ItemNo = " + iItem.ToString());
         }
 
-        public List<Category> GetCategories()
+        public async Task<List<Category>> GetCategories()
         {
             String sQuery = "select * from Category ";
             sQuery += " union ";
@@ -595,103 +523,103 @@ namespace POMuswick
             return _database.Query<Category>(sQuery);
         }
 
-        public List<Category> GetHomePageCategories()
+        public async Task<List<Category>> GetHomePageCategories()
         {
             String sQuery = "select * from Category where HomePage > 0 order by HomePage limit 4";
             return _database.Query<Category>(sQuery);
         }
 
-        public Category GetCategory(string sCategoryCode)
+        public async Task<Category> GetCategory(string sCategoryCode)
         {
             return _database.Find<Category>(s => s.Code == sCategoryCode);
         }
 
-        public int DeleteAllCategory()
+        public async Task<int> DeleteAllCategory()
         {
             return _database.DeleteAll<Category>();
         }
 
-        public int SaveCategory(List<Category> categorys)
+        public async Task<int> SaveCategory(List<Category> categorys)
         {
             return _database.InsertAll(categorys);
         }
 
-        public int DeleteCategory(Category category)
+        public async Task<int> DeleteCategory(Category category)
         {
             return _database.Delete(category);
         }
 
-        public int DeleteCategories()
+        public async Task<int> DeleteCategories()
         {
             return _database.Execute("delete from Category");
         }
 
-        public List<Subcategory> GetSubcategory()
+        public async Task<List<Subcategory>> GetSubcategory()
         {
             return _database.Table<Subcategory>().OrderBy(t => t.Description).ToList();
         }
 
-        public List<Subcategory> GetSubcategory(string sCategoryCode)
+        public async Task<List<Subcategory>> GetSubcategory(string sCategoryCode)
         {
             String sQuery = "select * from Subcategory where Category = '" + sCategoryCode + "' order by Description";
             return _database.Query<Subcategory>(sQuery);
         }
 
-        public int DeleteAllSubcategory()
+        public async Task<int> DeleteAllSubcategory()
         {
             return _database.DeleteAll<Subcategory>();
         }
 
-        public int SaveSubcategory(List<Subcategory> subcategorys)
+        public async Task<int> SaveSubcategory(List<Subcategory> subcategorys)
         {
             return _database.InsertAll(subcategorys);
         }
 
-        public int DeleteSubcategory(Subcategory subcategory)
+        public async Task<int> DeleteSubcategory(Subcategory subcategory)
         {
             return _database.Delete(subcategory);
         }
 
-        public int DeleteSubcategories()
+        public async Task<int> DeleteSubcategories()
         {
             return _database.Execute("delete from Subcategory");
         }
 
-        public int DeleteBannersAsync()
+        public async Task<int> DeleteBannersAsync()
         {
             return _database.Execute("delete from Banner");
         }
 
-        public int SaveBannerAsync(List<Banner> banners)
+        public async Task<int> SaveBannerAsync(List<Banner> banners)
         {
             return _database.InsertAll(banners);
         }
 
-        public List<Banner> GetBanners()
+        public async Task<List<Banner>> GetBanners()
         {
             return _database.Table<Banner>().OrderBy(t => t.BannerName).ToList();
         }
 
-        public int SaveCustomer(Customer cust)
+        public async Task<int> SaveCustomer(Customer cust)
         {
             _database.Delete(cust);
             return _database.Insert(cust);
         }
 
 
-        public Customer GetCustomer()
+        public async Task<Customer> GetCustomer()
         {
             //String sQuery = "select * from Customer limit 1";
             return _database.Find<Customer>(s => s.CustId == -1);
         }
 
-        public int DeleteCustomer()
+        public async Task<int> DeleteCustomer()
         {
             _database.Execute("delete from Customer");
             return 0;
         }
 
-        public string GetSetting(string sKey)
+        public async Task<string> GetSetting(string sKey)
         {
             try
             {
@@ -712,7 +640,7 @@ namespace POMuswick
             }
         }
 
-        public int SaveSetting(string sKey, string sValue)
+        public async Task<int> SaveSetting(string sKey, string sValue)
         {
             Setting setting = new Setting();
             setting.Key = sKey;
@@ -721,27 +649,27 @@ namespace POMuswick
             return _database.InsertOrReplace(setting);
         }
 
-        public int SaveLocation(Location location)
+        public async Task<int> SaveLocation(Location location)
         {
             return _database.InsertOrReplace(location);
         }
 
-        public int DeleteLocations()
+        public async Task<int> DeleteLocations()
         {
             return _database.Execute("delete from Location");
         }
 
-        public Location GetLocation(int iLocation)
+        public async Task<Location> GetLocation(int iLocation)
         {
             return _database.Find<Location>(s => s.LocationId == iLocation);
         }
 
-        public int SaveOrderHeader(OrderHeader oh)
+        public async Task<int> SaveOrderHeader(OrderHeader oh)
         {
             return _database.InsertOrReplace(oh);
         }
 
-        public List<OrderHeader> GetOrderHeaders()
+        public async Task<List<OrderHeader>> GetOrderHeaders()
         {
             //return _database.Table<OrderHeader>().OrderByDescending(t => t.OrderDate).ToList();
 
@@ -750,90 +678,90 @@ namespace POMuswick
             return _database.Query<OrderHeader>(sQuery);
         }
 
-        public OrderHeader GetOrderHeader(string sOrderNo)
+        public async Task<OrderHeader> GetOrderHeader(string sOrderNo)
         {
             return _database.Find<OrderHeader>(s => s.OrderNo == sOrderNo);
         }
 
-        public int DeleteOrderHistory()
+        public async Task<int> DeleteOrderHistory()
         {
             _database.Execute("delete from OrderHeader");
             _database.Execute("delete from OrderDetail");
             return 0;
         }
 
-        public int SaveOrderDetail(OrderDetail od)
+        public async Task<int> SaveOrderDetail(OrderDetail od)
         {
             return _database.InsertOrReplace(od);
         }
 
-        public int DeleteOrderDetail(string sOrderNo)
+        public async Task<int> DeleteOrderDetail(string sOrderNo)
         {
             return _database.Execute("delete from OrderDetail where OrderNo = '" + sOrderNo + "'");
         }
 
-        public List<OrderDetail> GetOrderDetail(string sOrderNo)
+        public async Task<List<OrderDetail>> GetOrderDetail(string sOrderNo)
         {
             String sQuery = "select * from OrderDetail where OrderNo = '" + sOrderNo + "' order by Description";
             return _database.Query<OrderDetail>(sQuery);
         }
 
-        public List<Item> GetReorderItems()
+        public async Task<List<Item>> GetReorderItems()
         {
             String sQuery = "select * from Item where Status = 'A' and LastPurchDateDisplay > '' order by LastPurchDate desc, Description";
             return _database.Query<Item>(sQuery);
         }
 
-        public List<ReorderItem> GetReorderItemsOld()
+        public async Task<List<ReorderItem>> GetReorderItemsOld()
         {
             String sQuery = "select * from ReorderItem where Status = 'A' order by LastPurchDate desc, Description";
             return _database.Query<ReorderItem>(sQuery);
         }
 
-        public int SaveReorderItem(ReorderItem ri)
+        public async Task<int> SaveReorderItem(ReorderItem ri)
         {
             return _database.InsertOrReplace(ri);
         }
 
-        public int GetReorderItemsCount()
+        public async Task<int> GetReorderItemsCount()
         {
             String sQuery = "select count(*) from [Item] where LastPurchDateDisplay > ''";
             return _database.ExecuteScalar<int>(sQuery);
         }
 
-        public int DeleteReorderItems()
+        public async Task<int> DeleteReorderItems()
         {
             return _database.Execute("delete from ReorderItem");
         }
 
-        public int DeleteSavedCartItems()
+        public async Task<int> DeleteSavedCartItems()
         {
             return _database.Execute("delete from CartItem");
         }
 
-        public int SaveCartItems()
+        public async Task<int> SaveCartItems()
         {
             String sQuery = "insert into CartItem select ItemNo, QtyOrder, QtyOnOrderSellUnit1, QtyOnOrderSellUnit3, QtyOnOrderSellUnit3, QtyOnOrderSellUnit4  from [Item] where QtyOrder > 0 or QtyOnOrderSellUnit1 > 0 or QtyOnOrderSellUnit2 > 0 or QtyOnOrderSellUnit3 > 0 or QtyOnOrderSellUnit4 > 0";
             return _database.Execute(sQuery);
         }
 
-        public List<CartItem> GetSavedCartItems()
+        public async Task<List<CartItem>> GetSavedCartItems()
         {
             String sQuery = "select * from CartItem";
             return _database.Query<CartItem>(sQuery);
         }
-        public int DeleteSalesCustomers()
+        public async Task<int> DeleteSalesCustomers()
         {
             return _database.Execute("delete from [SalesCustomer]");
         }
 
-        public List<SalesCustomer> GetSalesCustomers()
+        public async Task<List<SalesCustomer>> GetSalesCustomers()
         {
             String sQuery = "select * from [SalesCustomer] ";
             return _database.Query<SalesCustomer>(sQuery);
         }
 
-        public List<SalesCustomer> GetSalesCustomers(string SearchCustomer)
+        public async Task<List<SalesCustomer>> GetSalesCustomers(string SearchCustomer)
         {
             String sOrderBy = " order by CompanyName ";
             String sQuery = "select * from [SalesCustomer] ";
@@ -852,18 +780,18 @@ namespace POMuswick
             return _database.Query<SalesCustomer>(sQuery);
         }
 
-        public SalesCustomer FindSalesCustomer(string CustNo)
+        public async Task<SalesCustomer> FindSalesCustomer(string CustNo)
         {
             return _database.Find<SalesCustomer>(s => s.CustNo == CustNo);
         }
 
-        public int SaveSalesCustomer(SalesCustomer cust)
+        public async Task<int> SaveSalesCustomer(SalesCustomer cust)
         {
             _database.Delete(cust);
             return _database.Insert(cust);
         }
 
-        public int SuspendCartItems(string CustNo)               
+        public async Task<int> SuspendCartItems(string CustNo)
         {
             string sQuery = "INSERT INTO SuspendItem (CustNo, ItemNo, QtyOrder) " +
                    "SELECT '" + CustNo + "', ItemNo, QtyOrder " +
@@ -872,30 +800,30 @@ namespace POMuswick
             return _database.Execute(sQuery);
         }
 
-        public List<SuspendItem> GetSuspendedCartItems(string CustNo)
+        public async Task<List<SuspendItem>> GetSuspendedCartItems(string CustNo)
         {
             String sQuery = "select * from SuspendItem where CustNo = '" + CustNo + "'";
             return _database.Query<SuspendItem>(sQuery);
         }
 
-        public int RestoreCartItems(string CustNo)
+        public async Task<int> RestoreCartItems(string CustNo)
         {
-            List<SuspendItem> items = GetSuspendedCartItems(CustNo);
+            List<SuspendItem> items = await GetSuspendedCartItems(CustNo);
 
             foreach (SuspendItem item in items)
             {
                 if (item.QtyOrder > 0)
                 {
-                    UpdateItemQtySet(item.ItemNo, item.QtyOrder);
+                    await UpdateItemQtySet(item.ItemNo, item.QtyOrder);
                 }
             }
 
-            DeleteSuspendedCartItems(CustNo);
+            await DeleteSuspendedCartItems(CustNo);
 
             return 0;
         }
 
-        public int DeleteSuspendedCartItems(string CustNo)
+        public async Task<int> DeleteSuspendedCartItems(string CustNo)
         {
             return _database.Execute("delete from SuspendItem where CustNo = '" + CustNo + "'");
         }

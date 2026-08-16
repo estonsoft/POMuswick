@@ -106,7 +106,7 @@ public class CustomToolbar : StackLayout
     {
         var stack = new VerticalStackLayout
         {
-            BackgroundColor = Colors.Blue,           
+            BackgroundColor = Colors.Blue,
             HeightRequest = HeightRequest,
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
@@ -159,7 +159,7 @@ public class CustomToolbar : StackLayout
 
     async void OnShoppingCartTapped(object sender, EventArgs e)
     {
-        List<Item> items = App.g_db.GetCartItems();
+        List<Item> items = await App.g_db.GetCartItems();
 
         if (items.Count == 0)
             await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Your shopping cart is empty", "Ok");

@@ -97,16 +97,16 @@
 
             if (Category == "NEW ITEMS")
             {
-                lstItems = App.g_db.GetNewItems(App.g_SearchText, false);
+                lstItems = await App.g_db.GetNewItems(App.g_SearchText, false);
             }
             else
             {
-                lstItems = App.g_db.SearchItems(App.g_SearchText, App.g_Category, App.g_ScanBarcode, App.g_Subcategory);
+                lstItems = await App.g_db.SearchItems(App.g_SearchText, App.g_Category, App.g_ScanBarcode, App.g_Subcategory);
 
                 // ✅ Only merge keyword items if NO specific category is selected
                 if (string.IsNullOrEmpty(App.g_Category.Code) || App.g_Category.Description == "ALL CATEGORIES")
                 {
-                    lstKeywordItems = App.g_db.SearchItemsKeyword(App.g_SearchText);
+                    lstKeywordItems = await App.g_db.SearchItemsKeyword(App.g_SearchText);
 
                     foreach (Item itemKeyword in lstKeywordItems)
                     {
@@ -294,7 +294,7 @@
 
             if (App.g_Category.Code == "")
             {
-               await App.g_Shell.GoToCategories();
+                await App.g_Shell.GoToCategories();
             }
             else
             {

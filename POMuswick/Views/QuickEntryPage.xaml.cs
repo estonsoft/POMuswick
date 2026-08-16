@@ -13,15 +13,15 @@ namespace POMuswick.Views
 
         public QuickEntryPage()
         {
-           this.InitializeComponent();
+            this.InitializeComponent();
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            
+
             await Methods.AskForRequiredPermissionAsync();
-            
+
             App.g_CurrentPage = "QuickEntryPage";
 
             ClearItemInfo();
@@ -56,7 +56,7 @@ namespace POMuswick.Views
 
             await Task.Delay(100);
             ScanItem.Text = "";
-             RequestCameraPermission();
+            RequestCameraPermission();
         }
 
         async void RequestCameraPermission()
@@ -124,7 +124,7 @@ namespace POMuswick.Views
             }
         }
 
-        private void AddToOrderButton_Clicked(object sender, EventArgs e)
+        private async void AddToOrderButton_Clicked(object sender, EventArgs e)
         {
             //Database db = new Database();
 
@@ -137,7 +137,7 @@ namespace POMuswick.Views
                 SetMessage("Shopping Cart Qty Updated");
             }
 
-            App.g_db.UpdateItemQtySet(iItemNo, iQty);
+            await App.g_db.UpdateItemQtySet(iItemNo, iQty);
 
             //ClearItemInfo();
 
@@ -280,14 +280,14 @@ namespace POMuswick.Views
             Message.IsVisible = true;
         }
 
-        public void ScanComplete(String barcode)
+        public async Task ScanComplete(String barcode)
         {
             ClearItemInfo();
             ScanItem.Text = barcode;
 
             TapToScan.IsVisible = true;
 
-            Item item = FindItem();
+            Item item = await FindItem();
 
             if (item == null)
             {
@@ -298,7 +298,7 @@ namespace POMuswick.Views
                 return;
             }
 
-            if (App.g_db.GetItemQty(item.ItemNo) > 0)
+            if (await App.g_db.GetItemQty(item.ItemNo) > 0)
             {
                 SetMessage("Item Already In Shopping Cart");
             }
@@ -323,7 +323,7 @@ namespace POMuswick.Views
             ScanComplete(ScanItem.Text.Trim());
         }
 
-        private Item FindItem()
+        private async Task<Item> FindItem()
         {
             string ScanText = ScanItem.Text.Trim();
 
@@ -339,12 +339,12 @@ namespace POMuswick.Views
 
             if (ItemNo > 0)
             {
-                item = App.g_db.FindItem(ItemNo);
+                item = await App.g_db.FindItem(ItemNo);
             }
 
             if (item == null)
             {
-                items = App.g_db.SearchItemsQuickEntry(ScanText);
+                items = await App.g_db.SearchItemsQuickEntry(ScanText);
 
                 if (items.Count >= 1)
                 {
@@ -355,7 +355,7 @@ namespace POMuswick.Views
             return item;
         }
 
-private void OnBarcodeDetected(object sender, OnDetectionFinishedEventArg e)
+        private void OnBarcodeDetected(object sender, OnDetectionFinishedEventArg e)
         {
             // Check if anything was read in the current frame
             if (e.BarcodeResults.Count == 0) return;

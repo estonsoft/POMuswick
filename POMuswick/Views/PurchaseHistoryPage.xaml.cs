@@ -23,7 +23,7 @@ namespace POMuswick.Views
         {
             OrderHistoryList.ItemsSource = null;
 
-            List<OrderHeader> orderHeaders = App.g_db.GetOrderHeaders();
+            List<OrderHeader> orderHeaders = await App.g_db.GetOrderHeaders();
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 OrderHistoryList.ItemsSource = orderHeaders;

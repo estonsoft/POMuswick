@@ -195,7 +195,7 @@
         private async void UpdateBanner()
         {
             //Database db = new Database();
-            var banners = App.g_db.GetBanners();
+            var banners = await App.g_db.GetBanners();
 
             try
             {
@@ -343,7 +343,7 @@
             string CategoryCode = (string)te.Parameter;
 
             //Database db = new Database();
-            Category cat = App.g_db.GetCategory(CategoryCode);
+            Category cat = await App.g_db.GetCategory(CategoryCode);
 
             App.g_Category.Code = cat.Code;
             App.g_Category.Description = cat.Description;
@@ -374,19 +374,19 @@
             if (bLogout)
             {
                 //Database db = new Database();
-                App.g_db.SaveSetting("LoggedIn", "0");
+                await App.g_db.SaveSetting("LoggedIn", "0");
                 App.g_IsLoggedIn = false;
                 if (App.g_IsSalesUser)
                 {
                     try
                     {
-                        App.g_db.SuspendCartItems(App.g_Customer.CustNo);
-                        App.g_db.ClearCartItems();
+                        await App.g_db.SuspendCartItems(App.g_Customer.CustNo);
+                        await App.g_db.ClearCartItems();
                     }
                     catch { }
                 }
 
-                App.g_db.DeleteCustomer();
+                await App.g_db.DeleteCustomer();
                 App.g_Customer = new Customer();
 
                 SetLoginControls();
@@ -416,7 +416,7 @@
         {
             NewItemList.ItemsSource = null;
 
-            lstItems = App.g_db.GetNewItems("", true);
+            lstItems = await App.g_db.GetNewItems("", true);
 
             foreach (Item i in lstItems)
             {
@@ -512,7 +512,7 @@
         async void OnPastPurchases(object sender, EventArgs e)
         {
             //Database db = new Database();
-            int iReorderItems = App.g_db.GetReorderItemsCount();
+            int iReorderItems = await App.g_db.GetReorderItemsCount();
 
             if (iReorderItems == 0)
             {
@@ -632,8 +632,8 @@
             {
                 loading.IsVisible = true;
             });
-            
-            bool isloaded  = await App.g_App.InitializeAppAfterLogin();
+
+            bool isloaded = await App.g_App.InitializeAppAfterLogin();
             await Task.Delay(1000);
             MainThread.BeginInvokeOnMainThread(() =>
             {

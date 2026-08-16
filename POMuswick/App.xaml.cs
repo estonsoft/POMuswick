@@ -1,8 +1,6 @@
 ﻿using banditoth.MAUI.DeviceId.Interfaces;
-using FFImageLoading.Maui;
 using POMuswick.Controls;
 using POMuswick.Data;
-using POMuswick.ViewModels;
 using POMuswick.Views;
 
 namespace POMuswick
@@ -52,7 +50,7 @@ namespace POMuswick
         public static double g_CategoryScrollY { get; set; }
         public static bool g_IsScannerInit { get; set; }
         public static Boolean g_IsSalesUser { get; set; }
-        
+
         public static ImageAlertView imageAlertView;
 
         public static String app_uniqueId { get; set; }
@@ -91,8 +89,8 @@ namespace POMuswick
 
             g_App = this;
 
-            _= InitializeApp();
-            
+            _ = InitializeApp();
+
         }
 
         public async Task<bool> InitializeApp()
@@ -115,10 +113,10 @@ namespace POMuswick
             {
                 g_UserName = "";
 
-                if (g_db.GetSetting("LoggedIn") == "1")
+                if (await g_db.GetSetting("LoggedIn") == "1")
                 {
                     g_IsLoggedIn = true;
-                    g_UserName = g_db.GetSetting("UserName");
+                    g_UserName = await g_db.GetSetting("UserName");
                 }
 
                 g_Company = "";
@@ -132,9 +130,9 @@ namespace POMuswick
                 g_HeaderTitle = "";
                 g_CategoryScrollY = 0;
 
-                g_IsCredits = g_db.GetSetting("Credits");
-                g_QOHDisplay = g_db.GetSetting("QOHDisplay");
-                if (g_db.GetSetting("HoldForReview") == "1")
+                g_IsCredits = await g_db.GetSetting("Credits");
+                g_QOHDisplay = await g_db.GetSetting("QOHDisplay");
+                if (await g_db.GetSetting("HoldForReview") == "1")
                 {
                     g_HoldForReview = true;
                 }
@@ -142,7 +140,7 @@ namespace POMuswick
                 {
                     g_HoldForReview = false;
                 }
-                if (g_db.GetSetting("BlockItemsNoQOH") == "1")
+                if (await g_db.GetSetting("BlockItemsNoQOH") == "1")
                 {
                     g_BlockItemsNoQOH = true;
                 }
@@ -150,7 +148,7 @@ namespace POMuswick
                 {
                     g_BlockItemsNoQOH = false;
                 }
-                if (g_db.GetSetting("IsSalesUser") == "1")
+                if (await g_db.GetSetting("IsSalesUser") == "1")
                 {
                     g_IsSalesUser = true;
                 }
@@ -165,7 +163,7 @@ namespace POMuswick
                 }
                 else
                 {
-                    g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
+                    g_ServerURL = "https://muswicksales.ddns.net";    // await g_db.GetSetting("ServerURL");
                 }
 
                 UpdateServerLinks();
@@ -185,7 +183,7 @@ namespace POMuswick
                 location.Refresh();
 
                 g_Customer = new Customer();
-                g_ShoppingCartItems = App.g_db.GetCartPieces();
+                g_ShoppingCartItems = await g_db.GetCartPieces();
 
                 await Task.Run(async () =>
                 {
@@ -194,14 +192,14 @@ namespace POMuswick
                         g_Customer = new Customer();
                         if (App.g_IsLoggedIn)
                         {
-                            g_Customer = App.g_db.GetCustomer();
+                            g_Customer = await g_db.GetCustomer();
                             if (g_Customer == null)
                             {
                                 g_Customer = new Customer();
                             }
                             else
                             {
-                                App.g_db.RestoreCartItems(App.g_Customer.CustNo);
+                                await g_db.RestoreCartItems(App.g_Customer.CustNo);
                             }
                         }
                         InitializeAllTimer();
@@ -216,20 +214,20 @@ namespace POMuswick
                     }
                 });
 
-                //g_CategoryList = App.g_db.GetCategories();
-                g_HomePageCategoryList = App.g_db.GetHomePageCategories();
-                g_ItemList = App.g_db.GetItems();
-                g_ReorderItemList = App.g_db.GetReorderItems();
+                //g_CategoryList = await g_db.GetCategories();
+                g_HomePageCategoryList = await g_db.GetHomePageCategories();
+                g_ItemList = await g_db.GetItems();
+                g_ReorderItemList = await g_db.GetReorderItems();
 
                 try
                 {
-                    App.CommManager.GetSettings();
+                    await App.CommManager.GetSettings();
                 }
                 catch { }
 
                 if (g_IsSalesUser)
                 {
-                    App.CommManager.GetSalespersonCustomers(g_UserName);
+                    await App.CommManager.GetSalespersonCustomers(g_UserName);
                 }
             }
             return true;
@@ -239,16 +237,16 @@ namespace POMuswick
         {
             try
             {
-                App.CommManager.GetSettings();
+                await App.CommManager.GetSettings();
                 InitializeAllTimer();
                 InitializeOrderHistoryTimer();
                 InitializeQOHTimer();
                 if (g_IsSalesUser)
                 {
-                    App.CommManager.GetSalespersonCustomers(g_UserName);
+                    await App.CommManager.GetSalespersonCustomers(g_UserName);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 String sMsg = ex.Message;
                 Console.WriteLine("InitializeAppAfterLogin exception" + sMsg + ex.StackTrace);
@@ -283,7 +281,7 @@ namespace POMuswick
         public static async Task<String> RefreshAll()
         {
             // start with banners  services will call next when one is done
-            App.CommManager.GetBanners();
+            await App.CommManager.GetBanners();
             return "";
         }
 
@@ -302,7 +300,7 @@ namespace POMuswick
             {
                 if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
                 {
-                    App.CommManager.GetItemQOH2(App.g_UserName, App.g_Customer.CustNo);
+                    await App.CommManager.GetItemQOH2(App.g_UserName, App.g_Customer.CustNo);
                 }
             }
             catch { }
@@ -357,7 +355,7 @@ namespace POMuswick
             {
                 if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
                 {
-                    App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
+                    await App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
                 }
             }
             catch { }
@@ -369,7 +367,7 @@ namespace POMuswick
         {
             try
             {
-                App.CommManager.ValidateUserActive(App.g_UserName);
+                await App.CommManager.ValidateUserActive(App.g_UserName);
             }
             catch { }
 
@@ -384,26 +382,26 @@ namespace POMuswick
         {
         }
 
-        protected override void OnResume()
+        protected async override void OnResume()
         {
             g_IsOrderSubmitting = false;
 
             try
             {
-                App.CommManager.GetSettings();
+                await App.CommManager.GetSettings();
             }
             catch { }
 
             if (App.g_IsLoggedIn)
             {
-                ValidateUserActive();
+                await ValidateUserActive();
             }
 
-            RefreshQOH();
+            await RefreshQOH();
 
-            RefreshAll();
+            await RefreshAll();
 
-            RefreshOrderHistory();
+            await RefreshOrderHistory();
         }
     }
 }

@@ -181,10 +181,10 @@ namespace POMuswick.Views
         {
             if (App.g_Customer.Delivery != 1)
             {
-                App.g_Customer = App.g_db.GetCustomer();
+                App.g_Customer = await App.g_db.GetCustomer();
 
             }
-            
+
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 if (App.g_Customer.Delivery == 1)
@@ -205,7 +205,7 @@ namespace POMuswick.Views
                     CompanyAddress = "Delivery Not Available";
                     CompanyCityStateZip = "";
                 }
-            }); 
+            });
         }
 
         public void UpdateTotals()
@@ -238,7 +238,7 @@ namespace POMuswick.Views
         {
             ItemsListCart.ItemsSource = null;
 
-            lstItems = App.g_db.GetCartItems();
+            lstItems = await App.g_db.GetCartItems();
 
             foreach (Item i in lstItems)
             {
@@ -313,7 +313,7 @@ namespace POMuswick.Views
 
         private async void btnCheckout_Clicked(object sender, EventArgs e)
         {
-            validate();            
+            validate();
         }
 
         private async void validate()
@@ -322,9 +322,9 @@ namespace POMuswick.Views
             LoadingAlert.IsVisible = true;
             LoadingAlert.IsLoading = true;
 
-            await Task.Delay(1000).ContinueWith(t =>
+            await Task.Delay(1000).ContinueWith(async t =>
             {
-                List<Item> lstCartItems = App.g_db.GetCartItems();
+                List<Item> lstCartItems = await App.g_db.GetCartItems();
                 String sOrderInfo = "";
                 foreach (Item item in lstCartItems)
                 {
@@ -338,20 +338,21 @@ namespace POMuswick.Views
                 }
 
                 ValidateResponse response = App.CommManager.ValidateOrderQOH(App.g_Customer.CustNo, sOrderInfo).Result;
-                MainThread.BeginInvokeOnMainThread(async () => {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
                     if (response.IsValid)
                     {
                         LoadingAlert.IsVisible = false;
                         if ((dCartTotal < App.g_Customer.MinOrderAmount) && (IsDeliveryHighlighted))
                         {
-                            bool bContinue =  await DisplayAlertAsync("Muswick Wholesale Grocers", "Your order total must be at least " + string.Format("{0:C}", App.g_Customer.MinOrderAmount) + " to avoid a " + string.Format("{0:C}", App.g_Customer.ShippingFee) + " shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "YES", "NO");
+                            bool bContinue = await DisplayAlertAsync("Muswick Wholesale Grocers", "Your order total must be at least " + string.Format("{0:C}", App.g_Customer.MinOrderAmount) + " to avoid a " + string.Format("{0:C}", App.g_Customer.ShippingFee) + " shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "YES", "NO");
 
                             if (bContinue)
                             {
                                 await App.g_Shell.GoToCheckout();
                                 return;
                             }
-                            else 
+                            else
                             {
                                 await App.g_Shell.GoToShoppingCart();
                             }
@@ -378,7 +379,7 @@ namespace POMuswick.Views
 
             if (bClear)
             {
-                App.g_db.ClearCartItems();
+                await App.g_db.ClearCartItems();
                 await App.g_Shell.GoToHome();
             }
         }
