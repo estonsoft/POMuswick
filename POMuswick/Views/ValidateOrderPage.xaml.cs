@@ -20,7 +20,6 @@
         {
             base.OnAppearing();
 
-            //Database db = new Database();
             List<Item> lstCartItems = await App.g_db.GetCartItems();
             String sOrderInfo = "";
 
@@ -34,8 +33,6 @@
                 }
                 catch { }
             }
-
-            //App.CommManager.ValidateOrderQOH(App.g_Customer.CustNo, sOrderInfo);
         }
 
         protected override bool OnBackButtonPressed()

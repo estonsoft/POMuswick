@@ -337,7 +337,7 @@ namespace POMuswick.Views
                     catch { }
                 }
 
-                ValidateResponse response = App.CommManager.ValidateOrderQOH(App.g_Customer.CustNo, sOrderInfo).Result;
+                ValidateResponse response = await App.CommManager.ValidateOrderQOH(App.g_Customer.CustNo, sOrderInfo);
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     if (response.IsValid)

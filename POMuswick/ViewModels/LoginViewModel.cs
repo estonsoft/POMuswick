@@ -24,7 +24,7 @@
         private void OnLoginClicked(object obj)
         {
             App.g_LoginPage.ShowAnimation();
-            Task.Delay(1000).ContinueWith(t =>
+            Task.Run(async () =>
             {
                 if (User.ToLower() == "app_test")
                 {
@@ -43,12 +43,11 @@
                 App.g_Customer.User = User;
                 App.g_Customer.RememberMe = RememberMe;
 
-                //Database db = new Database();
-                App.g_db.SaveCustomer(App.g_Customer);
+                await App.g_db.SaveCustomer(App.g_Customer);
 
-                App.CommManager.ValidateLogin(User, Password, App.g_Customer.UniqueId);
+                await App.CommManager.ValidateLogin(User, Password, App.g_Customer.UniqueId);
 
-                Task.Delay(1500).ContinueWith(t =>
+                MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     App.g_LoginPage.HideAnimation();
                 });

@@ -52,7 +52,6 @@
             }
 
             await App.CommManager.SubmitOrder2(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
-            //App.CommManager.ValidateOrder(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
         }
 
         protected override bool OnBackButtonPressed()

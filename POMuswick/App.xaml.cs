@@ -199,9 +199,9 @@ namespace POMuswick
                                 await g_db.RestoreCartItems(App.g_Customer.CustNo);
                             }
                         }
-                        await RefreshAll();
-                        await RefreshOrderHistory();
-                        await RefreshQOH();
+                        // await RefreshAll();
+                        // await RefreshOrderHistory();
+                        // await RefreshQOH();
                     }
                     catch
                     {
@@ -220,10 +220,10 @@ namespace POMuswick
                 }
                 catch { }
 
-                if (g_IsSalesUser)
-                {
-                    await App.CommManager.GetSalespersonCustomers(g_UserName);
-                }
+                // if (g_IsSalesUser)
+                // {
+                //     await App.CommManager.GetSalespersonCustomers(g_UserName);
+                // }
             }
             return true;
         }
