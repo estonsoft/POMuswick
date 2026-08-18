@@ -16,8 +16,7 @@ namespace POMuswick
                 ConcurrentBag<Banner> lstBanners = new ConcurrentBag<Banner>();
                 if (aBanners.Length >= 1)
                 {
-                    // foreach (String s in aBanners)
-                    // {
+
                     Parallel.ForEach(aBanners, s =>
                     {
                         Banner banner = new Banner();
@@ -31,7 +30,6 @@ namespace POMuswick
 
                     await App.g_db.DeleteBannersAsync();
                     await App.g_db.SaveBannerAsync(lstBanners.ToList());
-
                     Console.WriteLine("Get Banners returned Completed");
                 }
                 catch (Exception ex)
@@ -202,7 +200,7 @@ namespace POMuswick
                         await App.g_db.SaveSubcategory(lstSubcategories.ToList());
 
                         Console.WriteLine("Get Categories Subcategories and Subsubcategories returned Completed");
-                        App.g_HomePageCategoryList = await App.g_db.GetHomePageCategories();
+                        // App.g_HomePageCategoryList = await App.g_db.GetHomePageCategories();
                     }
                     catch (Exception ex)
                     {
@@ -442,7 +440,6 @@ namespace POMuswick
                             Console.WriteLine("Parse Items exception" + pe.Message + pe.StackTrace);
                         }
                     });
-
                     Console.WriteLine($"Parse loop: {sw.ElapsedMilliseconds}ms"); sw.Restart();
 
                     try
@@ -471,7 +468,6 @@ namespace POMuswick
                         App.g_ItemList = await App.g_db.GetItems();
 
 
-
                         Console.WriteLine($"Finalize + commit: {sw.ElapsedMilliseconds}ms");
 
                     }
@@ -480,17 +476,17 @@ namespace POMuswick
                         Console.WriteLine("Error occurred while removing discontinued items: " + ex.Message);
                     }
 
-                    try
-                    {
-                        MainThread.BeginInvokeOnMainThread(async () =>
-                        {
-                            App.g_HomePage.RefreshNewItemsList();
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Refresh list get items exeception" + e.Message + e.StackTrace);
-                    }
+                    // try
+                    // {
+                    //     MainThread.BeginInvokeOnMainThread(async () =>
+                    //     {
+                    //         App.g_HomePage.RefreshNewItemsList();
+                    //     });
+                    // }
+                    // catch (Exception e)
+                    // {
+                    //     Console.WriteLine("Refresh list get items exeception" + e.Message + e.StackTrace);
+                    // }
 
                     await App.CommManager.GetItemQOH(App.g_Customer.CustNo);
                 }
@@ -551,7 +547,6 @@ namespace POMuswick
                             Console.WriteLine("Get Item QOH exception: " + ex.Message + ex.StackTrace);
                         }
                     }
-
 
                 }
             }
@@ -768,13 +763,6 @@ namespace POMuswick
                             Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
 
-                        if (App.g_IsSalesUser)
-                        {
-                            await App.CommManager.GetSalespersonCustomers(App.g_UserName);
-                        }
-                        else
-                        {
-                        }
 
                         if (App.g_Customer.CustNo != OldCustNo)
                         {
@@ -787,7 +775,10 @@ namespace POMuswick
                         }
 
                         await App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
-
+                        if (App.g_IsSalesUser)
+                        {
+                            await App.CommManager.GetSalespersonCustomers(App.g_UserName);
+                        }
                         await App.g_db.SaveSetting("LoggedIn", "1");
                         await App.g_db.SaveSetting("UserName", App.g_UserName);
                         App.g_IsLoggedIn = true;
@@ -928,7 +919,7 @@ namespace POMuswick
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>
                         {
-                            App.g_Shell.GoToHome();
+                            await App.g_Shell.GoToHome();
                         });
                     }
                     catch (Exception ex)
@@ -1422,7 +1413,7 @@ namespace POMuswick
                     App.g_QOHDisplay = "X";
                 }
                 await App.g_db.SaveSetting("QOHDisplay", App.g_QOHDisplay);
-
+                App.UpdateProgress(2, "Saving Settings");
                 try
                 {
                     if (aSettings[3] == "1")

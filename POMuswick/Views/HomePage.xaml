@@ -24,12 +24,12 @@
                 FontSize="16"
                 Text="Muswick Wholesale Grocers"
                 TextColor="White"
-                VerticalTextAlignment="Center" />
+                VerticalTextAlignment="Center"/>
         </StackLayout>
     </NavigationPage.TitleView>
 
     <ContentPage.BindingContext>
-        <vm:HomeViewModel />
+        <vm:HomeViewModel/>
     </ContentPage.BindingContext>
 
     <ContentPage.Resources>
@@ -45,14 +45,15 @@
             x:Name="SearchBox"
             DisplayMemberName="Name"
             Placeholder="Search Products"
-            ShowsResults="false" />
+            ShowsResults="false"/>
     </Shell.SearchHandler>
 
-    <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+    <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+          SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <StackLayout Grid.Row="0">
@@ -69,7 +70,7 @@
                     Source="menu_blue.png"
                     WidthRequest="30">
                     <ffimageloading:CachedImage.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnMenuTapped" />
+                        <TapGestureRecognizer Tapped="OnMenuTapped"/>
                     </ffimageloading:CachedImage.GestureRecognizers>
                 </ffimageloading:CachedImage>
                 <Entry
@@ -81,7 +82,7 @@
                     HorizontalOptions="Fill"
                     Placeholder="Search Products"
                     PlaceholderColor="Gray"
-                    TextChanged="Search_TextChanged" />
+                    TextChanged="Search_TextChanged"/>
                 <Label
                     Margin="0,5,30,0"
                     BackgroundColor="White"
@@ -92,7 +93,7 @@
                     TextColor="RoyalBlue"
                     VerticalOptions="Center">
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnSearchTapped" />
+                        <TapGestureRecognizer Tapped="OnSearchTapped"/>
                     </Label.GestureRecognizers>
                 </Label>
             </Grid>
@@ -101,10 +102,11 @@
                 HeightRequest="3"
                 HorizontalOptions="Fill"
                 VerticalOptions="Fill"
-                Color="lightgray" />
+                Color="lightgray"/>
         </StackLayout>
 
-        <ScrollView Grid.Row="1" Orientation="Vertical">
+        <ScrollView Grid.Row="1"
+                    Orientation="Vertical">
 
             <VerticalStackLayout
                 HorizontalOptions="Fill"
@@ -121,7 +123,7 @@
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
                         Text="Welcome"
-                        TextColor="black" />
+                        TextColor="black"/>
                     <Label
                         x:Name="lblUserName"
                         FontAttributes="Bold"
@@ -129,27 +131,28 @@
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
                         Text="Company Name"
-                        TextColor="black" />
+                        TextColor="black"/>
                 </VerticalStackLayout>
 
                 <Grid
                     BackgroundColor="white"
                     HeightRequest="200"
                     HorizontalOptions="Fill">
-                    <Border BackgroundColor="White" HorizontalOptions="Fill">
+                    <Border BackgroundColor="White"
+                            HorizontalOptions="Fill">
                         <ffimageloading:CachedImage
                             x:Name="BannerImage"
                             Aspect="AspectFit"
                             BackgroundColor="white"
                             HeightRequest="200"
-                            HorizontalOptions="Fill" />
+                            HorizontalOptions="Fill"/>
                     </Border>
                 </Grid>
 
                 <Grid HorizontalOptions="Fill">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <Border
@@ -158,14 +161,14 @@
                         Stroke="White"
                         StrokeThickness="5">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="7" />
+                            <RoundRectangle CornerRadius="7"/>
                         </Border.StrokeShape>
                         <HorizontalStackLayout
                             Margin="5"
                             HorizontalOptions="Center"
                             VerticalOptions="Center">
                             <HorizontalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnPastPurchases" />
+                                <TapGestureRecognizer Tapped="OnPastPurchases"/>
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
                                 FontAttributes="Bold"
@@ -176,7 +179,7 @@
                                 MaximumWidthRequest="45"
                                 Text="&#xF571;"
                                 TextColor="blue"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"/>
                             <VerticalStackLayout
                                 Margin="10,0,0,0"
                                 HorizontalOptions="Start"
@@ -184,14 +187,14 @@
                                 <Label
                                     FontSize="13"
                                     Text="Past Purchases"
-                                    TextColor="Blue" />
+                                    TextColor="Blue"/>
                                 <HorizontalStackLayout VerticalOptions="Center">
                                     <Label
                                         FontSize="10"
                                         HorizontalOptions="Start"
                                         Text="Buy Again"
                                         TextColor="blue"
-                                        VerticalOptions="Center" />
+                                        VerticalOptions="Center"/>
                                     <Label
                                         Margin="5,0,0,0"
                                         FontAttributes="Bold"
@@ -200,7 +203,7 @@
                                         HorizontalOptions="Start"
                                         Text="&#xF061;"
                                         TextColor="blue"
-                                        VerticalOptions="Center" />
+                                        VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </HorizontalStackLayout>
@@ -212,14 +215,14 @@
                         Stroke="White"
                         StrokeThickness="5">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="7" />
+                            <RoundRectangle CornerRadius="7"/>
                         </Border.StrokeShape>
                         <HorizontalStackLayout
                             Margin="5"
                             HorizontalOptions="Center"
                             VerticalOptions="Center">
                             <HorizontalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
                                 FontAttributes="Bold"
@@ -230,20 +233,21 @@
                                 MaximumWidthRequest="45"
                                 Text="&#xf021;"
                                 TextColor="blue"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"/>
                             <Label
                                 Margin="10,0,0,0"
                                 FontSize="13"
                                 HorizontalOptions="Start"
                                 Text="Refresh Data"
                                 TextColor="blue"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"/>
                         </HorizontalStackLayout>
                     </Border>
                 </Grid>
 
                 <!--  Start Your Cart header  -->
-                <Grid Padding="15,15,0,0" HorizontalOptions="Fill">
+                <Grid Padding="15,15,0,0"
+                      HorizontalOptions="Fill">
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
@@ -251,8 +255,9 @@
                         HorizontalOptions="Start"
                         Text="Start Your Cart"
                         TextColor="black"
-                        WidthRequest="240" />
-                    <HorizontalStackLayout Margin="0,0,10,0" HorizontalOptions="End">
+                        WidthRequest="240"/>
+                    <HorizontalStackLayout Margin="0,0,10,0"
+                                           HorizontalOptions="End">
                         <Label
                             Margin="0,6,0,0"
                             FontAttributes="Bold"
@@ -261,7 +266,7 @@
                             Text="Shop All Items"
                             TextColor="blue">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnShopNow" />
+                                <TapGestureRecognizer Tapped="OnShopNow"/>
                             </Label.GestureRecognizers>
                         </Label>
                         <Label
@@ -274,17 +279,18 @@
                             TextColor="blue"
                             VerticalOptions="Center">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnShopNow" />
+                                <TapGestureRecognizer Tapped="OnShopNow"/>
                             </Label.GestureRecognizers>
                         </Label>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnShopNow" />
+                        <TapGestureRecognizer Tapped="OnShopNow"/>
                     </Grid.GestureRecognizers>
                 </Grid>
 
                 <!--  New Items header  -->
-                <Grid Padding="15,15,0,0" HorizontalOptions="Fill">
+                <Grid Padding="15,15,0,0"
+                      HorizontalOptions="Fill">
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
@@ -292,8 +298,9 @@
                         HorizontalOptions="Start"
                         Text="New Items"
                         TextColor="black"
-                        WidthRequest="255" />
-                    <HorizontalStackLayout Margin="0,0,10,0" HorizontalOptions="End">
+                        WidthRequest="255"/>
+                    <HorizontalStackLayout Margin="0,0,10,0"
+                                           HorizontalOptions="End">
                         <Label
                             Margin="-25,6,0,0"
                             FontAttributes="Bold"
@@ -302,7 +309,7 @@
                             Text="View All New Items"
                             TextColor="blue">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnNewItemsAll" />
+                                <TapGestureRecognizer Tapped="OnNewItemsAll"/>
                             </Label.GestureRecognizers>
                         </Label>
                         <Label
@@ -315,12 +322,12 @@
                             TextColor="blue"
                             VerticalOptions="Center">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnNewItemsAll" />
+                                <TapGestureRecognizer Tapped="OnNewItemsAll"/>
                             </Label.GestureRecognizers>
                         </Label>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnNewItemsAll" />
+                        <TapGestureRecognizer Tapped="OnNewItemsAll"/>
                     </Grid.GestureRecognizers>
                 </Grid>
 
@@ -333,17 +340,18 @@
                     SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <StackLayout Orientation="Vertical" VerticalOptions="Fill">
+                            <StackLayout Orientation="Vertical"
+                                         VerticalOptions="Fill">
                                 <Border Stroke="LightGray">
                                     <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="10" />
+                                        <RoundRectangle CornerRadius="10"/>
                                     </Border.StrokeShape>
                                     <StackLayout Padding="10">
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="18"
                                             Text="{Binding ItemNoDisplay}"
-                                            TextColor="Black" />
+                                            TextColor="Black"/>
                                         <ffimageloading:CachedImage
                                             Aspect="AspectFit"
                                             CacheType="All"
@@ -356,7 +364,7 @@
                                             Source="{Binding ImageURL}"
                                             TransformPlaceholders="True"
                                             VerticalOptions="Center"
-                                            WidthRequest="70" />
+                                            WidthRequest="70"/>
                                         <Label
                                             BackgroundColor="White"
                                             FontAttributes="Bold"
@@ -367,14 +375,14 @@
                                             LineBreakMode="WordWrap"
                                             Text="{Binding Description}"
                                             TextColor="RoyalBlue"
-                                            WidthRequest="100" />
+                                            WidthRequest="100"/>
                                         <Label
                                             BackgroundColor="White"
                                             FontSize="14"
                                             HorizontalOptions="Fill"
                                             IsVisible="false"
                                             Text="{Binding CategoryDesc}"
-                                            TextColor="Black" />
+                                            TextColor="Black"/>
                                         <StackLayout
                                             HorizontalOptions="Fill"
                                             IsVisible="{Binding IsStockRowVisible}"
@@ -387,7 +395,7 @@
                                                 IsVisible="{Binding IsQOHVisible}"
                                                 Text="QOH:"
                                                 TextColor="Black"
-                                                VerticalOptions="Center" />
+                                                VerticalOptions="Center"/>
                                             <Label
                                                 BackgroundColor="White"
                                                 FontAttributes="Bold"
@@ -396,7 +404,7 @@
                                                 IsVisible="{Binding IsQOHRedVisible}"
                                                 Text="{Binding QOH}"
                                                 TextColor="Red"
-                                                VerticalOptions="Center" />
+                                                VerticalOptions="Center"/>
                                             <Label
                                                 BackgroundColor="White"
                                                 FontAttributes="Bold"
@@ -405,7 +413,7 @@
                                                 IsVisible="{Binding IsQOHBlackVisible}"
                                                 Text="{Binding QOH}"
                                                 TextColor="Black"
-                                                VerticalOptions="Center" />
+                                                VerticalOptions="Center"/>
                                             <Label
                                                 BackgroundColor="White"
                                                 FontSize="12"
@@ -413,7 +421,7 @@
                                                 IsVisible="{Binding IsInStockVisible}"
                                                 Text="In Stock"
                                                 TextColor="Black"
-                                                VerticalOptions="Center" />
+                                                VerticalOptions="Center"/>
                                             <Label
                                                 BackgroundColor="White"
                                                 FontSize="12"
@@ -421,7 +429,7 @@
                                                 IsVisible="{Binding IsOutOfStockVisible}"
                                                 Text="Out Of Stock"
                                                 TextColor="Red"
-                                                VerticalOptions="Center" />
+                                                VerticalOptions="Center"/>
                                             <Label
                                                 BackgroundColor="White"
                                                 FontSize="12"
@@ -429,7 +437,7 @@
                                                 IsVisible="{Binding IsMaxOrderQtyVisible}"
                                                 Text="{Binding MaxOrderQtyDisplay}"
                                                 TextColor="Black"
-                                                VerticalOptions="Center" />
+                                                VerticalOptions="Center"/>
                                         </StackLayout>
                                         <StackLayout
                                             HorizontalOptions="Fill"
@@ -439,7 +447,8 @@
                                                 Orientation="Vertical"
                                                 Spacing="0"
                                                 VerticalOptions="Center">
-                                                <StackLayout Orientation="Horizontal" WidthRequest="130">
+                                                <StackLayout Orientation="Horizontal"
+                                                             WidthRequest="130">
                                                     <Label
                                                         BackgroundColor="White"
                                                         FontAttributes="Bold"
@@ -448,14 +457,14 @@
                                                         MaxLines="1"
                                                         Text="{Binding PriceDisplay}"
                                                         TextColor="Black"
-                                                        VerticalOptions="Center" />
+                                                        VerticalOptions="Center"/>
                                                     <Label
                                                         BackgroundColor="White"
                                                         FontSize="14"
                                                         HorizontalOptions="Fill"
                                                         Text="{Binding SizeUOM}"
                                                         TextColor="Black"
-                                                        VerticalOptions="Center" />
+                                                        VerticalOptions="Center"/>
                                                 </StackLayout>
                                             </StackLayout>
                                         </StackLayout>
@@ -467,7 +476,7 @@
                                             ItemNo="{Binding ItemNo}"
                                             MaxOrderQty="{Binding MaxOrderQty}"
                                             Text="{Binding QtyOrder}"
-                                            UOM="{Binding UOM}" />
+                                            UOM="{Binding UOM}"/>
                                     </StackLayout>
                                 </Border>
                             </StackLayout>
@@ -478,27 +487,15 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <controls:CustomToolbar Grid.Row="2" VerticalOptions="End" />
-        <Grid
-            x:Name="loading"
+        <controls:CustomToolbar Grid.Row="2"
+                                VerticalOptions="End"/>
+        <controls:CustomAlertDialog
+            x:Name="LoadingAlert"
+            Title="Validating"
             Grid.Row="0"
-            Grid.RowSpan="3"
-            HorizontalOptions="Fill"
+            Grid.RowSpan="2"
+            IsLoading="True"
             IsVisible="False"
-            VerticalOptions="Fill">
-            <Border
-                BackgroundColor="LightGray"
-                HorizontalOptions="Fill"
-                Opacity="0.8"
-                VerticalOptions="Fill" />
-            <Label
-                x:Name="loadingLabel"
-                FontSize="30"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text="Please wait , Loading..."
-                TextColor="RoyalBlue"
-                VerticalOptions="Center" />
-        </Grid>
+            Message="Please wait while we refreshing the App Data…"/>
     </Grid>
 </ContentPage>

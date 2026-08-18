@@ -69,6 +69,24 @@ namespace POMuswick.Views
             });
         }
 
+        public void UpdateSyncProgress(
+            double current,
+            string status)
+        {
+            int total = 100;
+
+            var progress = (double)current / total;
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                LoadingAlert.ProgressValue = progress;
+                LoadingAlert.ProgressPercentage = (int)(progress * 100);
+                LoadingAlert.SyncStatus = status;
+                LoadingAlert.SyncCountText =
+                    $"{current:N0} / {total:N0} Percent";
+            });
+        }
+
         protected override bool OnBackButtonPressed()
         {
             return true;

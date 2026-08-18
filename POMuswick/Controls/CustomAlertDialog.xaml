@@ -5,46 +5,82 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="this">
 
-    <!--  Dim overlay  -->
     <Grid BackgroundColor="#80000000">
+
         <Border
             Padding="24"
             BackgroundColor="White"
             HorizontalOptions="Center"
             VerticalOptions="Center"
-            WidthRequest="300">
+            WidthRequest="320"
+            StrokeShape="RoundRectangle 16">
 
-            <StackLayout Spacing="16">
+            <VerticalStackLayout Spacing="14">
 
-                <!--  Activity Indicator  -->
+                <!-- Loading -->
                 <ActivityIndicator
-                    x:Name="LoadingIndicator"
                     HeightRequest="36"
                     HorizontalOptions="Center"
                     IsRunning="{Binding IsLoading, Source={x:Reference this}}"
                     IsVisible="{Binding IsLoading, Source={x:Reference this}}"
                     WidthRequest="36"
-                    Color="#378ADD" />
+                    Color="#378ADD"/>
 
-                <!--  Title  -->
+                <!-- Title -->
                 <Label
-                    x:Name="TitleLabel"
                     FontAttributes="Bold"
                     FontSize="20"
                     HorizontalTextAlignment="Center"
                     Text="{Binding Title, Source={x:Reference this}}"
-                    TextColor="#111111" />
+                    TextColor="#111111"/>
 
-                <!--  Message  -->
+                <!-- Current operation -->
                 <Label
-                    x:Name="MessageLabel"
-                    FontSize="16"
+                    FontSize="15"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding SyncStatus, Source={x:Reference this}}"
+                    TextColor="#555555"/>
+
+                <!-- Percentage -->
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="28"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding ProgressPercentage, Source={x:Reference this}, StringFormat='{0}%'}"
+                    TextColor="#378ADD"/>
+
+                <!-- Progress bar -->
+                <ProgressBar
+                    Progress="{Binding ProgressValue, Source={x:Reference this}}"
+                    ProgressColor="#378ADD"
+                    BackgroundColor="#E5E5E5"
+                    HeightRequest="8"/>
+
+                <!-- Synced records -->
+                <Label
+                    FontSize="14"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding SyncCountText, Source={x:Reference this}}"
+                    TextColor="#666666"/>
+
+                <!-- Data type -->
+                <Label
+                    FontSize="13"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding CurrentData, Source={x:Reference this}}"
+                    TextColor="#888888"/>
+
+                <!-- Optional message -->
+                <Label
+                    FontSize="14"
                     HorizontalTextAlignment="Center"
                     LineBreakMode="WordWrap"
                     Text="{Binding Message, Source={x:Reference this}}"
-                    TextColor="#666666" />
+                    TextColor="#666666"/>
 
-            </StackLayout>
+            </VerticalStackLayout>
+
         </Border>
+
     </Grid>
 </ContentView>

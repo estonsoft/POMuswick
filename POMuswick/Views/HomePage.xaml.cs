@@ -412,6 +412,25 @@
             await App.g_Shell.GoToItemSearch();
         }
 
+        public void UpdateSyncProgress(
+            double current,
+            string status)
+        {
+            int total = 100;
+
+            var progress = (double)current / total;
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                LoadingAlert.Title = "App Sync in progress";
+                LoadingAlert.ProgressValue = progress;
+                LoadingAlert.ProgressPercentage = (int)(progress * 100);
+                LoadingAlert.SyncStatus = status;
+                LoadingAlert.SyncCountText =
+                    $"{current:N0} / {total:N0} records";
+            });
+        }
+
         public async void RefreshNewItemsList()
         {
             NewItemList.ItemsSource = null;
@@ -630,13 +649,13 @@
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                loading.IsVisible = true;
+                LoadingAlert.IsVisible = true;
             });
 
             bool isloaded = await App.g_App.InitializeAppAfterLogin();
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                loading.IsVisible = false;
+                LoadingAlert.IsVisible = false;
             });
         }
     }

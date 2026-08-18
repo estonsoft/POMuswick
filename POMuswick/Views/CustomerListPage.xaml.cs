@@ -11,6 +11,7 @@ namespace POMuswick.Views
             try
             {
                 InitializeComponent();
+                App.g_CustomerPage = this;
             }
             catch (Exception ex)
             {
@@ -27,6 +28,24 @@ namespace POMuswick.Views
             App.g_CurrentPage = "CustomerListPage";
 
             RefreshList();
+        }
+
+        public void UpdateSyncProgress(
+            double current,
+            string status)
+        {
+            int total = 100;
+
+            var progress = (double)current / total;
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                LoadingAlert.ProgressValue = progress;
+                LoadingAlert.ProgressPercentage = (int)(progress * 100);
+                LoadingAlert.SyncStatus = status;
+                LoadingAlert.SyncCountText =
+                    $"{current:N0} / {total:N0} records";
+            });
         }
 
         public async void RefreshList()

@@ -15,6 +15,7 @@ namespace POMuswick
         public static ItemSearchPage g_SearchPage;
         public static HomePage g_HomePage;
         public static LoginPage g_LoginPage;
+        public static CustomerListPage g_CustomerPage;
         public static ShoppingCartPage g_ShoppingCartPage;
         public static CheckoutPage g_CheckoutPage;
         public static Customer g_Customer;
@@ -309,6 +310,24 @@ namespace POMuswick
             await RefreshAll();
 
             await RefreshOrderHistory();
+        }
+
+        public static async Task UpdateProgress(double current,
+            string status)
+        {
+            await Task.Delay(10);
+            switch (g_CurrentPage)
+            {
+                case "LoginPage":
+                    g_LoginPage.UpdateSyncProgress(current, status);
+                    break;
+                case "HomePage":
+                    g_HomePage.UpdateSyncProgress(current, status);
+                    break;
+                case "CustomerListPage":
+                    g_CustomerPage.UpdateSyncProgress(current, status);
+                    break;
+            }
         }
     }
 }
