@@ -634,7 +634,6 @@
             });
 
             bool isloaded = await App.g_App.InitializeAppAfterLogin();
-            await Task.Delay(1000);
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 loading.IsVisible = false;

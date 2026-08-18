@@ -67,9 +67,6 @@ namespace POMuswick
             InitializeComponent();
             CommManager = _commManager;
 
-            // 19.2 version Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NTAzNTg1QDMxMzkyZTMyMmUzMGMySndvR0x2aHJwSHJWcFpwSG93MVMxMFRub1pFRkhTbnRHakhEVTd3WlE9");
-            // 20.1.0.57 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NjQ1MDgwQDMyMzAyZTMxMmUzMEZVVGd2ZDhxb2liR2MzV0pybTM5ZE5SemU4Mml6SWthYnFFa3ZGZ0F6VlU9");
-            // 20.2.0.43
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Njk0OTc0QDMyMzAyZTMyMmUzMFdNblBzcjZVWWc5Q0VMdHZRdXQxeFYyRGhGdlF5ZGIzUjQ2VGdLU2ZBbGM9");
             app_uniqueId = deviceIdProvider.GetDeviceId();
 
@@ -202,11 +199,9 @@ namespace POMuswick
                                 await g_db.RestoreCartItems(App.g_Customer.CustNo);
                             }
                         }
-                        InitializeAllTimer();
-
-                        InitializeOrderHistoryTimer();
-
-                        InitializeQOHTimer();
+                        await RefreshAll();
+                        await RefreshOrderHistory();
+                        await RefreshQOH();
                     }
                     catch
                     {
@@ -238,9 +233,9 @@ namespace POMuswick
             try
             {
                 await App.CommManager.GetSettings();
-                InitializeAllTimer();
-                InitializeOrderHistoryTimer();
-                InitializeQOHTimer();
+                await RefreshAll();
+                await RefreshOrderHistory();
+                await RefreshQOH();
                 if (g_IsSalesUser)
                 {
                     await App.CommManager.GetSalespersonCustomers(g_UserName);
@@ -269,110 +264,28 @@ namespace POMuswick
             Constants.ItemImageUrl = App.g_ServerURL + "/images/items/";
         }
 
-        private void InitializeAllTimer()
-        {
-            Task.Run(async () =>
-                 {
-                     _ = await RefreshAll();
-                     return true;
-                 });
-        }
-
-        public static async Task<String> RefreshAll()
+        public static async Task RefreshAll()
         {
             // start with banners  services will call next when one is done
             await App.CommManager.GetBanners();
-            return "";
         }
 
-        private void InitializeQOHTimer()
+        public static async Task RefreshQOH()
         {
-            Task.Run(async () =>
-                {
-                    _ = await RefreshQOH();
-                    return true;
-                });
-        }
-
-        public static async Task<String> RefreshQOH()
-        {
-            try
+            if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
             {
-                if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
-                {
-                    await App.CommManager.GetItemQOH2(App.g_UserName, App.g_Customer.CustNo);
-                }
+                await App.CommManager.GetItemQOH2(App.g_UserName, App.g_Customer.CustNo);
             }
-            catch { }
-
-            return "";
         }
 
-        private void InitializeBannerTimer()
+        public static async Task RefreshOrderHistory()
         {
-            Task.Run(async () =>
+            if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
             {
-                _ = await RefreshBanners();
-                return true;
-            });
-        }
-
-        private async Task<String> RefreshBanners()
-        {
-            return "";
-        }
-
-        private void InitializeItemTimer()
-        {
-            Task.Run(async () =>
-            {
-                _ = await RefreshItems();
-                return true;
-            });
-        }
-
-        private async Task<String> RefreshItems()
-        {
-            //Database db = new Database();
-
-            //g_Customer = await db.GetCustomerAsync();
-
-            return "";
-        }
-
-        private void InitializeOrderHistoryTimer()
-        {
-            Task.Run(async () =>
-            {
-                _ = await RefreshOrderHistory();
-                return true;
-            });
-        }
-
-        public static async Task<String> RefreshOrderHistory()
-        {
-            try
-            {
-                if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
-                {
-                    await App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
-                }
+                await App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
             }
-            catch { }
-
-            return "";
         }
 
-        public static async Task<String> ValidateUserActive()
-        {
-            try
-            {
-                await App.CommManager.ValidateUserActive(App.g_UserName);
-            }
-            catch { }
-
-            return "";
-        }
 
         protected override void OnStart()
         {
@@ -385,16 +298,10 @@ namespace POMuswick
         protected async override void OnResume()
         {
             g_IsOrderSubmitting = false;
-
-            try
-            {
-                await App.CommManager.GetSettings();
-            }
-            catch { }
-
+            await App.CommManager.GetSettings();
             if (App.g_IsLoggedIn)
             {
-                await ValidateUserActive();
+                await App.CommManager.ValidateUserActive(App.g_UserName);
             }
 
             await RefreshQOH();

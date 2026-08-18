@@ -7,7 +7,6 @@
         public CommManager(ISoapService service)
         {
             soapService = service;
-
         }
 
         public async Task GetBanners()
@@ -23,7 +22,7 @@
         }
 
         public async Task GetCategoriesAndSubcategoriesCust(string sCust)
-        { 
+        {
             String response = await soapService.GetCategoriesAndSubcategoriesCustAsync(sCust);
             await XMLResponseParser.commService_GetCategoriesAndSubcategoriesCustCompleted(response);
         }
