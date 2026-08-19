@@ -426,8 +426,6 @@
                 LoadingAlert.ProgressValue = progress;
                 LoadingAlert.ProgressPercentage = (int)(progress * 100);
                 LoadingAlert.SyncStatus = status;
-                LoadingAlert.SyncCountText =
-                    $"{current:N0} / {total:N0} records";
             });
         }
 

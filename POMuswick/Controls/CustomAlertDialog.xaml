@@ -56,19 +56,6 @@
                     BackgroundColor="#E5E5E5"
                     HeightRequest="8"/>
 
-                <!-- Synced records -->
-                <Label
-                    FontSize="14"
-                    HorizontalTextAlignment="Center"
-                    Text="{Binding SyncCountText, Source={x:Reference this}}"
-                    TextColor="#666666"/>
-
-                <!-- Data type -->
-                <Label
-                    FontSize="13"
-                    HorizontalTextAlignment="Center"
-                    Text="{Binding CurrentData, Source={x:Reference this}}"
-                    TextColor="#888888"/>
 
                 <!-- Optional message -->
                 <Label

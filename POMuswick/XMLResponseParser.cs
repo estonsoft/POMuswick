@@ -24,19 +24,19 @@ namespace POMuswick
                         banner.BannerURL = Constants.BannerUrl + banner.BannerName;
                         lstBanners.Add(banner);
                     });
-                }
-                try
-                {
+                    try
+                    {
 
-                    await App.g_db.DeleteBannersAsync();
-                    await App.g_db.SaveBannerAsync(lstBanners.ToList());
-                    Console.WriteLine("Get Banners returned Completed");
+                        await App.g_db.DeleteBannersAsync();
+                        await App.g_db.SaveBannerAsync(lstBanners.ToList());
+                        Console.WriteLine("Get Banners returned Completed");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error occurred while saving banners: " + ex.Message);
+                    }
+                    await App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error occurred while saving banners: " + ex.Message);
-                }
-                await App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
             }
             catch (Exception ex)
             {

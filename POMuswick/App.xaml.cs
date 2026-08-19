@@ -312,10 +312,78 @@ namespace POMuswick
             await RefreshOrderHistory();
         }
 
-        public static async Task UpdateProgress(double current,
+        private static CancellationTokenSource? _progressCts;
+        private static int _actualProgress;
+        private static int _displayProgress;
+
+        public static async Task StartProgress(int progress, string status)
+        {
+            _actualProgress = progress;
+            _displayProgress = progress;
+
+            _progressCts?.Cancel();
+            _progressCts = new CancellationTokenSource();
+
+            await UpdateProgressUI(_displayProgress, status);
+
+            _ = RunProgressAnimationAsync(status, _progressCts.Token);
+        }
+
+        private static async Task RunProgressAnimationAsync(
+            string status,
+            CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    await Task.Delay(1500, token);
+
+                    if (_displayProgress < _actualProgress + 40 &&
+                        _displayProgress < 99)
+                    {
+                        _displayProgress++;
+
+                        await UpdateProgressUI(
+                            _displayProgress,
+                            status);
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Expected when next real progress arrives
+            }
+        }
+
+        public static async Task UpdateProgress(
+            int progress,
             string status)
         {
-            await Task.Delay(10);
+            _actualProgress = progress;
+
+            // If actual progress is already behind the animated value,
+            // don't move backwards.
+            if (_displayProgress < progress)
+                _displayProgress = progress;
+
+            await UpdateProgressUI(
+                _displayProgress,
+                status);
+
+            // Restart the 5% animation for this new operation
+            _progressCts?.Cancel();
+
+            _progressCts = new CancellationTokenSource();
+
+            _ = RunProgressAnimationAsync(
+                status,
+                _progressCts.Token);
+        }
+
+        public static async Task UpdateProgressUI(double current,
+            string status)
+        {
             switch (g_CurrentPage)
             {
                 case "LoginPage":

@@ -88,34 +88,6 @@ public partial class CustomAlertDialog : ContentView
     }
 
 
-    public static readonly BindableProperty SyncCountTextProperty =
-        BindableProperty.Create(
-            nameof(SyncCountText),
-            typeof(string),
-            typeof(CustomAlertDialog),
-            string.Empty);
-
-    public string SyncCountText
-    {
-        get => (string)GetValue(SyncCountTextProperty);
-        set => SetValue(SyncCountTextProperty, value);
-    }
-
-
-    public static readonly BindableProperty CurrentDataProperty =
-        BindableProperty.Create(
-            nameof(CurrentData),
-            typeof(string),
-            typeof(CustomAlertDialog),
-            string.Empty);
-
-    public string CurrentData
-    {
-        get => (string)GetValue(CurrentDataProperty);
-        set => SetValue(CurrentDataProperty, value);
-    }
-
-
     public CustomAlertDialog()
     {
         InitializeComponent();
