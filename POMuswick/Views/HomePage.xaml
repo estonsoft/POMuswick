@@ -493,6 +493,8 @@
             x:Name="LoadingAlert"
             Title="Validating"
             Grid.Row="0"
+            ProgressPercentage="0"
+            ProgressValue="0"
             Grid.RowSpan="2"
             IsLoading="True"
             IsVisible="False"

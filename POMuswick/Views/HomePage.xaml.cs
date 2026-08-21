@@ -645,12 +645,14 @@
 
         private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
         {
-            MainThread.BeginInvokeOnMainThread(() =>
+            MainThread.BeginInvokeOnMainThread(async () =>
             {
                 LoadingAlert.IsVisible = true;
+                await App.ResetProgressAsync();
             });
 
             bool isloaded = await App.g_App.InitializeAppAfterLogin();
+            RefreshNewItemsList();
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 LoadingAlert.IsVisible = false;

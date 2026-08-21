@@ -329,6 +329,7 @@ namespace POMuswick
             _ = RunProgressAnimationAsync(status, _progressCts.Token);
         }
 
+
         private static async Task RunProgressAnimationAsync(
             string status,
             CancellationToken token)
@@ -337,8 +338,12 @@ namespace POMuswick
             {
                 while (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(1500, token);
+                    await Task.Delay(2000, token);
 
+                    if (token.IsCancellationRequested)
+                        break;
+
+                    // Never go above 99 until actual progress reaches 100
                     if (_displayProgress < _actualProgress + 40 &&
                         _displayProgress < 99)
                     {
@@ -348,32 +353,68 @@ namespace POMuswick
                             _displayProgress,
                             status);
                     }
+
+                    // Reached 99, wait for the next real progress update
+                    if (_displayProgress >= 99)
+                        break;
                 }
             }
             catch (TaskCanceledException)
             {
-                // Expected when next real progress arrives
+                // Expected when a new progress update arrives
             }
         }
 
-        public static async Task UpdateProgress(
-            int progress,
-            string status)
+        public static async Task ResetProgressAsync(
+    string status = "Starting...")
         {
-            _actualProgress = progress;
+            // Stop previous animation
+            _progressCts?.Cancel();
+            _progressCts?.Dispose();
+            _progressCts = null;
 
-            // If actual progress is already behind the animated value,
-            // don't move backwards.
-            if (_displayProgress < progress)
-                _displayProgress = progress;
+            // Reset progress completely
+            _actualProgress = 0;
+            _displayProgress = 0;
+
+            await UpdateProgressUI(
+                0,
+                status);
+        }
+
+        public static async Task UpdateProgress(
+    int progress,
+    string status)
+        {
+            _actualProgress = Math.Clamp(progress, 0, 100);
+
+            // Cancel previous animation
+            _progressCts?.Cancel();
+            _progressCts?.Dispose();
+            _progressCts = null;
+
+            // Actual progress reached 100
+            if (_actualProgress >= 100)
+            {
+                _displayProgress = 100;
+
+                await UpdateProgressUI(
+                    100,
+                    status);
+
+                // No animation should run at 100
+                return;
+            }
+
+            // Don't move backwards
+            if (_displayProgress < _actualProgress)
+                _displayProgress = _actualProgress;
 
             await UpdateProgressUI(
                 _displayProgress,
                 status);
 
-            // Restart the 5% animation for this new operation
-            _progressCts?.Cancel();
-
+            // Start a NEW animation cycle
             _progressCts = new CancellationTokenSource();
 
             _ = RunProgressAnimationAsync(

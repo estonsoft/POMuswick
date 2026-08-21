@@ -467,14 +467,6 @@ namespace POMuswick
 
             await UpdateItemPriceOrder(iItem);
 
-            try
-            {
-                Vibration.Vibrate(100);
-            }
-            catch (Exception e)
-            {
-            }
-
             return 1;
         }
 
@@ -483,14 +475,6 @@ namespace POMuswick
             _database.Execute("update Item set QtyOrder = " + iQty.ToString() + " where ItemNo = " + iItem.ToString());
 
             await UpdateItemPriceOrder(iItem);
-
-            try
-            {
-                Vibration.Vibrate(100);
-            }
-            catch (Exception e)
-            {
-            }
 
             return 1;
         }
@@ -507,6 +491,31 @@ namespace POMuswick
             _database.Execute("update OrderDetail set QOH = " + iQOH.ToString() + " where ItemNo = " + iItem.ToString());
 
             return 1;
+        }
+
+        public Task<int> UpdateAllItemQOH(
+            List<(int ItemNo, int QOH)> updates)
+        {
+            if (updates == null || updates.Count == 0)
+                return Task.FromResult(0);
+            foreach (var item in updates)
+            {
+                _database.Execute(
+                    "UPDATE Item SET QOH = ? WHERE ItemNo = ?",
+                    item.QOH,
+                    item.ItemNo);
+
+                _database.Execute(
+                    "UPDATE ReorderItem SET QOH = ? WHERE ItemNo = ?",
+                    item.QOH,
+                    item.ItemNo);
+
+                _database.Execute(
+                    "UPDATE OrderDetail SET QOH = ? WHERE ItemNo = ?",
+                    item.QOH,
+                    item.ItemNo);
+            }
+            return Task.FromResult(updates.Count);
         }
 
         public async Task<int> GetItemQty(int iItem)
@@ -664,9 +673,9 @@ namespace POMuswick
             return _database.Find<Location>(s => s.LocationId == iLocation);
         }
 
-        public async Task<int> SaveOrderHeader(OrderHeader oh)
+        public async Task<int> SaveOrderHeader(List<OrderHeader> oh)
         {
-            return _database.InsertOrReplace(oh);
+            return _database.InsertAll(oh);
         }
 
         public async Task<List<OrderHeader>> GetOrderHeaders()
@@ -690,9 +699,9 @@ namespace POMuswick
             return 0;
         }
 
-        public async Task<int> SaveOrderDetail(OrderDetail od)
+        public async Task<int> SaveOrderDetail(List<OrderDetail> od)
         {
-            return _database.InsertOrReplace(od);
+            return _database.InsertAll(od);
         }
 
         public async Task<int> DeleteOrderDetail(string sOrderNo)

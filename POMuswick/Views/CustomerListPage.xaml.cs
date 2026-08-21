@@ -71,6 +71,8 @@ namespace POMuswick.Views
         async void OnTappedCustomer(object sender, EventArgs args)
         {
             LoadingAlert.IsVisible = true;
+            await App.ResetProgressAsync();
+
             string OldCustNo = App.g_Customer.CustNo;
 
             var c = sender as CustomerStackLayout;
@@ -101,18 +103,6 @@ namespace POMuswick.Views
             App.g_Customer.MinOrderAmount = cust.MinOrderAmount;
             App.g_Customer.ShippingFee = cust.ShippingFee;
 
-
-            try
-            {
-                if ((App.g_Customer.CustNo != null) && (App.g_Customer.CustNo != "") && (App.g_Customer.CustNo != "0"))
-                {
-                    await App.CommManager.GetCategoriesAndSubcategoriesCust(App.g_Customer.CustNo);
-                }
-                await App.CommManager.GetOrderHistory(App.g_Customer.CustNo);
-            }
-            catch
-            {
-            }
             await App.g_db.SaveCustomer(App.g_Customer);
 
             await App.g_db.SuspendCartItems(OldCustNo);
@@ -121,7 +111,8 @@ namespace POMuswick.Views
 
             await App.g_db.RestoreCartItems(App.g_Customer.CustNo);
 
-            //App.g_Shell.GoToUpdatingPage();
+            await App.g_App.InitializeAppAfterLogin();
+
             LoadingAlert.IsVisible = false;
             await App.g_Shell.GoToHome();
         }
