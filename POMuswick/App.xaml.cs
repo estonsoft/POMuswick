@@ -199,10 +199,10 @@ namespace POMuswick
                             {
                                 await g_db.RestoreCartItems(App.g_Customer.CustNo);
                             }
+                            await RefreshAll();
+                            await RefreshOrderHistory();
+                            await RefreshQOH();
                         }
-                        // await RefreshAll();
-                        // await RefreshOrderHistory();
-                        // await RefreshQOH();
                     }
                     catch
                     {
@@ -210,7 +210,6 @@ namespace POMuswick
                     }
                 });
 
-                //g_CategoryList = await g_db.GetCategories();
                 g_HomePageCategoryList = await g_db.GetHomePageCategories();
                 g_ItemList = await g_db.GetItems();
                 g_ReorderItemList = await g_db.GetReorderItems();
@@ -221,10 +220,10 @@ namespace POMuswick
                 }
                 catch { }
 
-                // if (g_IsSalesUser)
-                // {
-                //     await App.CommManager.GetSalespersonCustomers(g_UserName);
-                // }
+                if (g_IsSalesUser)
+                {
+                    await App.CommManager.GetSalespersonCustomers(g_UserName);
+                }
             }
             return true;
         }

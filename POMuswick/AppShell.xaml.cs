@@ -43,23 +43,7 @@ namespace POMuswick
 
             Shell.SetTabBarIsVisible(this, false);
             Shell.SetNavBarIsVisible(this, false);
-
-            // if (App.g_IsLoggedIn)
-            // {
-            //     ValidateUserActive();
-            // }
         }
-
-        // public static async Task<String> ValidateUserActive()
-        // {
-        //     try
-        //     {
-        //         await App.CommManager.ValidateUserActive(App.g_UserName);
-        //     }
-        //     catch { }
-
-        //     return "";
-        // }
 
         public void HideCustomerMenu()
         {
