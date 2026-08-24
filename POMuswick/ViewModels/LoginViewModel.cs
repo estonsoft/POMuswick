@@ -26,6 +26,7 @@
             App.g_LoginPage.ShowAnimation();
             Task.Run(async () =>
             {
+                await App.ResetProgressAsync();
                 if (User.ToLower() == "app_test")
                 {
                     App.g_ServerURL = "https://store.qwikpoint.net";

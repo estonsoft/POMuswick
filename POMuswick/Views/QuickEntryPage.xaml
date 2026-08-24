@@ -14,14 +14,15 @@
     Shell.NavBarIsVisible="False">
 
     <ContentPage.Content>
-        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" />
+            <controls:CustomHeader Grid.Row="0"/>
 
             <ScrollView Grid.Row="1">
                 <StackLayout
@@ -33,11 +34,11 @@
                             x:Name="ScannerControl"
                             CameraEnabled="True"
                             HeightRequest="200"
+                            VibrationOnDetected="false"
                             HorizontalOptions="Center"
                             OnDetectionFinished="OnBarcodeDetected"
                             VerticalOptions="Center"
-                            VibrationOnDetected="True"
-                            WidthRequest="200" />
+                            WidthRequest="200"/>
                         <!--<Label Text="" TextDecorations="Underline" Margin="0,-105,0,0" HeightRequest="2" WidthRequest="200" FontSize="14" HorizontalOptions="Fill" BackgroundColor="RoyalBlue" TextColor="RoyalBlue"/>-->
                         <StackLayout
                             x:Name="TapToScan"
@@ -45,7 +46,7 @@
                             IsVisible="false"
                             VerticalOptions="Center">
                             <StackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnScannerEnable" />
+                                <TapGestureRecognizer Tapped="OnScannerEnable"/>
                             </StackLayout.GestureRecognizers>
                             <Label
                                 FontAttributes="Bold"
@@ -54,14 +55,14 @@
                                 HorizontalOptions="Center"
                                 Text="&#xF030;"
                                 TextColor="Red"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"/>
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="20"
                                 HorizontalOptions="Center"
                                 Text="Tap To Scan"
                                 TextColor="Red"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"/>
                         </StackLayout>
                     </Grid>
 
@@ -81,7 +82,7 @@
                             Placeholder="Item # or UPC"
                             PlaceholderColor="Gray"
                             VerticalOptions="Center"
-                            WidthRequest="200" />
+                            WidthRequest="200"/>
                         <Button
                             x:Name="EnterButton"
                             Margin="10,0,0,0"
@@ -94,7 +95,7 @@
                             HorizontalOptions="Start"
                             Text="  Enter  "
                             TextColor="White"
-                            TextTransform="None" />
+                            TextTransform="None"/>
 
                     </StackLayout>
                     <StackLayout
@@ -109,7 +110,7 @@
                             FontAttributes="Bold"
                             FontSize="16"
                             HorizontalOptions="Fill"
-                            TextColor="Blue" />
+                            TextColor="Blue"/>
                         <Label
                             x:Name="Message"
                             Margin="0,0,0,0"
@@ -117,7 +118,7 @@
                             FontSize="16"
                             HorizontalOptions="Center"
                             IsVisible="false"
-                            TextColor="Red" />
+                            TextColor="Red"/>
                         <StackLayout
                             Margin="0,5,0,0"
                             HorizontalOptions="Fill"
@@ -134,7 +135,7 @@
                                 VerticalOptions="Fill"
                                 WidthRequest="90">
                                 <ffImage:CachedImage.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnShowImage" />
+                                    <TapGestureRecognizer Tapped="OnShowImage"/>
                                 </ffImage:CachedImage.GestureRecognizers>
                             </ffImage:CachedImage>
                             <StackLayout
@@ -154,21 +155,21 @@
                                         FontAttributes="Bold"
                                         FontSize="16"
                                         HorizontalOptions="Fill"
-                                        TextColor="Black" />
+                                        TextColor="Black"/>
                                     <Label
                                         x:Name="ItemNoDisplayUPC"
                                         Margin="10,8,0,0"
                                         BackgroundColor="White"
                                         FontSize="12"
                                         HorizontalOptions="Fill"
-                                        TextColor="Black" />
+                                        TextColor="Black"/>
                                 </StackLayout>
                                 <Label
                                     BackgroundColor="White"
                                     FontSize="14"
                                     HorizontalOptions="Fill"
                                     Text="{Binding CategoryDesc}"
-                                    TextColor="Black" />
+                                    TextColor="Black"/>
                                 <StackLayout
                                     x:Name="StockRow"
                                     HorizontalOptions="Fill"
@@ -181,7 +182,7 @@
                                         FontSize="14"
                                         HorizontalOptions="Fill"
                                         TextColor="Black"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                     <Label
                                         x:Name="QOHRed"
                                         Margin="0,0,0,0"
@@ -191,7 +192,7 @@
                                         HorizontalOptions="Fill"
                                         Text="{Binding QOH}"
                                         TextColor="Red"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                     <Label
                                         x:Name="QOHBlack"
                                         Margin="0,0,0,0"
@@ -201,7 +202,7 @@
                                         HorizontalOptions="Fill"
                                         Text="{Binding QOH}"
                                         TextColor="Black"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                     <Label
                                         x:Name="QOHInStock"
                                         Margin="5,0,0,0"
@@ -210,7 +211,7 @@
                                         HorizontalOptions="Fill"
                                         Text="In Stock"
                                         TextColor="Black"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                     <Label
                                         x:Name="QOHOutOfStock"
                                         Margin="5,0,0,0"
@@ -219,7 +220,7 @@
                                         HorizontalOptions="Fill"
                                         Text="Out Of Stock"
                                         TextColor="Red"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                     <Label
                                         x:Name="MaxOrderQty"
                                         Margin="5,0,0,0"
@@ -227,7 +228,7 @@
                                         FontSize="12"
                                         HorizontalOptions="Fill"
                                         TextColor="Black"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                 </StackLayout>
                                 <StackLayout
                                     Margin="0,0,0,0"
@@ -241,7 +242,7 @@
                                         HorizontalOptions="Fill"
                                         MaxLines="1"
                                         TextColor="Red"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                     <Label
                                         x:Name="SizeUOM"
                                         Margin="0,6,0,0"
@@ -249,7 +250,7 @@
                                         FontSize="14"
                                         HorizontalOptions="Fill"
                                         TextColor="Red"
-                                        VerticalOptions="Fill" />
+                                        VerticalOptions="Fill"/>
                                 </StackLayout>
                             </StackLayout>
                         </StackLayout>
@@ -269,7 +270,7 @@
                             HorizontalOptions="Center"
                             Source="blue_minus.png"
                             VerticalOptions="Center"
-                            WidthRequest="40" />
+                            WidthRequest="40"/>
                         <Label
                             x:Name="QtyStepper"
                             Margin="10,0,0,0"
@@ -277,7 +278,7 @@
                             FontSize="24"
                             HorizontalOptions="Center"
                             TextColor="black"
-                            VerticalOptions="Center" />
+                            VerticalOptions="Center"/>
                         <ImageButton
                             x:Name="PlusButton"
                             Margin="10,5,0,5"
@@ -287,7 +288,7 @@
                             HorizontalOptions="Center"
                             Source="blue_plus.png"
                             VerticalOptions="Center"
-                            WidthRequest="40" />
+                            WidthRequest="40"/>
                     </StackLayout>
                     <Button
                         x:Name="AddToOrderButton"
@@ -302,7 +303,7 @@
                         HorizontalOptions="Center"
                         Text="     Add     "
                         TextColor="White"
-                        TextTransform="None" />
+                        TextTransform="None"/>
                     <Button
                         x:Name="UpdateOrderButton"
                         Margin="0,0,0,0"
@@ -316,10 +317,10 @@
                         HorizontalOptions="Center"
                         Text="     Update Qty     "
                         TextColor="white"
-                        TextTransform="None" />
+                        TextTransform="None"/>
                 </StackLayout>
             </ScrollView>
-            <controls:CustomToolbar Grid.Row="2" />
+            <controls:CustomToolbar Grid.Row="2"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
