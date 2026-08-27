@@ -241,7 +241,7 @@
                                         FontSize="20"
                                         HorizontalOptions="Fill"
                                         MaxLines="1"
-                                        TextColor="Red"
+                                        TextColor="Black"
                                         VerticalOptions="Fill"/>
                                     <Label
                                         x:Name="SizeUOM"

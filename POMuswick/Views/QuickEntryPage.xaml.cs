@@ -14,6 +14,7 @@ namespace POMuswick.Views
         public QuickEntryPage()
         {
             this.InitializeComponent();
+            ScannerControl.VibrationOnDetected = false;
         }
 
         protected override async void OnAppearing()
