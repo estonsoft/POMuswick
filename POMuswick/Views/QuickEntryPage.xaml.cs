@@ -81,15 +81,8 @@ namespace POMuswick.Views
         }
         protected override void OnDisappearing()
         {
+            base.OnDisappearing();
             ScannerControl.CameraEnabled = false;
-            try
-            {
-                base.OnDisappearing();
-                Content = null;
-            }
-            catch
-            {
-            }
         }
 
         protected override bool OnBackButtonPressed()
@@ -127,8 +120,6 @@ namespace POMuswick.Views
 
         private async void AddToOrderButton_Clicked(object sender, EventArgs e)
         {
-            //Database db = new Database();
-
             if (AddToOrderButton.IsVisible)
             {
                 SetMessage("Item Added To Shopping Cart");
@@ -140,9 +131,8 @@ namespace POMuswick.Views
 
             await App.g_db.UpdateItemQtySet(iItemNo, iQty);
 
-            //ClearItemInfo();
-
             ScanItem.Text = "";
+            ScannerControl.CameraEnabled = true;
         }
 
         private void ShowItemInfo(Item item)
@@ -308,9 +298,9 @@ namespace POMuswick.Views
             ScanItem.Unfocus();
         }
 
-        private void ScanItem_Completed(object sender, EventArgs e)
+        private async void ScanItem_Completed(object sender, EventArgs e)
         {
-            ScanComplete(ScanItem.Text.Trim());
+            await ScanComplete(ScanItem.Text.Trim());
         }
 
         public void SetScanItem(string barcode)
@@ -318,10 +308,10 @@ namespace POMuswick.Views
             ScanItem.Text = barcode;
         }
 
-        private void EnterButton_Clicked(object sender, EventArgs e)
+        private async void EnterButton_Clicked(object sender, EventArgs e)
         {
             Message.Text = "";
-            ScanComplete(ScanItem.Text.Trim());
+            await ScanComplete(ScanItem.Text.Trim());
         }
 
         private async Task<Item> FindItem()
@@ -368,16 +358,14 @@ namespace POMuswick.Views
                 ScannerControl.CameraEnabled = false;
 
                 var primaryItem = e.BarcodeResults.First();
-                ScanComplete(primaryItem.DisplayValue.Trim());
-                //await DisplayAlertAsync("Native Scan Match",
-                //    $"Value: {primaryItem.DisplayValue}\nType: {primaryItem.BarcodeFormat}",
-                //    "OK");
+                await ScanComplete(primaryItem.DisplayValue.Trim());
             });
         }
 
         async void OnScannerEnable(object sender, EventArgs e)
         {
             ClearItemInfo();
+            ScannerControl.CameraEnabled = true;
             TapToScan.IsVisible = false;
             ScanItem.Text = "";
             Description.Text = "";
@@ -387,6 +375,7 @@ namespace POMuswick.Views
         async void OnShowImage(object sender, EventArgs e)
         {
             ClearItemInfo();
+            ScannerControl.CameraEnabled = true;
             TapToScan.IsVisible = false;
             ScanItem.Text = "";
             Description.Text = "";

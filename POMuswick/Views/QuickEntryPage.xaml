@@ -39,7 +39,6 @@
                             OnDetectionFinished="OnBarcodeDetected"
                             VerticalOptions="Center"
                             WidthRequest="200"/>
-                        <!--<Label Text="" TextDecorations="Underline" Margin="0,-105,0,0" HeightRequest="2" WidthRequest="200" FontSize="14" HorizontalOptions="Fill" BackgroundColor="RoyalBlue" TextColor="RoyalBlue"/>-->
                         <StackLayout
                             x:Name="TapToScan"
                             HorizontalOptions="Center"
