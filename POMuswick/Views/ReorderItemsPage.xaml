@@ -22,7 +22,7 @@
                 FontSize="16"
                 Text="Muswick Wholesale Grocers"
                 TextColor="White"
-                VerticalTextAlignment="Center" />
+                VerticalTextAlignment="Center"/>
         </StackLayout>
     </NavigationPage.TitleView>
 
@@ -34,14 +34,15 @@
     </ContentPage.Resources>
 
     <ContentPage.Content>
-        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="60" />
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" />
+            <controls:CustomHeader Grid.Row="0"/>
             <CollectionView
                 x:Name="ReorderItemsList"
                 Grid.Row="1"
@@ -63,7 +64,7 @@
                                 FontAttributes="Bold"
                                 FontSize="16"
                                 Text="{Binding Description}"
-                                TextColor="Blue" />
+                                TextColor="Blue"/>
 
                             <!--  Image Column  -->
                             <ffImage:CachedImage
@@ -75,7 +76,7 @@
                                 DownsampleToViewSize="true"
                                 HeightRequest="90"
                                 Source="{Binding ImageURL}"
-                                WidthRequest="90" />
+                                WidthRequest="90"/>
 
                             <!--  Info Column  -->
                             <VerticalStackLayout
@@ -88,60 +89,64 @@
                                         FontAttributes="Bold"
                                         FontSize="16"
                                         Text="{Binding ItemNoDisplay}"
-                                        TextColor="Black" />
+                                        TextColor="Black"/>
                                     <Label
                                         FontSize="12"
                                         Text="{Binding ItemNoDisplayUPC}"
                                         TextColor="Black"
-                                        VerticalOptions="Center" />
+                                        VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
 
                                 <Label
                                     Margin="0,-2,0,0"
                                     FontSize="14"
                                     Text="{Binding CategoryDesc}"
-                                    TextColor="Black" />
+                                    TextColor="Black"/>
 
                                 <!--  Stock Row  -->
-                                <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}" Spacing="5">
+                                <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}"
+                                                       Spacing="5">
                                     <Label
                                         IsVisible="{Binding IsQOHVisible}"
                                         Text="QOH:"
-                                        TextColor="Black" />
+                                        TextColor="Black"/>
                                     <Label
                                         FontAttributes="Bold"
                                         IsVisible="{Binding IsQOHRedVisible}"
                                         Text="{Binding QOH}"
-                                        TextColor="Red" />
+                                        TextColor="Red"/>
                                     <Label
                                         FontAttributes="Bold"
                                         IsVisible="{Binding IsQOHBlackVisible}"
                                         Text="{Binding QOH}"
-                                        TextColor="Black" />
+                                        TextColor="Black"/>
                                     <Label
                                         IsVisible="{Binding IsInStockVisible}"
                                         Text="In Stock"
-                                        TextColor="{Binding QOHColor}" />
+                                        TextColor="Black"/>
                                     <Label
                                         IsVisible="{Binding IsOutOfStockVisible}"
                                         Text="Out Of Stock"
-                                        TextColor="Red" />
+                                        TextColor="Red"/>
                                 </HorizontalStackLayout>
 
                                 <!--  Price & Stepper  -->
-                                <Grid Margin="0,5,0,0" ColumnDefinitions="Auto, *">
-                                    <HorizontalStackLayout IsVisible="{Binding IsLoggedIn}" Spacing="5">
+                                <Grid Margin="0,5,0,0"
+                                      ColumnDefinitions="Auto, *">
+                                    <HorizontalStackLayout IsVisible="{Binding IsLoggedIn}"
+                                                           Spacing="5">
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="20"
+                                            VerticalOptions="Center"
                                             Text="{Binding PriceDisplay}"
-                                            TextColor="Black" />
+                                            TextColor="Black"/>
                                         <Label
-                                            Margin="0,0,0,3"
                                             FontSize="14"
+                                            VerticalOptions="Center"
                                             Text="{Binding SizeUOM}"
                                             TextColor="Black"
-                                            VerticalOptions="End" />
+                                            WidthRequest="50"/>
                                     </HorizontalStackLayout>
 
                                     <controls:CustomStepper
@@ -152,7 +157,7 @@
                                         IsStepperVisible="{Binding IsStepperVisible}"
                                         IsVisible="{Binding IsLoggedIn}"
                                         ItemNo="{Binding ItemNo}"
-                                        Text="{Binding QtyOrder}" />
+                                        Text="{Binding QtyOrder}"/>
                                 </Grid>
                             </VerticalStackLayout>
 
@@ -168,22 +173,22 @@
                                         FontSize="12"
                                         Text="Last Purchased On"
                                         TextColor="Gray"
-                                        WidthRequest="115" />
+                                        WidthRequest="115"/>
                                     <Label
                                         FontSize="12"
                                         Text="{Binding LastPurchDateDisplay}"
-                                        TextColor="Black" />
+                                        TextColor="Black"/>
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="5">
                                     <Label
                                         FontSize="12"
                                         Text="Last Purchased Qty"
                                         TextColor="Gray"
-                                        WidthRequest="115" />
+                                        WidthRequest="115"/>
                                     <Label
                                         FontSize="12"
                                         Text="{Binding QtyLastOrderDisplay}"
-                                        TextColor="Black" />
+                                        TextColor="Black"/>
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
@@ -192,13 +197,13 @@
                                 Grid.Row="4"
                                 Grid.ColumnSpan="2"
                                 HeightRequest="1"
-                                Color="LightGray" />
+                                Color="LightGray"/>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <controls:CustomToolbar Grid.Row="2" />
+            <controls:CustomToolbar Grid.Row="2"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

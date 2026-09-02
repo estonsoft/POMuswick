@@ -12,21 +12,22 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <controls:StringToColorConverter x:Key="StringToColorConverter" />
+            <controls:StringToColorConverter x:Key="StringToColorConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+    <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+            SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="80" />
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
         <!--  HEADER  -->
-        <controls:CustomHeader Grid.Row="0" />
+        <controls:CustomHeader Grid.Row="0"/>
 
         <VerticalStackLayout Grid.Row="1">
 
@@ -39,7 +40,7 @@
                 Stroke="White"
                 StrokeShape="RoundRectangle 5">
                 <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnDelivery" />
+                    <TapGestureRecognizer Tapped="OnDelivery"/>
                 </Border.GestureRecognizers>
 
                 <Grid
@@ -55,7 +56,7 @@
                         FontSize="18"
                         Text="&#xF0D1;"
                         TextColor="Blue"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
 
                     <!--  Label  -->
                     <Label
@@ -64,7 +65,7 @@
                         FontSize="16"
                         Text="Delivery"
                         TextColor="Blue"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
 
                     <!--  Checkmark pinned to right  -->
                     <Label
@@ -75,7 +76,7 @@
                         IsVisible="{Binding IsDeliveryHighlighted}"
                         Text="&#xF00C;"
                         TextColor="Blue"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
 
                 </Grid>
             </Border>
@@ -89,7 +90,7 @@
                 Stroke="White"
                 StrokeShape="RoundRectangle 5">
                 <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnPickup" />
+                    <TapGestureRecognizer Tapped="OnPickup"/>
                 </Border.GestureRecognizers>
 
                 <Grid
@@ -105,7 +106,7 @@
                         FontSize="18"
                         Text="&#xF474;"
                         TextColor="Blue"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
 
                     <!--  Label  -->
                     <Label
@@ -114,7 +115,7 @@
                         FontSize="16"
                         Text="Pickup"
                         TextColor="Blue"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
 
                     <!--  Checkmark pinned to right  -->
                     <Label
@@ -125,7 +126,7 @@
                         IsVisible="{Binding IsPickupHighlighted}"
                         Text="&#xF00C;"
                         TextColor="Blue"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
 
                 </Grid>
             </Border>
@@ -140,23 +141,30 @@
             <!--  LEFT INFO  -->
             <VerticalStackLayout Spacing="4">
                 <HorizontalStackLayout>
-                    <Label Text="Items:" WidthRequest="70" />
-                    <Label FontAttributes="Bold" Text="{Binding CartItems}" />
+                    <Label Text="Items:"
+                            WidthRequest="70"/>
+                    <Label FontAttributes="Bold"
+                            Text="{Binding CartItems}"/>
                 </HorizontalStackLayout>
 
                 <HorizontalStackLayout>
-                    <Label Text="Pieces:" WidthRequest="70" />
-                    <Label FontAttributes="Bold" Text="{Binding CartPieces}" />
+                    <Label Text="Pieces:"
+                            WidthRequest="70"/>
+                    <Label FontAttributes="Bold"
+                            Text="{Binding CartPieces}"/>
                 </HorizontalStackLayout>
 
                 <HorizontalStackLayout>
-                    <Label Text="Total:" WidthRequest="70" />
-                    <Label FontAttributes="Bold" Text="{Binding CartTotal}" />
+                    <Label Text="Total:"
+                            WidthRequest="70"/>
+                    <Label FontAttributes="Bold"
+                            Text="{Binding CartTotal}"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
 
             <!--  BUTTONS  -->
-            <VerticalStackLayout Grid.Column="1" Spacing="6">
+            <VerticalStackLayout Grid.Column="1"
+                    Spacing="6">
                 <Button
                     x:Name="btnCheckout"
                     BackgroundColor="Blue"
@@ -166,7 +174,7 @@
                     HeightRequest="35"
                     Text="Validate Order"
                     TextColor="White"
-                    WidthRequest="250" />
+                    WidthRequest="250"/>
 
                 <Button
                     x:Name="btnSignIn"
@@ -177,13 +185,14 @@
                     HeightRequest="35"
                     Text="Sign In"
                     TextColor="White"
-                    WidthRequest="130" />
+                    WidthRequest="130"/>
             </VerticalStackLayout>
 
         </Grid>
 
         <!--  TITLE BAR  -->
-        <Grid Grid.Row="3" RowDefinitions="Auto,1,*">
+        <Grid Grid.Row="3"
+                RowDefinitions="Auto,1,*">
 
             <HorizontalStackLayout
                 Grid.Row="0"
@@ -195,7 +204,7 @@
                     FontSize="20"
                     Text="Items"
                     TextColor="Blue"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center"/>
 
                 <ImageButton
                     x:Name="btnClearCart"
@@ -204,20 +213,20 @@
                     Clicked="btnClearCart_Clicked"
                     HeightRequest="28"
                     Source="delete.png"
-                    WidthRequest="28" />
+                    WidthRequest="28"/>
             </HorizontalStackLayout>
 
             <BoxView
                 Grid.Row="1"
                 BackgroundColor="Gray"
                 HeightRequest="1"
-                Color="LightGray" />
+                Color="LightGray"/>
 
             <BoxView
                 Grid.Row="1"
                 BackgroundColor="Gray"
                 HeightRequest="1"
-                Color="LightGray" />
+                Color="LightGray"/>
 
             <CollectionView
                 x:Name="ItemsListCart"
@@ -227,12 +236,12 @@
                 SelectionMode="None">
 
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" />
+                    <LinearItemsLayout Orientation="Vertical"/>
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <controls:CustomListItem />
+                        <controls:CustomListItem/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
 
@@ -246,10 +255,11 @@
             Grid.RowSpan="4"
             IsLoading="True"
             IsVisible="False"
-            Message="Please wait while we validating the order…" />
+            Message="Please wait while we validating the order…"/>
 
         <!--  BOTTOM TOOLBAR (FIXED 80)  -->
-        <controls:CustomToolbar Grid.Row="4" HeightRequest="80" />
+        <controls:CustomToolbar Grid.Row="4"
+                HeightRequest="80"/>
 
     </Grid>
 </ContentPage>

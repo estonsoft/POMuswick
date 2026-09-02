@@ -76,15 +76,15 @@ public class CustomStepper : Grid
         ColumnSpacing = 4;
         VerticalOptions = LayoutOptions.Center;
 
-        PlusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
+        PlusBtn = new ImageButton { MaximumWidthRequest = 30, MaximumHeightRequest = 30, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
         PlusBtn.Clicked += PlusBtn_Clicked;
         PlusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
 
-        MinusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_minus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
+        MinusBtn = new ImageButton { MaximumWidthRequest = 30, MaximumHeightRequest = 30, Source = "blue_minus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
         MinusBtn.Clicked += MinusBtn_Clicked;
         MinusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
 
-        AddToOrderBtn = new Button { Text = "Add", HeightRequest = 40, WidthRequest = 100, CornerRadius = 20, Padding = Thickness.Zero, TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue, VerticalOptions = LayoutOptions.Center };
+        AddToOrderBtn = new Button { Text = "Add", HeightRequest = 30, WidthRequest = 100, CornerRadius = 20, Padding = Thickness.Zero, TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue, VerticalOptions = LayoutOptions.Center };
         AddToOrderBtn.Clicked += PlusBtn_Clicked;
         AddToOrderBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsAddToOrderVisible), source: this));
 
