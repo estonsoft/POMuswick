@@ -19,7 +19,7 @@
             TextColor="RoyalBlue"/>
 
         <!--  IMAGE  -->
-        <ff:CachedImage
+        <!-- <ff:CachedImage
             Grid.Row="1"
             Grid.Column="0"
             Margin="10"
@@ -27,6 +27,7 @@
             ErrorPlaceholder="logoicon.png"
             HeightRequest="90"
             RetryCount="0"
+            LoadingPlaceholder="loading_spinner.gif"
             CacheType="All"
             CacheDuration="30.00:00:00"
             DownsampleToViewSize="True"
@@ -35,7 +36,33 @@
             <ff:CachedImage.GestureRecognizers>
                 <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
             </ff:CachedImage.GestureRecognizers>
-        </ff:CachedImage>
+        </ff:CachedImage> -->
+        <Grid Grid.Row="1"
+              Grid.Column="0"
+              Margin="10"
+              HeightRequest="90"
+              WidthRequest="90">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+            </Grid.GestureRecognizers>
+            <!-- 1. Native Image with built-in Caching -->
+            <Image x:Name="MyImage"
+                   Aspect="AspectFit"
+                   HeightRequest="90"
+                   WidthRequest="90"
+                   Source="{Binding ImageURL}">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                </Image.GestureRecognizers>
+            </Image>
+
+            <!-- 2. Spinner that displays ONLY while the image is downloading -->
+            <ActivityIndicator IsRunning="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
+                               IsVisible="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Color="Gray"/>
+        </Grid>
 
         <!--  DETAILS  -->
         <VerticalStackLayout
@@ -95,7 +122,7 @@
                 <Label
                     BackgroundColor="White"
                     FontAttributes="Bold"
-                    FontSize="16"
+                    FontSize="18"
                     IsVisible="{Binding IsPriceVisible}"
                     Text="{Binding PriceDisplay}"/>
                 <Label

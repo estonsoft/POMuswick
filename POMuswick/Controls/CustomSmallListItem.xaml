@@ -5,7 +5,8 @@
     xmlns:controls="clr-namespace:POMuswick.Controls"
     xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui">
 
-    <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*,*,*,*">
+    <Grid ColumnDefinitions="*,*,*"
+            RowDefinitions="*,*,*,*,*">
         <!--  TITLE  -->
         <Label
             Grid.Row="0"
@@ -15,7 +16,7 @@
             FontAttributes="Bold"
             FontSize="12"
             Text="{Binding Description}"
-            TextColor="RoyalBlue" />
+            TextColor="RoyalBlue"/>
 
         <!--  IMAGE  -->
         <ff:CachedImage
@@ -29,7 +30,7 @@
             Source="{Binding ImageURL}"
             WidthRequest="50">
             <ff:CachedImage.GestureRecognizers>
-                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
             </ff:CachedImage.GestureRecognizers>
         </ff:CachedImage>
 
@@ -43,42 +44,45 @@
                 FontAttributes="Bold"
                 FontSize="10"
                 Text="{Binding ItemNoDisplay}"
-                TextColor="Black" />
-            <Label FontSize="10" Text="{Binding ItemNoDisplayUPC}" />
-            <Label FontSize="10" Text="{Binding CategoryDesc}" />
+                TextColor="Black"/>
+            <Label FontSize="10"
+                    Text="{Binding ItemNoDisplayUPC}"/>
+            <Label FontSize="10"
+                    Text="{Binding CategoryDesc}"/>
 
             <!--  STOCK  -->
-            <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}" Spacing="4">
+            <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}"
+                    Spacing="4">
                 <Label
                     FontSize="12"
                     IsVisible="{Binding IsQOHVisible}"
-                    Text="QOH:" />
+                    Text="QOH:"/>
                 <Label
                     FontAttributes="Bold"
                     FontSize="12"
                     IsVisible="{Binding IsQOHRedVisible}"
                     Text="{Binding QOH}"
-                    TextColor="Red" />
+                    TextColor="Red"/>
                 <Label
                     FontAttributes="Bold"
                     FontSize="12"
                     IsVisible="{Binding IsQOHBlackVisible}"
-                    Text="{Binding QOH}" />
+                    Text="{Binding QOH}"/>
                 <Label
                     FontSize="10"
                     IsVisible="{Binding IsInStockVisible}"
-                    Text="In Stock" />
+                    Text="In Stock"/>
                 <Label
                     FontSize="10"
                     IsVisible="{Binding IsOutOfStockVisible}"
                     Text="Out Of Stock"
-                    TextColor="Red" />
+                    TextColor="Red"/>
                 <Label
                     BackgroundColor="White"
                     FontSize="10"
                     IsVisible="{Binding IsMaxOrderQtyVisible}"
                     Text="{Binding MaxOrderQtyDisplay}"
-                    TextColor="Black" />
+                    TextColor="Black"/>
             </HorizontalStackLayout>
             <!--  PRICE  -->
             <HorizontalStackLayout
@@ -88,33 +92,15 @@
                 <Label
                     BackgroundColor="White"
                     FontAttributes="Bold"
-                    FontSize="14"
+                    FontSize="16"
                     IsVisible="{Binding IsPriceVisible}"
-                    Text="{Binding PriceDisplay}" />
+                    Text="{Binding PriceDisplay}"/>
                 <Label
                     BackgroundColor="White"
                     FontSize="14"
                     Text="{Binding SizeUOM}"
-                    TextColor="Black" />
+                    TextColor="Black"/>
             </HorizontalStackLayout>
-            <!--<HorizontalStackLayout WidthRequest="130">
-                <Label
-                    BackgroundColor="White"
-                    FontSize="12"
-                    HorizontalOptions="Start"
-                    Text="Qty: "
-                    TextColor="Gray" />
-                <Label
-                    BackgroundColor="White"
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    HorizontalOptions="Start"
-                    IsVisible="{Binding IsLoggedIn}"
-                    MaxLines="1"
-                    Text="{Binding QtyShipped}"
-                    TextColor="Black"
-                    VerticalOptions="Start" />
-            </HorizontalStackLayout>-->
         </VerticalStackLayout>
 
         <controls:CustomSmallStepper
@@ -129,24 +115,25 @@
             MaxOrderQty="{Binding MaxOrderQty}"
             Text="{Binding QtyOrder}"
             UOM="{Binding UOM}"
-            VerticalOptions="End" />
+            VerticalOptions="End"/>
         <!--  DIVIDER  -->
         <BoxView
             Grid.Row="4"
             Grid.ColumnSpan="3"
             BackgroundColor="gray"
             HeightRequest="1"
-            Color="LightGray" />
+            Color="LightGray"/>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroupList>
                 <VisualStateGroup Name="CommonStates">
                     <!--  Normal State  -->
-                    <VisualState Name="Normal" />
+                    <VisualState Name="Normal"/>
 
                     <!--  Selected State  -->
                     <VisualState Name="Selected">
                         <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="LightGray" />
+                            <Setter Property="BackgroundColor"
+                                    Value="LightGray"/>
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
