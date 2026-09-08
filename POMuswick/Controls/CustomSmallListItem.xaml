@@ -6,7 +6,7 @@
     xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui">
 
     <Grid ColumnDefinitions="*,*,*"
-            RowDefinitions="*,*,*,*,*">
+          RowDefinitions="*,*,*,*,*">
         <!--  TITLE  -->
         <Label
             Grid.Row="0"
@@ -19,20 +19,36 @@
             TextColor="RoyalBlue"/>
 
         <!--  IMAGE  -->
-        <ff:CachedImage
-            Grid.Row="1"
-            Grid.Column="0"
-            Margin="5"
-            Aspect="AspectFit"
-            ErrorPlaceholder="logoicon.png"
-            HeightRequest="50"
-            LoadingPlaceholder="logoicon.png"
-            Source="{Binding ImageURL}"
-            WidthRequest="50">
-            <ff:CachedImage.GestureRecognizers>
+        <Grid Grid.Row="1"
+              Grid.Column="0"
+              Margin="10"
+              Loaded="Grid_Loaded"
+              Unloaded="Grid_Unloaded"
+              HeightRequest="90"
+              WidthRequest="90">
+            <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-            </ff:CachedImage.GestureRecognizers>
-        </ff:CachedImage>
+            </Grid.GestureRecognizers>
+
+            <ff:CachedImage x:Name="MyImage"
+                            Aspect="AspectFit"
+                            HeightRequest="90"
+                            ErrorPlaceholder="logoicon.png"
+                            WidthRequest="90"
+                            Source="{Binding ImageURL}">
+                <ff:CachedImage.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                </ff:CachedImage.GestureRecognizers>
+            </ff:CachedImage>
+
+
+            <ActivityIndicator x:Name="MySpinner"
+                               IsRunning="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
+                               IsVisible="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Color="Gray"/>
+        </Grid>
 
         <!--  DETAILS  -->
         <VerticalStackLayout
@@ -46,13 +62,13 @@
                 Text="{Binding ItemNoDisplay}"
                 TextColor="Black"/>
             <Label FontSize="10"
-                    Text="{Binding ItemNoDisplayUPC}"/>
+                   Text="{Binding ItemNoDisplayUPC}"/>
             <Label FontSize="10"
-                    Text="{Binding CategoryDesc}"/>
+                   Text="{Binding CategoryDesc}"/>
 
             <!--  STOCK  -->
             <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}"
-                    Spacing="4">
+                                   Spacing="4">
                 <Label
                     FontSize="12"
                     IsVisible="{Binding IsQOHVisible}"

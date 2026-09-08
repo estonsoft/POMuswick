@@ -19,45 +19,31 @@
             TextColor="RoyalBlue"/>
 
         <!--  IMAGE  -->
-        <!-- <ff:CachedImage
-            Grid.Row="1"
-            Grid.Column="0"
-            Margin="10"
-            Aspect="AspectFit"
-            ErrorPlaceholder="logoicon.png"
-            HeightRequest="90"
-            RetryCount="0"
-            LoadingPlaceholder="loading_spinner.gif"
-            CacheType="All"
-            CacheDuration="30.00:00:00"
-            DownsampleToViewSize="True"
-            Source="{Binding ImageURL}"
-            WidthRequest="90">
-            <ff:CachedImage.GestureRecognizers>
-                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-            </ff:CachedImage.GestureRecognizers>
-        </ff:CachedImage> -->
         <Grid Grid.Row="1"
               Grid.Column="0"
               Margin="10"
+              Loaded="Grid_Loaded"
+              Unloaded="Grid_Unloaded"
               HeightRequest="90"
               WidthRequest="90">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
             </Grid.GestureRecognizers>
-            <!-- 1. Native Image with built-in Caching -->
-            <Image x:Name="MyImage"
-                   Aspect="AspectFit"
-                   HeightRequest="90"
-                   WidthRequest="90"
-                   Source="{Binding ImageURL}">
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-                </Image.GestureRecognizers>
-            </Image>
 
-            <!-- 2. Spinner that displays ONLY while the image is downloading -->
-            <ActivityIndicator IsRunning="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
+            <ff:CachedImage x:Name="MyImage"
+                            Aspect="AspectFit"
+                            HeightRequest="90"
+                            ErrorPlaceholder="logoicon.png"
+                            WidthRequest="90"
+                            Source="{Binding ImageURL}">
+                <ff:CachedImage.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                </ff:CachedImage.GestureRecognizers>
+            </ff:CachedImage>
+
+
+            <ActivityIndicator x:Name="MySpinner"
+                               IsRunning="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
                                IsVisible="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"
