@@ -25,6 +25,7 @@
               Loaded="Grid_Loaded"
               Unloaded="Grid_Unloaded"
               HeightRequest="90"
+              BindingContext="{Binding .}"
               WidthRequest="90">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
@@ -40,14 +41,6 @@
                     <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
                 </ff:CachedImage.GestureRecognizers>
             </ff:CachedImage>
-
-
-            <ActivityIndicator x:Name="MySpinner"
-                               IsRunning="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
-                               IsVisible="{Binding Source={x:Reference MyImage}, Path=IsLoading}"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               Color="Gray"/>
         </Grid>
 
         <!--  DETAILS  -->
