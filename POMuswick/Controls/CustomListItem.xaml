@@ -22,9 +22,6 @@
         <Grid Grid.Row="1"
               Grid.Column="0"
               Margin="10"
-              BindingContext="{Binding .}"
-              Loaded="Grid_Loaded"
-              Unloaded="Grid_Unloaded"
               HeightRequest="90"
               WidthRequest="90">
             <Grid.GestureRecognizers>
@@ -34,7 +31,8 @@
             <ff:CachedImage x:Name="MyImage"
                             Aspect="AspectFit"
                             HeightRequest="90"
-                            ErrorPlaceholder="logoicon.png"
+                            LoadingPlaceholder="logoicon.png"
+                            Source="{Binding ImageURL}"
                             WidthRequest="90">
                 <ff:CachedImage.GestureRecognizers>
                     <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>

@@ -1,4 +1,5 @@
-﻿using FFImageLoading.Maui;
+﻿using FFImageLoading.Args;
+using FFImageLoading.Maui;
 
 namespace POMuswick.Controls
 {
@@ -9,20 +10,15 @@ namespace POMuswick.Controls
             InitializeComponent();
         }
 
-        private void Grid_Loaded(object sender, EventArgs e)
-        {
-            // 1. Get the data model from the cell
-            if (BindingContext is Item model && !string.IsNullOrEmpty(model.ImageURL))
-            {
-                MyImage.Source = ImageSource.FromUri(new Uri(model.ImageURL));
-            }
-            MyImage.IsVisible = true;
-        }
+        // private void DownloadStarted(object sender, EventArgs e)
+        // {
+        //     MyImage.IsVisible = false;
+        // }
 
-        private void Grid_Unloaded(object sender, EventArgs e)
-        {
-            MyImage.IsVisible = false;
-        }
+        // private void DownloadSuccess(object sender, SuccessEventArgs e)
+        // {
+        //     MyImage.IsVisible = true;
+        // }
 
         private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
         {
