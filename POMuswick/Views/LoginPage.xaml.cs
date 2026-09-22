@@ -1,99 +1,30 @@
 ﻿using POMuswick.ViewModels;
-
-
-
 namespace POMuswick.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
     {
-        public LoginPage()
+        private readonly LoginViewModel _viewModel;
+        public LoginPage(LoginViewModel vm)
         {
+            BindingContext = _viewModel = vm;
             InitializeComponent();
-            this.BindingContext = new LoginViewModel();
-
-            App.g_LoginPage = this;
         }
 
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-
-            User.IsEnabled = false;
-            User.IsEnabled = true;
-            Password.IsEnabled = false;
-            Password.IsEnabled = true;
-            RememberMe.IsEnabled = false;
-            RememberMe.IsEnabled = true;
-        }
-
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-
-            App.g_CurrentPage = "LoginPage";
-
-            AppVersion.Text = Constants.Version;
-
-            if (App.g_Customer.RememberMe)
-            {
-                User.Text = App.g_Customer.User;
-            }
-            else
-            {
-            }
+            await _viewModel.OnAppearingAsync();
         }
 
-        public void ShowAnimation()
+        protected override async void OnDisappearing()
         {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                User.IsEnabled = false;
-                Password.IsEnabled = false;
-                RememberMe.IsEnabled = false;
-
-                LoadingAlert.IsVisible = true;
-                LoadingAlert.IsLoading = true;
-            });
+            base.OnDisappearing();
+            await _viewModel.OnDisappearingAsync();
         }
-
-        public void HideAnimation()
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                User.IsEnabled = true;
-                Password.IsEnabled = true;
-                RememberMe.IsEnabled = true;
-                LoadingAlert.IsVisible = false;
-                LoadingAlert.IsLoading = false;
-            });
-        }
-
-        public void UpdateSyncProgress(
-            double current,
-            string status)
-        {
-            int total = 100;
-
-            var progress = (double)current / total;
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                LoadingAlert.ProgressValue = progress;
-                LoadingAlert.ProgressPercentage = (int)(progress * 100);
-                LoadingAlert.SyncStatus = status;
-            });
-        }
-
         protected override bool OnBackButtonPressed()
         {
             return true;
-        }
-
-        private async void Settings_Clicked(object sender, EventArgs e)
-        {
-            App.g_HeaderTitle = "Settings";
-            await Navigation.PushModalAsync(new SettingsPage());
         }
     }
 }

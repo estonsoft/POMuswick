@@ -114,10 +114,10 @@
                 </Grid.RowDefinitions>
                 <ffimageloading:CachedImage
                     Margin="6"
-                    Aspect="AspectFill"
-                    HeightRequest="50"
+                    Aspect="AspectFit"
+                    HeightRequest="80"
                     HorizontalOptions="Center"
-                    Source="logo.png"
+                    Source="logo.jpg"
                     StyleClass="FlyoutHeaderStyle"
                     VerticalOptions="Center" />
             </Grid>
@@ -125,6 +125,21 @@
     </Shell.FlyoutHeaderTemplate>
 
     <FlyoutItem Title="Home" FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent
+            x:Name="MenuLogin"
+            Title="Login"
+            ContentTemplate="{DataTemplate views:LoginPage}"
+            Route="LoginPage"
+            FlyoutItemIsVisible="False"
+        Shell.NavBarIsVisible="False"
+            StyleClass="MenuItemLayoutStyle">
+            <ShellContent.Icon FontSize="16">
+                <FontImageSource
+                    FontFamily="FontAwesomeFreeSolid"
+                    Glyph="&#xF015;"
+                    Color="Blue" />
+            </ShellContent.Icon>
+        </ShellContent>
         <ShellContent
             x:Name="MenuHome"
             Title="Home"

@@ -1,4 +1,6 @@
-﻿namespace POMuswick.Controls;
+﻿using System.Windows.Input;
+
+namespace POMuswick.Controls;
 
 public class CustomStepper : Grid
 {
@@ -52,6 +54,56 @@ public class CustomStepper : Grid
         set { SetValue(IsAddToOrderVisibleProperty, value); }
     }
 
+    public static readonly BindableProperty PlusCommandProperty =
+            BindableProperty.Create(
+                nameof(PlusCommand),
+                typeof(ICommand),
+                typeof(CustomStepper));
+
+    public ICommand? PlusCommand
+    {
+        get => (ICommand?)GetValue(PlusCommandProperty);
+        set => SetValue(PlusCommandProperty, value);
+    }
+
+    public static readonly BindableProperty MinusCommandProperty =
+        BindableProperty.Create(
+            nameof(MinusCommand),
+            typeof(ICommand),
+            typeof(CustomStepper));
+
+    public ICommand? MinusCommand
+    {
+        get => (ICommand?)GetValue(MinusCommandProperty);
+        set => SetValue(MinusCommandProperty, value);
+    }
+
+    public static readonly BindableProperty CommandParameterProperty =
+        BindableProperty.Create(
+            nameof(CommandParameter),
+            typeof(object),
+            typeof(CustomStepper));
+
+    public object? CommandParameter
+    {
+        get => GetValue(CommandParameterProperty);
+        set => SetValue(CommandParameterProperty, value);
+    }
+
+    private void Plus_Clicked(object sender, EventArgs e)
+    {
+        
+        if (PlusCommand?.CanExecute(CommandParameter) == true)
+            PlusCommand.Execute(CommandParameter);
+    }
+
+    private void Minus_Clicked(object sender, EventArgs e)
+    {
+        if (MinusCommand?.CanExecute(CommandParameter) == true)
+            MinusCommand.Execute(CommandParameter);
+    }
+    
+
     ImageButton PlusBtn;
     ImageButton MinusBtn;
     VerticalStackLayout QtyStack;
@@ -76,16 +128,16 @@ public class CustomStepper : Grid
         ColumnSpacing = 4;
         VerticalOptions = LayoutOptions.Center;
 
-        PlusBtn = new ImageButton { MaximumWidthRequest = 30, MaximumHeightRequest = 30, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
-        PlusBtn.Clicked += PlusBtn_Clicked;
+        PlusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
+        PlusBtn.Clicked += Plus_Clicked;
         PlusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
 
-        MinusBtn = new ImageButton { MaximumWidthRequest = 30, MaximumHeightRequest = 30, Source = "blue_minus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
-        MinusBtn.Clicked += MinusBtn_Clicked;
+        MinusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_minus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
+        MinusBtn.Clicked += Minus_Clicked;
         MinusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
 
-        AddToOrderBtn = new Button { Text = "Add", HeightRequest = 30, WidthRequest = 100, CornerRadius = 20, Padding = Thickness.Zero, TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue, VerticalOptions = LayoutOptions.Center };
-        AddToOrderBtn.Clicked += PlusBtn_Clicked;
+        AddToOrderBtn = new Button { Text = "Add", HeightRequest = 40, WidthRequest = 100, CornerRadius = 20, Padding = Thickness.Zero, TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue, VerticalOptions = LayoutOptions.Center };
+        AddToOrderBtn.Clicked += Plus_Clicked;
         AddToOrderBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsAddToOrderVisible), source: this));
 
         QtyStack = new VerticalStackLayout { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center, Spacing = 2 };
@@ -134,47 +186,5 @@ public class CustomStepper : Grid
         Children.Add(QtyStack);
         Children.Add(PlusBtn);
         Children.Add(AddToOrderBtn);
-    }
-
-    private async void MinusBtn_Clicked(object sender, EventArgs e)
-    {
-        if (Text <= 0) return;
-
-        int iQty = await App.g_db.GetItemQty(ItemNo);
-        if (iQty > 0)
-        {
-            await App.g_db.UpdateItemQty(ItemNo, -1);
-        }
-
-        Text--;
-        QtyOrder--;
-        App.g_ShoppingCartItems = await App.g_db.GetCartPieces();
-
-        try { App.g_ShoppingCartPage.UpdateTotals(); } catch { }
-        try { App.g_CheckoutPage.UpdateTotals(); } catch { }
-
-        if (Text == 0)
-        {
-            IsStepperVisible = false;
-            IsAddToOrderVisible = true;
-        }
-    }
-
-    private async void PlusBtn_Clicked(object sender, EventArgs e)
-    {
-        if (Text == 999) return;
-        if ((Text >= MaxOrderQty) && (MaxOrderQty > 0)) return;
-
-        await App.g_db.UpdateItemQty(ItemNo, 1);
-
-        Text++;
-        QtyOrder++;
-        App.g_ShoppingCartItems = await App.g_db.GetCartPieces();
-
-        try { App.g_ShoppingCartPage.UpdateTotals(); } catch { }
-        try { App.g_CheckoutPage.UpdateTotals(); } catch { }
-
-        IsStepperVisible = true;
-        IsAddToOrderVisible = false;
     }
 }

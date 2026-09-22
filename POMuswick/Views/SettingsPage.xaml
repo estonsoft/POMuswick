@@ -17,7 +17,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" />
+            <controls:CustomHeader Grid.Row="0" Title="{Binding title}" BackCommand="{Binding BackPressedCommand}"/>
             <ScrollView Grid.Row="1">
                 <StackLayout
                     Padding="0,50,0,0"
@@ -39,7 +39,7 @@
                         HorizontalOptions="Center"
                         Placeholder="Server URL"
                         PlaceholderColor="Gray"
-                        Text="{Binding ServerURL}"
+                        Text="{Binding ServerURLText,Mode=TwoWay}"
                         VerticalOptions="Center"
                         WidthRequest="300" />
                     <Button
@@ -47,7 +47,7 @@
                         Margin="0,20,0,0"
                         Padding="0,0,0,0"
                         BackgroundColor="blue"
-                        Clicked="Save_Clicked"
+                        Command="{Binding SaveSettingCommand}"
                         CornerRadius="10"
                         FontAttributes="Bold"
                         FontSize="14"

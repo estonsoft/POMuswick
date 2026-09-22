@@ -1,6 +1,8 @@
-﻿namespace POMuswick
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace POMuswick
 {
-    public class OrderDetail
+    public partial class OrderDetail
     {
         public string OrderNo { get; set; }
         public int ItemNo { get; set; }

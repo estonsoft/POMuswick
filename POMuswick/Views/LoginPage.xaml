@@ -34,16 +34,16 @@
                             Padding="0,0,0,0"
                             BackgroundColor="White"
                             FontSize="14"
+                            Text="{Binding AppVersion}"
                             HorizontalOptions="Start"
                             TextColor="black" />
                         <ImageButton
                             Padding="0,0,0,10"
                             Aspect="AspectFit"
                             BackgroundColor="Transparent"
-                            Clicked="Settings_Clicked"
+                            Command="{Binding SettingCommand}"
                             HeightRequest="50"
                             HorizontalOptions="End"
-                            IsVisible="false"
                             Source="settings.png"
                             WidthRequest="50" />
                     </Grid>
@@ -72,6 +72,7 @@
                             x:Name="User"
                             Margin="0,40,0,0"
                             FontSize="18"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
                             HeightRequest="40"
                             HorizontalOptions="Center"
                             Placeholder="Username"
@@ -87,6 +88,7 @@
                             HorizontalOptions="Center"
                             IsPassword="true"
                             Placeholder="Password"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
                             PlaceholderColor="Gray"
                             Text="{Binding Password}"
                             VerticalOptions="Center"
@@ -128,6 +130,7 @@
                             CornerRadius="10"
                             FontAttributes="Bold"
                             FontSize="14"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
                             HeightRequest="35"
                             HorizontalOptions="Center"
                             Text="       Sign In       "
@@ -141,8 +144,8 @@
                 Title="Validating"
                 Grid.Row="0"
                 Grid.RowSpan="0"
-                IsLoading="True"
-                IsVisible="False"
+                IsVisible="{Binding IsBusy}"
+                IsLoading="{Binding IsBusy}"
                 Message="Please wait while we validating the credential…" />
         </Grid>
     </ContentPage.Content>

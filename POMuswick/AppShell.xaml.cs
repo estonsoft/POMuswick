@@ -1,48 +1,57 @@
-﻿using POMuswick.Views;
+﻿using POMuswick.Models;
+using POMuswick.Services;
+using POMuswick.Views;
 
 namespace POMuswick
 {
     public partial class AppShell : Shell
     {
-
+        private readonly INavigationService _navigationService;
+        private readonly ISettingService _settingService;
+        private readonly IDialogService _dialogService;
+        private readonly ICartService _cartService;
+        private readonly ICustomerService _customerService;
         MenuItem custMenu;
         Boolean bIsCustMenuVisible = false;
         MenuItem myAccountMenu;
         Boolean bIsMyAccountMenuVisible = false;
 
-
-        public AppShell()
+        public AppShell(IAppServices appServices)
         {
             InitializeComponent();
 
-            App.g_Shell = this;
+            RegisterRoutes();
 
-            //LogoURL = Constants.LogoUrl;
-
-            Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
-            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
-            Routing.RegisterRoute(nameof(DeliveryOptionsPage), typeof(DeliveryOptionsPage));
-            Routing.RegisterRoute(nameof(LocationsPage), typeof(LocationsPage));
-            Routing.RegisterRoute(nameof(ItemSearchPage), typeof(ItemSearchPage));
-            Routing.RegisterRoute(nameof(CategoryPage), typeof(CategoryPage));
-            Routing.RegisterRoute(nameof(SubcategoryPage), typeof(SubcategoryPage));
-            Routing.RegisterRoute(nameof(MyAccountPage), typeof(MyAccountPage));
-            Routing.RegisterRoute(nameof(ShoppingCartPage), typeof(ShoppingCartPage));
-            Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
-            Routing.RegisterRoute(nameof(SubmitOrderPage), typeof(SubmitOrderPage));
-            Routing.RegisterRoute(nameof(ValidateOrderPage), typeof(ValidateOrderPage));
-            Routing.RegisterRoute(nameof(PaymentMethodPage), typeof(PaymentMethodPage));
-            Routing.RegisterRoute(nameof(PurchaseHistoryPage), typeof(PurchaseHistoryPage));
-            Routing.RegisterRoute(nameof(PurchaseHistoryDetailPage), typeof(PurchaseHistoryDetailPage));
-            Routing.RegisterRoute(nameof(ReorderItemsPage), typeof(ReorderItemsPage));
-            Routing.RegisterRoute(nameof(QuickEntryPage), typeof(QuickEntryPage));
-            Routing.RegisterRoute(nameof(CustomerListPage), typeof(CustomerListPage));
+            _navigationService = appServices._navigationService;
+            _settingService = appServices._settingService;
+            _dialogService = appServices._dialogService;
+            _cartService = appServices._cartService;
+            _customerService = appServices._customerService;
 
             custMenu = MenuCustomers;
             myAccountMenu = MenuMyAccount;
 
             Shell.SetTabBarIsVisible(this, false);
             Shell.SetNavBarIsVisible(this, false);
+        }
+
+        private void RegisterRoutes()
+        {
+            Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
+            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+            Routing.RegisterRoute(nameof(ItemSearchPage), typeof(ItemSearchPage));
+            Routing.RegisterRoute(nameof(CategoryPage), typeof(CategoryPage));
+            Routing.RegisterRoute(nameof(SubcategoryPage), typeof(SubcategoryPage));
+            Routing.RegisterRoute(nameof(MyAccountPage), typeof(MyAccountPage));
+            Routing.RegisterRoute(nameof(ShoppingCartPage), typeof(ShoppingCartPage));
+            Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
+            Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
+            Routing.RegisterRoute(nameof(SubmitOrderPage), typeof(SubmitOrderPage));
+            Routing.RegisterRoute(nameof(PurchaseHistoryPage), typeof(PurchaseHistoryPage));
+            Routing.RegisterRoute(nameof(PurchaseHistoryDetailPage), typeof(PurchaseHistoryDetailPage));
+            Routing.RegisterRoute(nameof(ReorderItemsPage), typeof(ReorderItemsPage));
+            Routing.RegisterRoute(nameof(QuickEntryPage), typeof(QuickEntryPage));
+            Routing.RegisterRoute(nameof(CustomerListPage), typeof(CustomerListPage));
         }
 
         public void HideCustomerMenu()
@@ -71,18 +80,6 @@ namespace POMuswick
             bIsMyAccountMenuVisible = false;
         }
 
-        public void ShowLoggedInMenu()
-        {
-            foreach (ShellItem item in Items)
-            {
-                if (item.Title == "Login")
-                {
-                    //Items.Remove(item);
-                    break;
-                }
-            }
-        }
-
         public void ShowCustomerMenu()
         {
             if (!bIsCustMenuVisible)
@@ -101,151 +98,26 @@ namespace POMuswick
             }
         }
 
-        public void Logout()
+        public async Task Logout()
         {
-            App.g_db.SaveSetting("LoggedIn", "0");
-            App.g_IsLoggedIn = false;
-            App.g_Shell.GoToLogin();
-        }
+            bool logout = await _dialogService.ConfirmAsync(
+                "Logout",
+                "Are you sure you want to logout?");
 
-        public async Task<int> GoToHome()
-        {
-            try
-            {
-                App.g_HeaderTitle = "Muswick Wholesale Grocers";
-                await Current.GoToAsync("//HomePage");
-            }
-            catch
-            {
-                await Navigation.PopToRootAsync();
-            }
-            return 0;
-        }
-        public async Task<int> GoToShoppingCart()
-        {
-            App.g_HeaderTitle = "Shopping Cart";
-            await Current.GoToAsync("//HomePage/ShoppingCartPage");
-            return 0;
-        }
-        public async Task<int> GoToScanBarcode()
-        {
-            App.g_HeaderTitle = "Scan Barcode";
-            //await Current.GoToAsync("//HomePage/BarcodeScanner");
-            await Current.GoToAsync("//HomePage/QuickEntryPage");
-            return 0;
-        }
-        public async Task<int> GoToMyPurchases()
-        {
-            App.g_HeaderTitle = "Order History";
-            await Current.GoToAsync("//HomePage/PurchaseHistoryPage");
-            return 0;
-        }
-        public async Task<int> GoToCategories()
-        {
-            App.g_HeaderTitle = "Product Categories";
-            await Current.GoToAsync("//HomePage/CategoryPage");
-            return 0;
-        }
-
-        public async Task<int> GoToSubCategories()
-        {
-            App.g_HeaderTitle = "Product Categories";
-            await Current.GoToAsync("//HomePage/SubcategoryPage");
-            return 0;
-        }
-
-        public async Task<int> GoToLocations()
-        {
-            await Current.GoToAsync("//HomePage/LocationsPage");
-            return 0;
-        }
-        public async Task<int> GoToLogin()
-        {
-            await Current.GoToAsync("//HomePage/LoginPage");
-            return 0;
-        }
-        public async Task<int> GoToMyAccount()
-        {
-            App.g_HeaderTitle = "My Account";
-            await Current.GoToAsync("//HomePage/MyAccountPage");
-            return 0;
-        }
-        public async Task<int> GoToCheckout()
-        {
-            App.g_HeaderTitle = "Checkout";
-            await Current.GoToAsync("//HomePage/ShoppingCartPage/CheckoutPage");
-            return 0;
-        }
-        public async Task<int> GoToSubmitOrderPage()
-        {
-            App.g_HeaderTitle = "Submit Order";
-            await Current.GoToAsync("//HomePage/ShoppingCartPage/CheckoutPage/SubmitOrderPage");
-            return 0;
-        }
-        public async Task<int> GoToValidateOrder()
-        {
-            App.g_HeaderTitle = "Validate Order";
-            await Current.GoToAsync("//HomePage/ShoppingCartPage/ValidateOrderPage");
-            return 0;
-        }
-        public async Task<int> GoToCustomerList()
-        {
-            App.g_HeaderTitle = "Customers";
-            await Current.GoToAsync("//HomePage/CustomerListPage");
-            return 0;
-        }
-        public async Task<int> PopModal()
-        {
-            try
-            {
-                await Navigation.PopModalAsync();
-            }
-            catch
-            {
-            }
-            return 0;
-        }
-        public async Task<int> GoToOrderDetail()
-        {
-            App.g_HeaderTitle = "Order Detail";
-            await Current.GoToAsync("//HomePage/PurchaseHistoryPage/PurchaseHistoryDetailPage");
-            return 0;
-        }
-        public async Task<int> GoToReorderItems()
-        {
-            App.g_HeaderTitle = "Reorder Items";
-            await Current.GoToAsync("//HomePage/ReorderItemsPage");
-            return 0;
-        }
-        public async Task<int> GoToRegister()
-        {
-            await Current.GoToAsync("//HomePage/LoginPage");
-            return 0;
-        }
-        public async Task<int> GoToRegisterVerify()
-        {
-            await Current.GoToAsync("//HomePage/RegisterVerifyPage");
-            return 0;
-        }
-        public async Task<int> GoToItemSearch()
-        {
-            if (App.g_CurrentPage != "ItemSearchPage")
-            {
-                App.g_HeaderTitle = "Search Products";
-                await Current.GoToAsync("//HomePage/CategoryPage/ItemSearchPage");
-            }
+            if (!logout)
+                return;
             else
             {
-                try
+                AppSettings appSettings = new() { IsLoggedIn = false };
+                if (appSettings.IsSalesUser)
                 {
-                    App.g_SearchPage.RefreshList();
+                    await _cartService.SuspendCartItems(appSettings.CustomerNo);
+                    await _cartService.ClearCartItems();
                 }
-                catch
-                {
-                }
+                await _customerService.ClearCustomer();
+                await _settingService.SaveSetting(appSettings);
+                await _navigationService.GoToAsync(AppRoutes.Login);
             }
-
-            return 0;
         }
 
         public void ShowNavBar()
@@ -253,62 +125,46 @@ namespace POMuswick
             SetNavBarIsVisible(this, true);
         }
 
-        public bool bStopNavigating = true;
-        public bool bStopHome = false;
-        public string sNavTo = "";
-        public string sLastNavTo = "";
-
-        protected override void OnNavigating(ShellNavigatingEventArgs args)
-        {
-            // implement your logic
-            base.OnNavigating(args);
-        }
-
         private void MenuShoppingCart_Clicked(object sender, EventArgs e)
         {
-            GoToShoppingCart();
+            _navigationService.GoToAsync(AppRoutes.ShoppingCart);
             Shell.Current.FlyoutIsPresented = false;
         }
         private void MenuScanBarcode_Clicked(object sender, EventArgs e)
         {
-            GoToScanBarcode();
+            _navigationService.GoToAsync(AppRoutes.QuickEntry);
             Shell.Current.FlyoutIsPresented = false;
         }
         private void MenuMyPurchases_Clicked(object sender, EventArgs e)
         {
-            GoToMyPurchases();
+            _navigationService.GoToAsync(AppRoutes.PurchaseHistory);
             Shell.Current.FlyoutIsPresented = false;
         }
         private void MenuCategories_Clicked(object sender, EventArgs e)
         {
-            GoToCategories();
+            _navigationService.GoToAsync(AppRoutes.Categories);
             Shell.Current.FlyoutIsPresented = false;
         }
-        private void MenuLocations_Clicked(object sender, EventArgs e)
-        {
-            GoToLocations();
-            Shell.Current.FlyoutIsPresented = false;
-        }
-        private void MenuLogout_Clicked(object sender, EventArgs e)
+
+        private async void MenuLogout_Clicked(object sender, EventArgs e)
         {
             Shell.Current.FlyoutIsPresented = false;
-            if (!App.g_IsLoggedIn)
+            AppSettings appSettings = await _settingService.LoadSetting();
+            if (!appSettings.IsLoggedIn)
             {
-                GoToLogin();
+                await _navigationService.GoToAsync(AppRoutes.Login);
+                return;
             }
-            else
-            {
-                App.g_HomePage.ConfirmLogout();
-            }
+            await Logout();
         }
         private void MenuMyAccount_Clicked(object sender, EventArgs e)
         {
-            GoToMyAccount();
+            _navigationService.GoToAsync(AppRoutes.MyAccount);
             Shell.Current.FlyoutIsPresented = false;
         }
         private void MenuCustomers_Clicked(object sender, EventArgs e)
         {
-            GoToCustomerList();
+            _navigationService.GoToAsync(AppRoutes.CustomerList);
             Shell.Current.FlyoutIsPresented = false;
         }
     }

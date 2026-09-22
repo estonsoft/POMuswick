@@ -1,18 +1,69 @@
-﻿namespace POMuswick.Controls;
+﻿using System.Security.AccessControl;
+using System.Windows.Input;
+
+namespace POMuswick.Controls;
 
 public class CustomToolbar : StackLayout
 {
-    public static readonly BindableProperty CartItemsProperty =
-        BindableProperty.Create(nameof(CartItems), typeof(int), typeof(CustomToolbar), 0);
+    public static readonly BindableProperty HomeCommandProperty =
+    BindableProperty.Create(
+        nameof(HomeCommand),
+        typeof(ICommand),
+        typeof(CustomToolbar));
 
-    public int CartItems
+    public ICommand HomeCommand
     {
-        get => (int)GetValue(CartItemsProperty);
-        set => SetValue(CartItemsProperty, value);
+        get => (ICommand)GetValue(HomeCommandProperty);
+        set => SetValue(HomeCommandProperty, value);
     }
 
-    //static int ColumnWidth = 70;
+    public static readonly BindableProperty CartCommandProperty =
+    BindableProperty.Create(
+        nameof(CartCommand),
+        typeof(ICommand),
+        typeof(CustomToolbar));
 
+    public ICommand CartCommand
+    {
+        get => (ICommand)GetValue(CartCommandProperty);
+        set => SetValue(CartCommandProperty, value);
+    }
+
+    public static readonly BindableProperty HistoryCommandProperty =
+    BindableProperty.Create(
+        nameof(HistoryCommand),
+        typeof(ICommand),
+        typeof(CustomToolbar));
+
+    public ICommand HistoryCommand
+    {
+        get => (ICommand)GetValue(HistoryCommandProperty);
+        set => SetValue(HistoryCommandProperty, value);
+    }
+
+    public static readonly BindableProperty ShopCommandProperty =
+    BindableProperty.Create(
+        nameof(ShopCommand),
+        typeof(ICommand),
+        typeof(CustomToolbar));
+
+    public ICommand ShopCommand
+    {
+        get => (ICommand)GetValue(ShopCommandProperty);
+        set => SetValue(ShopCommandProperty, value);
+    }
+
+    public static readonly BindableProperty ScanCommandProperty =
+    BindableProperty.Create(
+        nameof(ScanCommand),
+        typeof(ICommand),
+        typeof(CustomToolbar));
+
+    public ICommand ScanCommand
+    {
+        get => (ICommand)GetValue(ScanCommandProperty);
+        set => SetValue(ScanCommandProperty, value);
+    }
     Grid gridContainer;
 
     VerticalStackLayout StackHome;
@@ -67,39 +118,33 @@ public class CustomToolbar : StackLayout
 
         StackHome = CreateStack(out LabelHomeIcon, out LabelHomeText, "\uF015", "Home");
         TapHome = new TapGestureRecognizer();
-        TapHome.Tapped += OnHomeTapped;
+        TapHome.SetBinding(TapGestureRecognizer.CommandProperty,
+            new Binding(nameof(HomeCommand), source: this));
         AddTap(StackHome, TapHome);
 
         StackShoppingCart = CreateStack(out LabelShoppingCartIcon, out LabelShoppingCartText, "\uF07A", "Shopping\nCart");
         TapShoppingCart = new TapGestureRecognizer();
-        TapShoppingCart.Tapped += OnShoppingCartTapped;
+        TapShoppingCart.SetBinding(TapGestureRecognizer.CommandProperty,
+            new Binding(nameof(CartCommand), source: this));
         AddTap(StackShoppingCart, TapShoppingCart);
-
-        //LabelShoppingCartItems = new Label
-        //{
-        //    TextColor = Colors.Black,
-        //    FontSize = 10,
-        //    HorizontalTextAlignment = TextAlignment.Center
-        //};
-        //LabelShoppingCartItems.SetBinding(Label.TextProperty, new Binding(nameof(CartItems), source: this));
-        //StackShoppingCart.Children.Add(LabelShoppingCartItems);
 
         StackPurchaseHistory = CreateStack(out LabelPurchaseHistoryIcon, out LabelPurchaseHistoryText, "\uF571", "Order\nHistory");
         TapPurchaseHistory = new TapGestureRecognizer();
-        TapPurchaseHistory.Tapped += OnPurchaseHistoryTapped;
+        TapPurchaseHistory.SetBinding(TapGestureRecognizer.CommandProperty,
+            new Binding(nameof(HistoryCommand), source: this));
         AddTap(StackPurchaseHistory, TapPurchaseHistory);
 
         StackShopNow = CreateStack(out LabelShopNowIcon, out LabelShopNowText, "\uF0CA", "Shop Now");
         TapShopNow = new TapGestureRecognizer();
-        TapShopNow.Tapped += OnShopNowTapped;
+        TapShopNow.SetBinding(TapGestureRecognizer.CommandProperty,
+            new Binding(nameof(ShopCommand), source: this));
         AddTap(StackShopNow, TapShopNow);
 
         StackScanBarcode = CreateStack(out LabelScanBarcodeIcon, out LabelScanBarcodeText, "\uF464", "Scan\nBarcode", "FontAwesomePro6Regular");
         TapScanBarcode = new TapGestureRecognizer();
-        TapScanBarcode.Tapped += OnScanBarcodeTapped;
+        TapScanBarcode.SetBinding(TapGestureRecognizer.CommandProperty,
+           new Binding(nameof(ScanCommand), source: this));
         AddTap(StackScanBarcode, TapScanBarcode);
-
-        CartItems = App.g_ShoppingCartItems;
     }
 
     VerticalStackLayout CreateStack(out Image icon, out Label text, string glyph, string label, string font = "FontAwesomeFreeSolid")
@@ -148,37 +193,5 @@ public class CustomToolbar : StackLayout
     void AddTap(VerticalStackLayout stack, TapGestureRecognizer tap)
     {
         stack.GestureRecognizers.Add(tap);
-    }
-
-    async void OnHomeTapped(object sender, EventArgs e)
-    {
-        App.g_Shell.bStopNavigating = false;
-        await App.g_Shell.GoToHome();
-        App.g_Shell.bStopNavigating = true;
-    }
-
-    async void OnShoppingCartTapped(object sender, EventArgs e)
-    {
-        List<Item> items = await App.g_db.GetCartItems();
-
-        if (items.Count == 0)
-            await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Your shopping cart is empty", "Ok");
-        else
-            await App.g_Shell.GoToShoppingCart();
-    }
-
-    async void OnShopNowTapped(object sender, EventArgs e)
-    {
-        await App.g_Shell.GoToCategories();
-    }
-
-    async void OnScanBarcodeTapped(object sender, EventArgs e)
-    {
-        await App.g_Shell.GoToScanBarcode();
-    }
-
-    async void OnPurchaseHistoryTapped(object sender, EventArgs e)
-    {
-        await App.g_Shell.GoToMyPurchases();
     }
 }

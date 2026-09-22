@@ -15,7 +15,7 @@ namespace POMuswick.Data
 
         private async Task<string> SendSoapRequestAsync(string soapAction, string soapBody)
         {
-            SoapUrl = App.g_ServerURL + "/RemotePhoneApp.asmx";
+            SoapUrl = AppState.GetbaseUrl() + "/RemotePhoneApp.asmx";
             var content = new StringContent(soapBody, Encoding.UTF8, "text/xml");
 
             content.Headers.Clear();
@@ -23,7 +23,6 @@ namespace POMuswick.Data
             content.Headers.Add("SOAPAction", soapAction);
 
             var response = await _httpClient.PostAsync(SoapUrl, content);
-            //response.EnsureSuccessStatusCode();
             string responseValue = await response.Content.ReadAsStringAsync();
             responseValue = ExtractSoapResult(responseValue);
             return responseValue;

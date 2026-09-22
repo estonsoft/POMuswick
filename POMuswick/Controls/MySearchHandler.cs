@@ -2,6 +2,7 @@
 
 public class MySearchHandler : SearchHandler
 {
+    string searchText;
     public MySearchHandler()
     {
         FontSize = 12;
@@ -16,7 +17,7 @@ public class MySearchHandler : SearchHandler
 
         if (!string.IsNullOrEmpty(newValue))
         {
-            App.g_SearchText = newValue;
+            searchText = newValue;
         }
     }
 
@@ -27,24 +28,11 @@ public class MySearchHandler : SearchHandler
 
     protected async void GoToSearchPage()
     {
-        App.g_ScanBarcode = string.Empty;
-        App.g_SearchFromPage = App.g_CurrentPage;
-        await App.g_Shell.GoToItemSearch();
+        // await App.g_Shell.GoToItemSearch();
     }
 
     protected override async void OnItemSelected(object item)
     {
         base.OnItemSelected(item);
-
-        await Task.Delay(1000);
-        App.g_Shell.ShowNavBar();
     }
-
-    //private async Task QueryItems(string oldValue, string newValue)
-    //{
-    //    if (Application.Current?.MainPage is Shell shell)
-    //    {
-    //        await shell.GoToAsync("app:///HomePage");
-    //    }
-    //}
 }

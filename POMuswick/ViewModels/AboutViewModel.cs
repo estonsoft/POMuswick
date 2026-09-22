@@ -1,15 +1,25 @@
 ﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using POMuswick.Services;
 
 namespace POMuswick.ViewModels
 {
-    public class AboutViewModel : BaseViewModel
+    public partial class AboutViewModel : BaseViewModel
     {
-        public AboutViewModel()
+        public AboutViewModel(IAppServices appServices) : base(appServices)
         {
             Title = "About";
-            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
+        }
+        
+        public override async Task OnAppearingAsync()
+        {
+            await base.OnAppearingAsync();
         }
 
-        public ICommand OpenWebCommand { get; }
+        [RelayCommand]
+        public async Task OpenWebAsync()
+        {
+            await Browser.OpenAsync("https://aka.ms/xamarin-quickstart");
+        }
     }
 }

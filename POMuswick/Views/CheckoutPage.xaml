@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <!--  HEADER  -->
-        <controls:CustomHeader Grid.Row="0" />
+        <controls:CustomHeader Grid.Row="0" Title="{Binding Title}" BackCommand="{Binding BackPressedCommand}"/>
 
         <!--  BODY  -->
         <ScrollView Grid.Row="1">
@@ -70,6 +70,7 @@
                                 <Label
                                     x:Name="DeliveryAddress"
                                     FontSize="11"
+                                    TextColor="Red"
                                     Text="{Binding CompanyAddress}" />
                                 <Label FontSize="11" Text="{Binding CompanyCityStateZip}" />
                             </VerticalStackLayout>
@@ -134,15 +135,15 @@
                     </Grid.ColumnDefinitions>
 
                     <VerticalStackLayout Padding="20">
-                        <Label Text="{Binding CartItems, StringFormat='Items: {0}'}" />
-                        <Label Text="{Binding CartPieces, StringFormat='Pieces: {0}'}" />
-                        <Label Text="{Binding CartTotal, StringFormat='Total: {0}'}" />
+                        <Label Text="{Binding SCartItems, StringFormat='Items: {0}'}" />
+                        <Label Text="{Binding SCartPieces, StringFormat='Pieces: {0}'}" />
+                        <Label Text="{Binding SCartTotal, StringFormat='Total: {0}'}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Column="1" Padding="20">
                         <Button
                             BackgroundColor="Blue"
-                            Clicked="OnPlaceOrderClicked"
+                            Command="{Binding PlaceOrderCommand}"
                             Text="Place Order"
                             TextColor="White" />
 
@@ -180,7 +181,7 @@
                 <!--  CART LIST  -->
                 <CollectionView
                     x:Name="ItemsListCart"
-                    ItemsSource="{Binding CartItemList}"
+                    ItemsSource="{Binding ItemList}"
                     SelectionMode="None">
 
                     <CollectionView.ItemTemplate>
@@ -244,7 +245,12 @@
         </ScrollView>
 
         <!--  TOOLBAR  -->
-        <controls:CustomToolbar Grid.Row="2" />
+        <controls:CustomToolbar Grid.Row="2" 
+                HomeCommand="{Binding HomePressedCommand}" 
+                CartCommand="{Binding CartPressedCommand}" 
+                HistoryCommand="{Binding HistoryPressedCommand}" 
+                ShopCommand="{Binding ShopPressedCommand}" 
+                ScanCommand="{Binding ScanPressedCommand}"/>
 
     </Grid>
 </ContentPage>

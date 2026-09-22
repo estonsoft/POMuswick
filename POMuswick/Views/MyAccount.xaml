@@ -14,7 +14,7 @@
                 <RowDefinition Height="60" />
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" />
+            <controls:CustomHeader Grid.Row="0" Title="{Binding title}" BackCommand="{Binding BackPressedCommand}"/>
 
             <VerticalStackLayout
                 Grid.Row="1"
@@ -27,7 +27,7 @@
                     FontAttributes="Bold"
                     FontSize="18"
                     HorizontalOptions="Start"
-                    Text=""
+                    Text="{Binding CompanyNameText}"
                     TextColor="Blue"
                     VerticalOptions="Start" />
                 <Label
@@ -35,7 +35,7 @@
                     BackgroundColor="White"
                     FontSize="16"
                     HorizontalOptions="Start"
-                    Text=""
+                    Text="{Binding AddressText}"
                     TextColor="Black"
                     VerticalOptions="Start" />
                 <Label
@@ -43,7 +43,7 @@
                     BackgroundColor="White"
                     FontSize="16"
                     HorizontalOptions="Start"
-                    Text=""
+                    Text="{Binding CityStateZipText}"
                     TextColor="Black"
                     VerticalOptions="Start" />
                 <Label
@@ -51,7 +51,7 @@
                     BackgroundColor="White"
                     FontSize="16"
                     HorizontalOptions="Start"
-                    Text=""
+                    Text="{Binding PhoneText}"
                     TextColor="Black"
                     VerticalOptions="Start" />
                 <Label
@@ -59,7 +59,7 @@
                     BackgroundColor="White"
                     FontSize="16"
                     HorizontalOptions="Start"
-                    Text=""
+                    Text="{Binding EmailText}"
                     TextColor="Black"
                     VerticalOptions="Start" />
                 <StackLayout HorizontalOptions="Start" Orientation="Horizontal">
@@ -77,7 +77,7 @@
                         FontAttributes="Bold"
                         FontSize="16"
                         HorizontalOptions="Start"
-                        Text=""
+                        Text="{Binding CreditLimitText}"
                         TextColor="Black"
                         VerticalOptions="Start" />
                 </StackLayout>
@@ -96,13 +96,18 @@
                         FontAttributes="Bold"
                         FontSize="16"
                         HorizontalOptions="Start"
-                        Text=""
+                        Text="{Binding ARBalanceText}"
                         TextColor="Black"
                         VerticalOptions="Start" />
                 </StackLayout>
             </VerticalStackLayout>
 
-            <controls:CustomToolbar Grid.Row="2" />
+            <controls:CustomToolbar Grid.Row="2" 
+                HomeCommand="{Binding HomePressedCommand}" 
+                CartCommand="{Binding CartPressedCommand}" 
+                HistoryCommand="{Binding HistoryPressedCommand}" 
+                ShopCommand="{Binding ShopPressedCommand}" 
+                ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -1,58 +1,90 @@
-﻿namespace POMuswick.ViewModels
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using POMuswick.Services;
+using POMuswick;
+using POMuswick.ViewModels;
+using POMuswick.Common;
+public partial class LoginViewModel : BaseViewModel
 {
-    public class LoginViewModel : BaseViewModel
+    private readonly ILoginService _loginService;
+    private readonly ICustomerService _customerService;
+    private readonly INavigationService _navigationService;
+    private readonly ISettingService _settingService;
+    private readonly IAppSyncService _appSyncService;
+
+    [ObservableProperty]
+    private string _user = string.Empty;
+
+    [ObservableProperty]
+    private string _password = string.Empty;
+
+    [ObservableProperty]
+    private string _appVersion = string.Empty;
+
+    [ObservableProperty]
+    private bool _rememberMe;
+
+
+    public LoginViewModel(IAppServices appServices) : base(appServices)
     {
-        public Command LoginCommand { get; }
-        public String User { get; set; }
-        public String Password { get; set; }
-        public bool RememberMe { get; set; }
+         Title = PageTitles.Login;
+        _navigationService = appServices._navigationService;
+        _settingService = appServices._settingService;
+        _loginService = appServices._loginService;
+        _customerService = appServices._customerService;
+        _appSyncService = appServices._appSyncService;
+    }
 
-        public LoginViewModel()
+    public override async Task OnAppearingAsync()
+    {
+        Customer customer = await _customerService.GetCustomerAsync();
+        RememberMe = customer.RememberMe;
+        AppVersion = Constants.Version;
+        if (RememberMe)
+            User = customer.User;
+    }
+
+    [RelayCommand]
+    private async Task LoginAsync()
+    {
+        try
         {
-            LoginCommand = new Command(OnLoginClicked);
+            IsBusy = true;
 
-            try
+            var result = await _loginService.LoginAsync(
+                User,
+                Password);
+            
+            await _customerService.SaveCustomerAsync(new Customer() { RememberMe = this.RememberMe });
+            
+            if (result.Success)
             {
-                RememberMe = App.g_Customer.RememberMe;
+                await _appSyncService.SyncApp();
+                await _navigationService.GoToRootAsync(AppRoutes.Home);
+                return;
             }
-            catch
+            string message = result.Status switch
             {
-                RememberMe = false;
-            }
+                "P" => "Invalid password. Please try again.",
+                "I" => "Inactive account. Please contact Customer Service.",
+                "U" => "Account does not exist.",
+                _ => "Error attempting to login."
+            };
+
+            await Shell.Current.DisplayAlertAsync(
+                "Muswick Wholesale Grocers",
+                message,
+                "OK");
         }
-
-        private void OnLoginClicked(object obj)
+        finally
         {
-            App.g_LoginPage.ShowAnimation();
-            Task.Run(async () =>
-            {
-                await App.ResetProgressAsync();
-                if (User.ToLower() == "app_test")
-                {
-                    App.g_ServerURL = "https://store.qwikpoint.net";
-                }
-                else
-                {
-                    App.g_ServerURL = "https://muswicksales.ddns.net";    // g_db.GetSetting("ServerURL");
-                }
-
-                App.UpdateServerLinks();
-
-                App.g_IsLoggedIn = true;
-                App.g_UserName = User;
-
-                App.g_Customer.User = User;
-                App.g_Customer.RememberMe = RememberMe;
-
-                await App.g_db.SaveCustomer(App.g_Customer);
-
-                await App.CommManager.ValidateLogin(User, Password, App.g_Customer.UniqueId);
-
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    App.g_LoginPage.HideAnimation();
-                });
-            });
+            IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task SettingAsync()
+    {
+        await _navigationService.GoToAsync(AppRoutes.Setting);
     }
 }

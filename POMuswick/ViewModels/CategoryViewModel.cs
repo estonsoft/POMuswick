@@ -1,73 +1,60 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using POMuswick.Services;
 
 namespace POMuswick.ViewModels;
 
-public class CategoryViewModel : BaseViewModel
+public partial class CategoryViewModel : BaseViewModel
 {
+    private readonly IDialogService _dialogService;
+    private readonly INavigationService _navigationService;
+    private readonly ICatNSubCatService _catNSubCatService;
     private Category _selectedItem;
 
-    public ObservableCollection<Category> Categories { get; }
-    public Command LoadCategoriesCommand { get; }
-    public Command<Category> CategoryTapped { get; }
+    [ObservableProperty]
+    public List<Category> _categories;
 
-    public CategoryViewModel()
+    public CategoryViewModel(IAppServices appServices) : base(appServices)
     {
-        Title = "Categories";
-        Categories = new ObservableCollection<Category>();
-        LoadCategoriesCommand = new Command(async () => await ExecuteLoadCategoriesCommand());
-
-        CategoryTapped = new Command<Category>(OnCategorySelected);
+        Title = "Product Categories";
+        _dialogService = appServices._dialogService;
+        _navigationService = appServices._navigationService;
+        _catNSubCatService = appServices._catNSubCatService;
     }
 
-    async Task ExecuteLoadCategoriesCommand()
+    public async override Task OnAppearingAsync()
+    {
+        await base.OnAppearingAsync();
+        await LoadCategoriesAsync();
+    }
+
+    private async Task LoadCategoriesAsync()
     {
         IsBusy = true;
+        Categories = await _catNSubCatService.GetCategories();
 
-        try
+        if (Categories == null || Categories.Count == 0)
         {
-            //Database db = new Database();
-
-            Categories.Clear();
-            var items = await App.g_db.GetCategories();
-            foreach (var item in items)
-            {
-                Categories.Add(item);
-            }
+            await _dialogService.AlertAsync("Error", "Unable to load categories.", "OK");
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        IsBusy = false;
     }
 
-    public void OnAppearing()
+    [RelayCommand]
+    private async Task CategoriesSelectedAsync(Category selectedCategory)
     {
-        IsBusy = true;
-        SelectedItem = null;
-    }
-
-    public Category SelectedItem
-    {
-        get => _selectedItem;
-        set
-        {
-            SetProperty(ref _selectedItem, value);
-            OnCategorySelected(value);
-        }
-    }
-
-    async void OnCategorySelected(Category category)
-    {
-        if (category == null)
+        if (selectedCategory == null)
             return;
 
-        await Shell.Current.DisplayAlertAsync("Muswick Wholesale Grocers", "Category Selected (tapped)", "Ok");
-        // This will push the ItemDetailPage onto the navigation stack
-        //await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
+        CatNSubCatParameter parameter = new CatNSubCatParameter
+        {
+            Category = selectedCategory,
+            Subcategory = null
+        };
+
+        await _navigationService.GoToAsync(AppRoutes.SubCategories, new ShellNavigationQueryParameters
+        {
+            { "CatNSubCatParameter", parameter }
+        });
     }
 }

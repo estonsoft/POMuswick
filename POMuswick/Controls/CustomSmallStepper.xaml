@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView
+    x:Class="POMuswick.Controls.CustomSmallStepper"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Grid
+        ColumnDefinitions="Auto,Auto,Auto,*"
+        ColumnSpacing="4"
+        VerticalOptions="Center">
+
+        <!-- Minus -->
+
+        <ImageButton
+            Grid.Column="0"
+            WidthRequest="30"
+            HeightRequest="30"
+            Aspect="AspectFit"
+            BackgroundColor="Transparent"
+            Source="blue_minus.png"
+            IsVisible="{Binding Source={x:Reference Root},Path=IsStepperVisible}"
+            Command="{Binding Source={x:Reference Root},Path=MinusCommand}"
+            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}" />
+
+        <!-- Qty -->
+
+        <VerticalStackLayout
+            Grid.Column="1"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            IsVisible="{Binding Source={x:Reference Root},Path=IsStepperVisible}"
+            Spacing="1">
+
+            <Border
+                Stroke="LightGray"
+                StrokeThickness="1"
+                HeightRequest="28"
+                Padding="0">
+
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="4"/>
+                </Border.StrokeShape>
+
+                <Label
+                    WidthRequest="35"
+                    HeightRequest="26"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    Text="{Binding Source={x:Reference Root},Path=QtyOrder}" />
+
+            </Border>
+
+            <Label
+                Text="In Cart"
+                FontSize="8"
+                TextColor="Gray"
+                HorizontalTextAlignment="Center"/>
+
+        </VerticalStackLayout>
+
+        <!-- Plus -->
+
+        <ImageButton
+            Grid.Column="2"
+            WidthRequest="30"
+            HeightRequest="30"
+            Aspect="AspectFit"
+            BackgroundColor="Transparent"
+            Source="blue_plus.png"
+            IsVisible="{Binding Source={x:Reference Root},Path=IsStepperVisible}"
+            Command="{Binding Source={x:Reference Root},Path=PlusCommand}"
+            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}" />
+
+        <!-- Add -->
+
+        <Button
+            Grid.Column="3"
+            Margin="20,0"
+            HeightRequest="32"
+            CornerRadius="15"
+            Text="Add"
+            FontSize="14"
+            FontAttributes="Bold"
+            TextColor="Blue"
+            BackgroundColor="LightGray"
+            IsVisible="{Binding Source={x:Reference Root},Path=IsAddToOrderVisible}"
+            Command="{Binding Source={x:Reference Root},Path=PlusCommand}"
+            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}" />
+
+    </Grid>
+
+</ContentView>

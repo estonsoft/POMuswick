@@ -15,24 +15,27 @@
         <controls:MySearchHandler
             DisplayMemberName="Name"
             Placeholder="Search Products"
-            ShowsResults="false" />
+            ShowsResults="false"/>
     </Shell.SearchHandler>
 
     <ContentPage.Content>
-        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+                SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="60" />
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" />
+            <controls:CustomHeader Grid.Row="0"
+                    Title="{Binding Title}"
+                    BackCommand="{Binding BackPressedCommand}"/>
 
             <CollectionView
                 x:Name="CategoriesListSearch"
                 Grid.Row="1"
-                SelectionChanged="CategoriesListSearch_SelectionChanged"
-                SelectionMode="Single">
+                ItemsSource="{Binding Categories}"
+                SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <!--  Use a plain layout as the DataTemplate content for MAUI  -->
@@ -40,11 +43,16 @@
                             Margin="0,0,0,0"
                             Spacing="0"
                             VerticalOptions="Start">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CategoriesSelectedCommand}"
+                                    CommandParameter="{Binding .}"/>
+                            </VerticalStackLayout.GestureRecognizers>
                             <Label
                                 Margin="0,0,0,0"
                                 BackgroundColor="Aqua"
                                 IsVisible="False"
-                                Text="{Binding Code}" />
+                                Text="{Binding Code}"/>
                             <HorizontalStackLayout
                                 Margin="20,5,0,0"
                                 HorizontalOptions="Start"
@@ -56,7 +64,7 @@
                                     HorizontalOptions="Fill"
                                     Source="{Binding ImageURL}"
                                     VerticalOptions="Fill"
-                                    WidthRequest="90" />
+                                    WidthRequest="90"/>
                                 <StackLayout
                                     Margin="0,0,0,0"
                                     HorizontalOptions="Start"
@@ -71,7 +79,7 @@
                                         LineBreakMode="WordWrap"
                                         Text="{Binding Description}"
                                         TextColor="Blue"
-                                        VerticalOptions="Start" />
+                                        VerticalOptions="Start"/>
                                 </StackLayout>
                             </HorizontalStackLayout>
                             <BoxView
@@ -79,17 +87,18 @@
                                 HorizontalOptions="Fill"
                                 IsVisible="false"
                                 VerticalOptions="Fill"
-                                Color="Gray" />
+                                Color="Gray"/>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroupList>
                                     <VisualStateGroup Name="CommonStates">
                                         <!--  Normal State  -->
-                                        <VisualState Name="Normal" />
+                                        <VisualState Name="Normal"/>
 
                                         <!--  Selected State  -->
                                         <VisualState Name="Selected">
                                             <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" Value="LightGray" />
+                                                <Setter Property="BackgroundColor"
+                                                        Value="LightGray"/>
                                             </VisualState.Setters>
                                         </VisualState>
                                     </VisualStateGroup>
@@ -100,7 +109,12 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <controls:CustomToolbar Grid.Row="2" />
+            <controls:CustomToolbar Grid.Row="2"
+                                    HomeCommand="{Binding HomePressedCommand}"
+                                    CartCommand="{Binding CartPressedCommand}"
+                                    HistoryCommand="{Binding HistoryPressedCommand}"
+                                    ShopCommand="{Binding ShopPressedCommand}"
+                                    ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

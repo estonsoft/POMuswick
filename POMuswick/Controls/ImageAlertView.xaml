@@ -53,7 +53,7 @@
                             TextColor="#555555"
                             VerticalOptions="Center">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCloseTapped" />
+                                <TapGestureRecognizer Tapped="CloseTapped" />
                             </Label.GestureRecognizers>
                         </Label>
                     </Border>
@@ -70,6 +70,7 @@
                     Aspect="AspectFit"
                     ErrorPlaceholder="logoicon.png"
                     HeightRequest="280"
+                    Source="{Binding Source={x:Reference this}, Path=ImageSource}"
                     LoadingPlaceholder="logoicon.png"
                     WidthRequest="280" />
             </VerticalStackLayout>

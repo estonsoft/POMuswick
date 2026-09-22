@@ -1,57 +1,21 @@
-﻿namespace POMuswick.Views
+﻿using POMuswick.ViewModels;
+
+namespace POMuswick.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SubmitOrderPage : ContentPage
     {
-        public SubmitOrderPage()
+        private readonly SubmitOrderViewModel _submitOrderViewModel;
+        public SubmitOrderPage(SubmitOrderViewModel submitOrderViewModel)
         {
             InitializeComponent();
-            BindingContext = this;
-
-            App.g_CurrentPage = "SubmitOrderPage";
+            BindingContext = _submitOrderViewModel = submitOrderViewModel;
         }
 
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-        }
-
-        protected async override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-
-            //Database db = new Database();
-            List<Item> lstCartItems = await App.g_db.GetCartItems();
-            String sOrderInfo = "";
-
-            foreach (Item item in lstCartItems)
-            {
-                try
-                {
-                    sOrderInfo += item.ItemNo.ToString() + "|";
-                    sOrderInfo += item.QtyOrder.ToString() + "|";
-                    sOrderInfo += "0" + "~";
-                }
-                catch { }
-            }
-
-            String sDeliveryPickup;
-            if (App.g_ShoppingCartPage._IsDeliveryHighlighted)
-            {
-                sDeliveryPickup = "D";
-            }
-            else
-            {
-                sDeliveryPickup = "P";
-            }
-
-            int iHoldForReview = 0;
-            if (App.g_CheckoutPage.HoldForReview)
-            {
-                iHoldForReview = 1;
-            }
-
-            await App.CommManager.SubmitOrder2(App.g_Customer.CustNo, "", "", "", sOrderInfo, sDeliveryPickup, App.g_UserName, "", iHoldForReview, "O");
+            await _submitOrderViewModel.OnAppearingAsync();
         }
 
         protected override bool OnBackButtonPressed()

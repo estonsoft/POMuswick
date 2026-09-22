@@ -43,7 +43,9 @@
             </Grid.RowDefinitions>
 
             <controls:CustomHeader x:Name="CustomHeader"
-                                   Grid.Row="0"/>
+                                   Grid.Row="0"
+                                   Title="{Binding Title}"
+                                   BackCommand="{Binding BackPressedCommand}"/>
             <StackLayout Grid.Row="1">
                 <BoxView
                     BackgroundColor="gray"
@@ -63,11 +65,11 @@
                         <Entry
                             x:Name="CustomerSearch"
                             Margin="0,0,0,0"
-                            Completed="CustomerSearch_Completed"
                             FontSize="14"
                             HeightRequest="40"
                             HorizontalOptions="Start"
                             Placeholder="Search Customers"
+                            Text="{Binding CustomerSearchText,Mode=TwoWay}"
                             PlaceholderColor="Gray"
                             VerticalOptions="Center"
                             WidthRequest="200"/>
@@ -81,7 +83,7 @@
                             TextColor="RoyalBlue"
                             VerticalOptions="Center">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnTappedSearch"/>
+                                <TapGestureRecognizer Command="{Binding SearchCustomerCommand}"/>
                             </Label.GestureRecognizers>
                         </Label>
                     </StackLayout>
@@ -108,9 +110,10 @@
                                 Grid.Row="1"
                                 CustNo="{Binding CustNo}"
                                 Orientation="Vertical">
-                                <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnTappedCustomer"/>
-                                </StackLayout.GestureRecognizers>
+                                <controls:CustomerStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectedCustomerCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </controls:CustomerStackLayout.GestureRecognizers>
                                 <VerticalStackLayout Margin="10">
                                     <HorizontalStackLayout>
                                         <Label
@@ -221,17 +224,20 @@
                 </CollectionView>
             </Grid>
             <controls:CustomToolbar x:Name="CustomToolbar"
-                                    Grid.Row="3"/>
+                                    Grid.Row="3"
+                                    HomeCommand="{Binding HomePressedCommand}"
+                                    CartCommand="{Binding CartPressedCommand}"
+                                    HistoryCommand="{Binding HistoryPressedCommand}"
+                                    ShopCommand="{Binding ShopPressedCommand}"
+                                    ScanCommand="{Binding ScanPressedCommand}"/>
             <controls:CustomAlertDialog
                 x:Name="LoadingAlert"
-                Title="Update Customer"
-                Grid.Row="0"
+                Title="Updating Customer"
+                Grid.Row="1"
                 Grid.RowSpan="3"
-                IsLoading="True"
-                ProgressPercentage="0"
-                ProgressValue="0"
-                IsVisible="False"
-                Message="Please wait while we change the customer and refresh the App data"/>
+                IsVisible="{Binding IsBusy}"
+                IsLoading="{Binding IsBusy}"
+                Message="Please wait while we updating the customer"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

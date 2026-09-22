@@ -1,3 +1,4 @@
+using System.Windows.Input;
 using FFImageLoading.Maui;
 
 namespace POMuswick.Controls;
@@ -6,50 +7,38 @@ public partial class ImageAlertView : ContentView
 {
     // Bindable: ImageSource
     public static readonly BindableProperty ImageSourceProperty =
-        BindableProperty.Create(
-            nameof(ImageSource),
-            typeof(string),
-            typeof(ImageAlertView),
-            default(string),
-            propertyChanged: OnImageSourceChanged);
+      BindableProperty.Create(
+        nameof(ImageSource),
+        typeof(ImageSource),
+        typeof(ImageAlertView),
+        default(ImageSource));
 
-    public string ImageSource
+    public ImageSource ImageSource
     {
-        get => (string)GetValue(ImageSourceProperty);
+        get => (ImageSource)GetValue(ImageSourceProperty);
         set => SetValue(ImageSourceProperty, value);
     }
 
-    private static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
-    {
-        var control = (ImageAlertView)bindable;
-        control.PreviewImage.Source = newValue?.ToString();
-    }
 
-    // Events
-    public event EventHandler? Closed;
+    public static readonly BindableProperty CloseCommandProperty =
+    BindableProperty.Create(
+        nameof(CloseCommand),
+        typeof(ICommand),
+        typeof(ImageAlertView));
+
+    public ICommand CloseCommand
+    {
+        get => (ICommand)GetValue(CloseCommandProperty);
+        set => SetValue(CloseCommandProperty, value);
+    }
 
     public ImageAlertView()
     {
         InitializeComponent();
     }
 
-    // Show with image
-    public void Show(CachedImage image)
+    private async void CloseTapped(object sender, EventArgs e)
     {
-        PreviewImage.Source = image.Source;
-        IsVisible = true;
-    }
-
-    // Hide
-    public void Hide()
-    {
-        IsVisible = false;
-        PreviewImage.Source = null;
-    }
-
-    private void OnCloseTapped(object sender, TappedEventArgs e)
-    {
-        Hide();
-        Closed?.Invoke(this, EventArgs.Empty);
+        CloseCommand?.Execute(this);
     }
 }

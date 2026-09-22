@@ -2,203 +2,86 @@
 {
     public class CommManager
     {
-        private readonly ISoapService soapService;
+        ISoapService soapService;
 
         public CommManager(ISoapService service)
         {
             soapService = service;
         }
 
-        public async Task GetSettings()
+        public async Task<string> GetBanners()
         {
-            await App.UpdateProgress(0, "Downloading Settings");
-            string response = await soapService.GetSettingsAsync();
-            await XMLResponseParser.commService_GetSettingsCompletedAsync(response);
+            return await soapService.GetBannersAsync();
         }
 
-        public async Task GetBanners()
+        public async Task<string> GetCategoriesAndSubcategories()
         {
-            await App.UpdateProgress(5, "Downloading banner data");
-            string banner = await soapService.GetBannersAsync();
-            await XMLResponseParser.commService_GetBannersCompleted(banner);
+            return await soapService.GetCategoriesAndSubcategoriesAsync();
         }
 
-        public async Task GetCategoriesAndSubcategories()
-        {
-            await App.UpdateProgress(10, "Downloading Categories data");
-            string response =
-                await soapService.GetCategoriesAndSubcategoriesAsync();
-            await XMLResponseParser
-                .commService_GetCategoriesAndSubcategoriesCompleted(response);
+        public async Task<string> GetCategoriesAndSubcategoriesCust(string sCust)
+        { 
+            return await soapService.GetCategoriesAndSubcategoriesCustAsync(sCust);
         }
 
-        public async Task GetCategoriesAndSubcategoriesCust(string sCust)
+        public async Task<string> GetItems(String sCustomer, String sDate)
         {
-            await App.UpdateProgress(10, "Downloading Categories data");
-
-            string response =
-                await soapService.GetCategoriesAndSubcategoriesCustAsync(sCust);
-
-            await XMLResponseParser
-                .commService_GetCategoriesAndSubcategoriesCustCompleted(response);
+            return await soapService.GetItemsAsync(sCustomer, sDate);
         }
 
-        public async Task GetItems(string sCustomer, string sDate)
+        public async Task<string> GetItemQOH(String sCustomer)
         {
-            await App.UpdateProgress(20, "Downloading Items data");
-
-            string response =
-                await soapService.GetItemsAsync(sCustomer, sDate);
-            await XMLResponseParser
-                .commService_GetItemsCompletedAsync(response);
+            return await soapService.GetItemQOHAsync(sCustomer);
         }
 
-        public async Task GetOrderHistory(string sCustNo)
+        public async Task<string> GetItemQOH2(String sUser, String sCustomer)
         {
-            await App.UpdateProgress(70, "Downloading Order History");
-
-            string response =
-                await soapService.GetOrderHistoryAsync(sCustNo);
-            await XMLResponseParser
-                .commService_GetOrderHistoryCompletedAsync(response);
+            return await soapService.GetItemQOH2Async(sUser, sCustomer);
         }
 
-        public async Task GetItemQOH(string sCustomer)
+        public async Task<string> ValidateLogin(String sUser, String sPassword, String sDeviceId)
         {
-            await App.UpdateProgress(60, "Downloading Item quantity");
-
-            string response =
-                await soapService.GetItemQOHAsync(sCustomer);
-
-            await XMLResponseParser
-                .commService_GetItemQOHCompletedAsync(response);
+            return await soapService.ValidateLoginAsync(sUser, sPassword, sDeviceId);
         }
 
-        public async Task GetItemQOH2(string sUser, string sCustomer)
+        public async Task<string> ValidateUserActive(String sUser)
         {
-            await App.UpdateProgress(87, "Downloading Item quantity");
-
-            string response =
-                await soapService.GetItemQOH2Async(sUser, sCustomer);
-            await XMLResponseParser
-                .commService_GetItemQOH2CompletedAsync(response);
+            return await soapService.ValidateUserActiveAsync(sUser);
         }
 
-        public async Task ValidateLogin(
-            string sUser,
-            string sPassword,
-            string sDeviceId)
+        public async Task<string> GetSettings()
         {
-            string response =
-                await soapService.ValidateLoginAsync(
-                    sUser,
-                    sPassword,
-                    sDeviceId);
-
-            await XMLResponseParser
-                .commService_ValidateLoginCompletedAsync(response);
+            return await soapService.GetSettingsAsync();
         }
 
-        public async Task ValidateUserActive(string sUser)
+        public async Task<string> SubmitOrder(string sCustNo, string sPO, string sPaymentMethod, string sCCInfo, string sOrderInfo, string sDeliveryPickup, string sUser, string sNotes, int iHoldForReview, string sOrderType)
         {
-            string response =
-                await soapService.ValidateUserActiveAsync(sUser);
-
-            await XMLResponseParser
-                .commService_ValidateUserActiveCompletedAsync(response);
+            return await soapService.SubmitOrderAsync(sCustNo, sPO, sPaymentMethod, sCCInfo, sOrderInfo, sDeliveryPickup, sUser, sNotes, iHoldForReview, sOrderType);
         }
 
-        public async Task SubmitOrder(
-            string sCustNo,
-            string sPO,
-            string sPaymentMethod,
-            string sCCInfo,
-            string sOrderInfo,
-            string sDeliveryPickup,
-            string sUser,
-            string sNotes,
-            int iHoldForReview,
-            string sOrderType)
+        public async Task<string> SubmitOrder2(string sCustNo, string sPO, string sPaymentMethod, string sCCInfo, string sOrderInfo, string sDeliveryPickup, string sUser, string sNotes, int iHoldForReview, string sOrderType)
         {
-            string response =
-                await soapService.SubmitOrderAsync(
-                    sCustNo,
-                    sPO,
-                    sPaymentMethod,
-                    sCCInfo,
-                    sOrderInfo,
-                    sDeliveryPickup,
-                    sUser,
-                    sNotes,
-                    iHoldForReview,
-                    sOrderType);
-
-            Console.WriteLine("SubmitOrder response: " + response);
-
-            await XMLResponseParser
-                .commService_SubmitOrderCompletedAsync(response);
+            return await soapService.SubmitOrder2Async(sCustNo, sPO, sPaymentMethod, sCCInfo, sOrderInfo, sDeliveryPickup, sUser, sNotes, iHoldForReview, sOrderType);
         }
 
-        public async Task SubmitOrder2(
-            string sCustNo,
-            string sPO,
-            string sPaymentMethod,
-            string sCCInfo,
-            string sOrderInfo,
-            string sDeliveryPickup,
-            string sUser,
-            string sNotes,
-            int iHoldForReview,
-            string sOrderType)
+        public async Task<string> ValidateOrderQOH(string sCustNo, string sOrderInfo)
         {
-            string response =
-                await soapService.SubmitOrder2Async(
-                    sCustNo,
-                    sPO,
-                    sPaymentMethod,
-                    sCCInfo,
-                    sOrderInfo,
-                    sDeliveryPickup,
-                    sUser,
-                    sNotes,
-                    iHoldForReview,
-                    sOrderType);
-
-            Console.WriteLine("SubmitOrder2 response: " + response);
-
-            await XMLResponseParser
-                .commService_SubmitOrder2CompletedAsync(response);
+            return await soapService.ValidateOrderQOHAsync(sCustNo, sOrderInfo);
         }
 
-        public async Task<ValidateResponse> ValidateOrderQOH(
-            string sCustNo,
-            string sOrderInfo)
+        public async Task<string> GetOrderHistory(string sCustNo)
         {
-            string response =
-                await soapService.ValidateOrderQOHAsync(
-                    sCustNo,
-                    sOrderInfo);
-
-            return await XMLResponseParser
-                .commService_ValidateOrderQOHCompletedAsync(response);
+            return await soapService.GetOrderHistoryAsync(sCustNo);
         }
 
-        public async Task GetSalespersonCustomers(string sUser)
+        public async Task<string> GetSalespersonCustomers(string sUser)
         {
-            string response =
-                await soapService.GetSalespersonCustomersAsync(sUser);
-
-            await XMLResponseParser
-                .commService_GetSalespersonCustomersCompletedAsync(response);
+            return await soapService.GetSalespersonCustomersAsync(sUser);
         }
 
-        public async Task GetFlyerItemsPDF()
+        public async Task<string> GetFlyerItemsPDF()
         {
-            string response =
-                await soapService.GetFlyerItemsPDFAsync();
-
-            await XMLResponseParser
-                .commService_GetFlyerItemsPDFCompleted(response);
+            return await soapService.GetFlyerItemsPDFAsync();
         }
     }
 }

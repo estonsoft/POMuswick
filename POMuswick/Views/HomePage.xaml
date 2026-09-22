@@ -28,10 +28,6 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <ContentPage.BindingContext>
-        <vm:HomeViewModel/>
-    </ContentPage.BindingContext>
-
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="BannerBackground">White</Color>
@@ -49,7 +45,7 @@
     </Shell.SearchHandler>
 
     <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
-          SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+            SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -70,19 +66,18 @@
                     Source="menu_blue.png"
                     WidthRequest="30">
                     <ffimageloading:CachedImage.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnMenuTapped"/>
+                        <TapGestureRecognizer Command="{Binding MenuTappedCommand}"/>
                     </ffimageloading:CachedImage.GestureRecognizers>
                 </ffimageloading:CachedImage>
                 <Entry
                     x:Name="SearchText"
                     Margin="60,10,60,0"
                     ClearButtonVisibility="WhileEditing"
-                    Completed="OnSearchTapped"
                     FontSize="14"
                     HorizontalOptions="Fill"
                     Placeholder="Search Products"
                     PlaceholderColor="Gray"
-                    TextChanged="Search_TextChanged"/>
+                    Text="{Binding SearchText, Mode=TwoWay}"/>
                 <Label
                     Margin="0,5,30,0"
                     BackgroundColor="White"
@@ -93,7 +88,7 @@
                     TextColor="RoyalBlue"
                     VerticalOptions="Center">
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnSearchTapped"/>
+                        <TapGestureRecognizer Command="{Binding SearchTappedCommand}"/>
                     </Label.GestureRecognizers>
                 </Label>
             </Grid>
@@ -106,7 +101,7 @@
         </StackLayout>
 
         <ScrollView Grid.Row="1"
-                    Orientation="Vertical">
+                Orientation="Vertical">
 
             <VerticalStackLayout
                 HorizontalOptions="Fill"
@@ -122,7 +117,7 @@
                         FontSize="14"
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
-                        Text="Welcome"
+                        Text="{Binding WelcomeTitle}"
                         TextColor="black"/>
                     <Label
                         x:Name="lblUserName"
@@ -130,7 +125,7 @@
                         FontSize="14"
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
-                        Text="Company Name"
+                        Text="{Binding CustomerTitle}"
                         TextColor="black"/>
                 </VerticalStackLayout>
 
@@ -143,6 +138,7 @@
                         <ffimageloading:CachedImage
                             x:Name="BannerImage"
                             Aspect="AspectFit"
+                            Source="{Binding BannerImage}"
                             BackgroundColor="white"
                             HeightRequest="200"
                             HorizontalOptions="Fill"/>
@@ -168,7 +164,7 @@
                             HorizontalOptions="Center"
                             VerticalOptions="Center">
                             <HorizontalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnPastPurchases"/>
+                                <TapGestureRecognizer Command="{Binding PastPurchasesCommand}"/>
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
                                 FontAttributes="Bold"
@@ -222,7 +218,7 @@
                             HorizontalOptions="Center"
                             VerticalOptions="Center">
                             <HorizontalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                                <TapGestureRecognizer Command="{Binding RefreshDataCommand}"/>
                             </HorizontalStackLayout.GestureRecognizers>
                             <Label
                                 FontAttributes="Bold"
@@ -247,7 +243,7 @@
 
                 <!--  Start Your Cart header  -->
                 <Grid Padding="15,15,0,0"
-                      HorizontalOptions="Fill">
+                        HorizontalOptions="Fill">
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
@@ -257,7 +253,7 @@
                         TextColor="black"
                         WidthRequest="240"/>
                     <HorizontalStackLayout Margin="0,0,10,0"
-                                           HorizontalOptions="End">
+                            HorizontalOptions="End">
                         <Label
                             Margin="0,6,0,0"
                             FontAttributes="Bold"
@@ -266,7 +262,7 @@
                             Text="Shop All Items"
                             TextColor="blue">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnShopNow"/>
+                                <TapGestureRecognizer Command="{Binding ShopNowCommand}"/>
                             </Label.GestureRecognizers>
                         </Label>
                         <Label
@@ -279,18 +275,18 @@
                             TextColor="blue"
                             VerticalOptions="Center">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnShopNow"/>
+                                <TapGestureRecognizer Command="{Binding ShopNowCommand}"/>
                             </Label.GestureRecognizers>
                         </Label>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnShopNow"/>
+                        <TapGestureRecognizer Command="{Binding ShopNowCommand}"/>
                     </Grid.GestureRecognizers>
                 </Grid>
 
                 <!--  New Items header  -->
                 <Grid Padding="15,15,0,0"
-                      HorizontalOptions="Fill">
+                        HorizontalOptions="Fill">
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
@@ -300,7 +296,7 @@
                         TextColor="black"
                         WidthRequest="255"/>
                     <HorizontalStackLayout Margin="0,0,10,0"
-                                           HorizontalOptions="End">
+                            HorizontalOptions="End">
                         <Label
                             Margin="-25,6,0,0"
                             FontAttributes="Bold"
@@ -309,7 +305,7 @@
                             Text="View All New Items"
                             TextColor="blue">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnNewItemsAll"/>
+                                <TapGestureRecognizer Command="{Binding NewItemsAllCommand}"/>
                             </Label.GestureRecognizers>
                         </Label>
                         <Label
@@ -322,12 +318,12 @@
                             TextColor="blue"
                             VerticalOptions="Center">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnNewItemsAll"/>
+                                <TapGestureRecognizer Command="{Binding NewItemsAllCommand}"/>
                             </Label.GestureRecognizers>
                         </Label>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnNewItemsAll"/>
+                        <TapGestureRecognizer Command="{Binding NewItemsAllCommand}"/>
                     </Grid.GestureRecognizers>
                 </Grid>
 
@@ -336,12 +332,13 @@
                     x:Name="NewItemList"
                     Margin="0,20,0,20"
                     HeightRequest="300"
+                    ItemsSource="{Binding LstItems}"
                     ItemsLayout="HorizontalList"
                     SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <StackLayout Orientation="Vertical"
-                                         VerticalOptions="Fill">
+                                    VerticalOptions="Fill">
                                 <Border Stroke="LightGray">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10"/>
@@ -448,7 +445,7 @@
                                                 Spacing="0"
                                                 VerticalOptions="Center">
                                                 <StackLayout Orientation="Horizontal"
-                                                             WidthRequest="130">
+                                                        WidthRequest="130">
                                                     <Label
                                                         BackgroundColor="White"
                                                         FontAttributes="Bold"
@@ -468,7 +465,7 @@
                                                 </StackLayout>
                                             </StackLayout>
                                         </StackLayout>
-                                        <controls:CustomStepperSmall
+                                        <!-- <controls:CustomStepperSmall
                                             x:Name="stepper"
                                             IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
                                             IsMaxOrderQtyVisible="{Binding IsMaxOrderQtyVisible}"
@@ -476,7 +473,7 @@
                                             ItemNo="{Binding ItemNo}"
                                             MaxOrderQty="{Binding MaxOrderQty}"
                                             Text="{Binding QtyOrder}"
-                                            UOM="{Binding UOM}"/>
+                                            UOM="{Binding UOM}" /> -->
                                     </StackLayout>
                                 </Border>
                             </StackLayout>
@@ -488,16 +485,19 @@
         </ScrollView>
 
         <controls:CustomToolbar Grid.Row="2"
-                                VerticalOptions="End"/>
+                VerticalOptions="End"
+                                HomeCommand="{Binding HomePressedCommand}"
+                                CartCommand="{Binding CartPressedCommand}"
+                                HistoryCommand="{Binding HistoryPressedCommand}"
+                                ShopCommand="{Binding ShopPressedCommand}"
+                                ScanCommand="{Binding ScanPressedCommand}"/>
         <controls:CustomAlertDialog
             x:Name="LoadingAlert"
-            Title="Validating"
+            Title="Refreshing Data"
             Grid.Row="0"
-            ProgressPercentage="0"
-            ProgressValue="0"
             Grid.RowSpan="2"
-            IsLoading="True"
-            IsVisible="False"
-            Message="Please wait while we refreshing the App Data…"/>
+            IsVisible="{Binding IsBusy}"
+            IsLoading="{Binding IsBusy}"
+            Message="Please wait while we Refreshing app data..."/>
     </Grid>
 </ContentPage>

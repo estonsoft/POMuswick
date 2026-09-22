@@ -1,45 +1,20 @@
-﻿namespace POMuswick.Views
+﻿using POMuswick.ViewModels;
+
+namespace POMuswick.Views
 {
     public partial class SubcategoryPage : ContentPage
     {
-
-        public SubcategoryPage()
+        private readonly SubCategoryViewModel _viewModel;
+        public SubcategoryPage(SubCategoryViewModel viewModel)
         {
             InitializeComponent();
-            BindingContext = this;
+            BindingContext = _viewModel = viewModel;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-
-            App.g_Subcategory.Code = "";
-            App.g_Subcategory.Description = "ALL SUBCATEGORIES";
-
-            App.g_SearchText = "";
-
-            App.g_CurrentPage = "SubcategoryPage";
-
-            //Database db = new Database();
-            List<Subcategory> lst = await App.g_db.GetSubcategory(App.g_Category.Code);
-
-            SubcategoriesListSearch.ItemsSource = lst;
-        }
-
-        private void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
-        {
-            //Category item = (Category) e.SelectedItem;
-            //App.g_Category = item.Code;
-
-            //Shell.Current.GoToAsync("//HomePage/ItemSearchPage");
-        }
-
-        private async void OnSubcategoryTapped(object sender, ItemTappedEventArgs e)
-        {
-            App.g_Subcategory = (Subcategory)e.Item;
-            App.g_ScanBarcode = "";
-
-            await App.g_Shell.GoToItemSearch();
+            await _viewModel.OnAppearingAsync();
         }
 
         protected override bool OnBackButtonPressed()

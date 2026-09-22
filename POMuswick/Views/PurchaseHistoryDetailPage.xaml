@@ -26,12 +26,6 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <!--
-    <Shell.SearchHandler>
-        <controls:MySearchHandler Placeholder="Search Products" ShowsResults="false" DisplayMemberName="Name" />
-    </Shell.SearchHandler>
-    -->
-
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="BannerBackground">White</Color>
@@ -48,7 +42,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" />
+            <controls:CustomHeader Grid.Row="0" Title="{Binding Title}" BackCommand="{Binding BackPressedCommand}"/>
             <StackLayout
                 Grid.Row="1"
                 Margin="0,0,0,0"
@@ -161,14 +155,33 @@
             <CollectionView
                 x:Name="OrderItemsList"
                 Grid.Row="2"
+                ItemsSource="{Binding OrderDetailList}"
                 SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <controls:CustomListItem x:Name="CustomListItem" />
-                    </DataTemplate>
+                        <controls:CustomListItem
+                            CommandParameter="{Binding .}"
+                            ImageViewCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShowImageCommand}"
+                            PlusCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IncreaseQtyCommand}"
+                            MinusCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DecreaseQtyCommand}"/>
+                   </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <controls:CustomToolbar Grid.Row="3" />
+            <controls:ImageAlertView
+                x:Name="ImageAlert"
+                Grid.Row="0"
+                CloseCommand="{Binding CloseImageCommand}"
+                ImageSource="{Binding SelectedImage}"
+                Grid.RowSpan="3"
+                IsVisible="{Binding ShowImage}"
+                Grid.Column="0"
+                ZIndex="99"/>
+            <controls:CustomToolbar Grid.Row="3" 
+                HomeCommand="{Binding HomePressedCommand}" 
+                CartCommand="{Binding CartPressedCommand}" 
+                HistoryCommand="{Binding HistoryPressedCommand}" 
+                ShopCommand="{Binding ShopPressedCommand}" 
+                ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

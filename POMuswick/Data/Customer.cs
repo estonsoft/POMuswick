@@ -41,7 +41,7 @@ namespace POMuswick
         {
             CustId = -1;
             IsCodeVerified = false;
-            UniqueId = App.app_uniqueId;
+            UniqueId="";
             CustNo = "0";
             CompanyName = "";
             Contact = "";
