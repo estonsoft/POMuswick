@@ -12,10 +12,42 @@ public partial class BaseViewModel : ObservableObject
 
     [ObservableProperty]
     public string _title = string.Empty;
-    
+
+    [ObservableProperty]
+    private string _syncStatus = string.Empty;
+
+    [ObservableProperty]
+    private int _progressPercentage;
+
+    [ObservableProperty]
+    private double _progressValue;
+
     public BaseViewModel(IAppServices appServices)
     {
         _appServices = appServices;
+    }
+
+    protected void ResetSyncProgress()
+    {
+        SyncStatus = "Starting sync";
+        ProgressPercentage = 0;
+        ProgressValue = 0;
+    }
+
+    protected IProgress<SyncProgress> CreateSyncProgress()
+    {
+        return new Progress<SyncProgress>(syncProgress =>
+        {
+            SyncStatus = syncProgress.Status;
+            ProgressPercentage = syncProgress.Percentage;
+            ProgressValue = syncProgress.Percentage / 100d;
+        });
+    }
+
+    protected Task SyncAppAsync(string selectedCustomer = "0")
+    {
+        ResetSyncProgress();
+        return _appServices._appSyncService.SyncApp(selectedCustomer, CreateSyncProgress());
     }
 
     public async Task RequestCameraPermission()

@@ -24,7 +24,7 @@ namespace POMuswick.Parsers
                     {
                         String[] aCust = s.Split("|");
 
-                        if (aCust.Count() < 2)
+                        if (aCust.Length < 2)
                         {
                             continue;
                         }
@@ -38,10 +38,10 @@ namespace POMuswick.Parsers
                         c.Zip = aCust[5];
                         c.CityStateZip = c.City.Trim() + ", " + c.State.Trim() + " " + c.Zip.Trim();
                         c.ARBalance = 0;
-                        c.ARBalance = GetDecimalValue("AR Balance",aCust[6],0);
-                        
+                        c.ARBalance = GetDecimalValue("AR Balance", aCust[6], 0);
+
                         c.ARBalanceDisplay = string.Format("{0:C2}", c.ARBalance);
-                        c.CreditLimit = GetDecimalValue("Credit Limit",aCust[7],0);
+                        c.CreditLimit = GetDecimalValue("Credit Limit", aCust[7], 0);
                         if (c.CreditLimit > 0)
                         {
                             c.CreditLimitDisplay = string.Format("{0:C2}", c.CreditLimit);
@@ -68,7 +68,7 @@ namespace POMuswick.Parsers
                                 c.LastPaymentDate += aCust[13].Substring(1, 2);
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
@@ -85,13 +85,13 @@ namespace POMuswick.Parsers
                                 c.LastOrderDate += aCust[14].Substring(1, 2);
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Console.WriteLine("Get Validate Login exception: " + ex.Message + ex.StackTrace);
                         }
 
-                        c.MinOrderAmount = GetDecimalValue("Min Order Amount",aCust[15],0);
-                        c.ShippingFee = GetDecimalValue("Shipping Fee",aCust[16],0);
+                        c.MinOrderAmount = GetDecimalValue("Min Order Amount", aCust[15], 0);
+                        c.ShippingFee = GetDecimalValue("Shipping Fee", aCust[16], 0);
                         salesCustomers.Add(c);
                     }
                 }

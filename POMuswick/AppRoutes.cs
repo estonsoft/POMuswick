@@ -7,7 +7,7 @@ public static class AppRoutes
     public const string ShoppingCart = nameof(ShoppingCartPage);
     public const string Checkout = nameof(CheckoutPage);
     public const string SubmitOrder = nameof(SubmitOrderPage);
-    public const string Categories = nameof(CategoryPage);
+    public const string Categories = "category-route";
     public const string SubCategories = nameof(SubcategoryPage);
     public const string ItemSearch = nameof(ItemSearchPage);
     public const string CustomerList = nameof(CustomerListPage);

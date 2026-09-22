@@ -24,39 +24,45 @@ namespace POMuswick.Parsers
                 {
                     try
                     {
-                     String[] aCategory = s.Split("|");
+                        String[] aCategory = s.Split("|");
 
-                    if (aCategory.Count() < 4)
-                    {
-                        return;
-                    }
+                        if (aCategory.Count() < 4)
+                        {
+                            return;
+                        }
 
-                    if (aCategory[1].Length == 0)
-                    {
-                        Category cat = new Category()
+                        if (aCategory[1].Length == 0)
                         {
-                            Code = aCategory[0],
-                            Description = aCategory[2].Trim(),
-                            ImageURL = Constants.CategoryImageUrl + aCategory[0] + ".png",
-                            Rank = GetIntegerValue("Category Rank", aCategory[3].Trim(), 0),
-                            HomePage = GetIntegerValue("Category Home Page", aCategory[4].Trim(), 0)
-                        };
-                        lstCategories.Add(cat);
+                            if (aCategory.Length < 5)
+                            {
+                                return;
+                            }
+
+                            Category cat = new Category()
+                            {
+                                Code = aCategory[0],
+                                Description = aCategory[2].Trim(),
+                                ImageURL = Constants.CategoryImageUrl + aCategory[0] + ".png",
+                                Rank = GetIntegerValue("Category Rank", aCategory[3].Trim(), 0),
+                                HomePage = GetIntegerValue("Category Home Page", aCategory[4].Trim(), 0)
+                            };
+                            lstCategories.Add(cat);
+                        }
+                        else
+                        {
+                            Subcategory subcat = new Subcategory()
+                            {
+                                Category = aCategory[0],
+                                Code = aCategory[1],
+                                Description = aCategory[2].Trim(),
+                                Rank = GetIntegerValue("Subcategory Rank", aCategory[3].Trim(), 0)
+                            };
+                            lstSubcategories.Add(subcat);
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        Subcategory subcat = new Subcategory()
-                        {
-                            Category = aCategory[0],
-                            Code = aCategory[1],
-                            Description = aCategory[2].Trim(),
-                            Rank = GetIntegerValue("Subcategory Rank", aCategory[3].Trim(), 0)
-                        };
-                        lstSubcategories.Add(subcat);
-                    }   
-                    }catch(Exception e)
-                    {
-                        Console.WriteLine("Parsing Categories error"+e.Message);
+                        Console.WriteLine("Parsing Categories error" + e.Message);
                     }
                 });
             }

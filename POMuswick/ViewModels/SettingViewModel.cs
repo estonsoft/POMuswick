@@ -16,15 +16,15 @@ namespace POMuswick.ViewModels
         [ObservableProperty]
         public string _serverURLText;
         private AppSettings appSettings;
-        
+
         public SettingViewModel(IAppServices appServices) : base(appServices)
-    {
+        {
             Title = PageTitles.Settings;
             _settingService = appServices._settingService;
             _navigationService = appServices._navigationService;
             _appSyncService = appServices._appSyncService;
         }
-        
+
         public override async Task OnAppearingAsync()
         {
             await base.OnAppearingAsync();
@@ -55,12 +55,14 @@ namespace POMuswick.ViewModels
                 if (appSettings.BaseUrl != sURL)
                 {
                     appSettings.BaseUrl = sURL;
-                    appSettings.UpdateServerLinks(appSettings.BaseUrl);
-
+                    Constants.BaseURL = appSettings.BaseUrl;
                     await _appSyncService.SyncApp();
                 }
             }
-            await _settingService.SaveSetting(appSettings);
+            await _settingService.SaveChanges(new Dictionary<string, string>
+            {
+                [nameof(AppSettings.BaseUrl)] = appSettings.BaseUrl
+            });
             await _navigationService.GoBackAsync();
         }
     }

@@ -4,13 +4,15 @@ using POMuswick.Services;
 using POMuswick;
 using POMuswick.ViewModels;
 using POMuswick.Common;
+
+namespace POMuswick.ViewModels;
+
 public partial class LoginViewModel : BaseViewModel
 {
     private readonly ILoginService _loginService;
     private readonly ICustomerService _customerService;
     private readonly INavigationService _navigationService;
     private readonly ISettingService _settingService;
-    private readonly IAppSyncService _appSyncService;
 
     [ObservableProperty]
     private string _user = string.Empty;
@@ -27,12 +29,11 @@ public partial class LoginViewModel : BaseViewModel
 
     public LoginViewModel(IAppServices appServices) : base(appServices)
     {
-         Title = PageTitles.Login;
+        Title = PageTitles.Login;
         _navigationService = appServices._navigationService;
         _settingService = appServices._settingService;
         _loginService = appServices._loginService;
         _customerService = appServices._customerService;
-        _appSyncService = appServices._appSyncService;
     }
 
     public override async Task OnAppearingAsync()
@@ -54,12 +55,12 @@ public partial class LoginViewModel : BaseViewModel
             var result = await _loginService.LoginAsync(
                 User,
                 Password);
-            
+
             await _customerService.SaveCustomerAsync(new Customer() { RememberMe = this.RememberMe });
-            
+
             if (result.Success)
             {
-                await _appSyncService.SyncApp();
+                await SyncAppAsync();
                 await _navigationService.GoToRootAsync(AppRoutes.Home);
                 return;
             }

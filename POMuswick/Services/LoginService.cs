@@ -32,17 +32,28 @@ namespace POMuswick.Services
 
         public async Task<LoginResult> LoginAsync(string user, string password)
         {
-            CheckURL(user);
+            await CheckURL(user);
             var deviceID = _deviceIdProvider.GetDeviceId();
-            var response = await _comm.ValidateLogin(user, password,deviceID);
+            var response = await _comm.ValidateLogin(user, password, deviceID);
 
             var result = _parser.Parse(response);
             result.Settings.UserName = user;
             if (result.Success)
             {
-                // _customerRepository.Save(result.Customer);
+                await _customerService.SaveCustomerAsync(result.Customer);
 
-                await _settingService.SaveSetting(result.Settings);
+                await _settingService.SaveChanges(new Dictionary<string, string>
+                {
+                    [nameof(AppSettings.UserName)] = user,
+                    [nameof(AppSettings.CustomerNo)] = result.Settings.CustomerNo,
+                    [nameof(AppSettings.IsLoggedIn)] = result.Settings.IsLoggedIn ? "1" : "0",
+                    [nameof(AppSettings.IsCredits)] = result.Settings.IsCredits ? "1" : "0",
+                    [nameof(AppSettings.IsSalesUser)] = result.Settings.IsSalesUser ? "1" : "0",
+                    [nameof(AppSettings.HoldForReview)] = result.Settings.HoldForReview ? "1" : "0",
+                    [nameof(AppSettings.ForceSubmit)] = result.Settings.ForceSubmit ? "1" : "0",
+                    [nameof(AppSettings.QOHDisplay)] = result.Settings.QOHDisplay ?? "X",
+                    [nameof(AppSettings.BlockItemsNoQOH)] = result.Settings.BlockItemsNoQOH ? "1" : "0"
+                });
 
                 await _locationService.SaveLocationAsync(result.Location);
             }
@@ -57,9 +68,9 @@ namespace POMuswick.Services
             return loginResult;
         }
 
-        private void CheckURL(string user)
+        private async Task CheckURL(string user)
         {
-            AppSettings appSettings = new AppSettings();
+            AppSettings appSettings = await _settingService.LoadSetting();
             if (user.ToLower() == "app_test")
             {
                 appSettings.BaseUrl = "https://store.qwikpoint.net";
@@ -68,8 +79,12 @@ namespace POMuswick.Services
             {
                 appSettings.BaseUrl = "https://muswicksales.ddns.net";
             }
-            appSettings.UpdateServerLinks(appSettings.BaseUrl);
-            _settingService.SaveSetting(appSettings);
+            Constants.BaseURL = appSettings.BaseUrl;
+
+            await _settingService.SaveChanges(new Dictionary<string, string>
+            {
+                [nameof(AppSettings.BaseUrl)] = appSettings.BaseUrl
+            });
         }
     }
 

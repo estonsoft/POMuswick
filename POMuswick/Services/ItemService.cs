@@ -26,9 +26,11 @@ namespace POMuswick.Services
         {
             var customer = _customerRepository.Load();
 
-            var response = await _comm.GetItems(customer.CustNo,"0");
+            var response = await _comm.GetItems(customer.CustNo, "0");
 
             ItemResult result = await _parser.Parse(response);
+
+            await _ItemRepository.Clear();
 
             await _ItemRepository.SaveItems(result.items);
 
@@ -48,16 +50,16 @@ namespace POMuswick.Services
             };
             return itemResult;
         }
-        
+
         public async Task<List<Item>> SearchItemsQuickEntry(string searchTerm)
         {
             var items = await _ItemRepository.SearchItemsQuickEntry(searchTerm);
             return items;
         }
 
-        public async Task<List<Item>> SearchItemsAsync(bool stock,string searchText, Category category, string scanBarcode, Subcategory subcategory)
+        public async Task<List<Item>> SearchItemsAsync(bool stock, string searchText, Category category, string scanBarcode, Subcategory subcategory)
         {
-           var items =  await _ItemRepository.SearchItemsAsync(stock,searchText, category, scanBarcode, subcategory);
+            var items = await _ItemRepository.SearchItemsAsync(stock, searchText, category, scanBarcode, subcategory);
             return items;
         }
 
@@ -76,9 +78,9 @@ namespace POMuswick.Services
             return await _ItemRepository.GetItemQty(itemNo);
         }
 
-        public async Task<List<Item>> SearchItemsKeyword(string searchText,bool stock)
+        public async Task<List<Item>> SearchItemsKeyword(string searchText, bool stock)
         {
-            return await _ItemRepository.SearchItemsKeyword(searchText,stock);
+            return await _ItemRepository.SearchItemsKeyword(searchText, stock);
         }
 
         public async Task<ItemResult> FetchReorderItemsAsync()
@@ -103,7 +105,7 @@ namespace POMuswick.Services
         public Task<List<Item>> SearchItemsQuickEntry(string searchTerm);
         public Task<Item> GetItemByItemNo(int itemNo);
         public Task<int> GetItemQty(int itemNo);
-        public Task<List<Item>>SearchItemsAsync(bool stock,string searchText, Category category,string scanBarcode, Subcategory subcategory);
-        public Task<List<Item>> SearchItemsKeyword(string searchText,bool stock);
+        public Task<List<Item>> SearchItemsAsync(bool stock, string searchText, Category category, string scanBarcode, Subcategory subcategory);
+        public Task<List<Item>> SearchItemsKeyword(string searchText, bool stock);
     }
 }

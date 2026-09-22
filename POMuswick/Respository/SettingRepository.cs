@@ -12,39 +12,34 @@ namespace POMuswick.Repository
             _db = db;
         }
 
-        public void Save(AppSettings setting)
+        public void SaveChanges(IReadOnlyDictionary<string, string> changes)
         {
-            if (!string.IsNullOrWhiteSpace(setting.UserName))
-                _db.SaveString(nameof(setting.UserName), setting.UserName);
+            var allowedKeys = new HashSet<string>(StringComparer.Ordinal)
+            {
+                nameof(AppSettings.UserName),
+                nameof(AppSettings.BaseUrl),
+                nameof(AppSettings.CustomerNo),
+                nameof(AppSettings.IsLoggedIn),
+                nameof(AppSettings.IsCredits),
+                nameof(AppSettings.IsSalesUser),
+                nameof(AppSettings.HoldForReview),
+                nameof(AppSettings.ForceSubmit),
+                nameof(AppSettings.QOHDisplay),
+                nameof(AppSettings.BlockItemsNoQOH)
+            };
 
-            if (!string.IsNullOrWhiteSpace(setting.LastUserName))
-                _db.SaveString(nameof(setting.LastUserName), setting.LastUserName);
-
-            if (!string.IsNullOrWhiteSpace(setting.CustomerNo))
-                _db.SaveString(nameof(setting.CustomerNo), setting.CustomerNo);
-
-            if (!string.IsNullOrWhiteSpace(setting.QOHDisplay))
-                _db.SaveString(nameof(setting.QOHDisplay), setting.QOHDisplay);
-
-            if (!string.IsNullOrWhiteSpace(setting.LastCategoryUpdate))
-                _db.SaveString(nameof(setting.LastCategoryUpdate), setting.LastCategoryUpdate);
-
-            if (!string.IsNullOrWhiteSpace(setting.LastItemUpdate))
-                _db.SaveString(nameof(setting.LastItemUpdate), setting.LastItemUpdate);
-
-            // Booleans are always present, so they will always be saved
-            _db.SaveString(nameof(setting.IsLoggedIn), setting.IsLoggedIn ? "1" : "0");
-            _db.SaveString(nameof(setting.IsCredits), setting.IsCredits ? "1" : "0");
-            _db.SaveString(nameof(setting.IsSalesUser), setting.IsSalesUser ? "1" : "0");
-            _db.SaveString(nameof(setting.HoldForReview), setting.HoldForReview ? "1" : "0");
-            _db.SaveString(nameof(setting.ForceSubmit), setting.ForceSubmit ? "1" : "0");
-            _db.SaveString(nameof(setting.BlockItemsNoQOH), setting.BlockItemsNoQOH ? "1" : "0");
+            foreach (var change in changes)
+            {
+                if (allowedKeys.Contains(change.Key))
+                {
+                    SaveIfChanged(change.Key, change.Value);
+                }
+            }
         }
+
         private void SaveIfChanged(string key, string newValue)
         {
-            var currentValue = _db.GetString(key);
-
-            if (currentValue != newValue)
+            if (_db.GetString(key) != newValue)
             {
                 _db.SaveString(key, newValue);
             }
@@ -70,6 +65,8 @@ namespace POMuswick.Repository
                     _db.GetString(nameof(AppSettings.LastCategoryUpdate)) ?? "",
                 LastItemUpdate =
                     _db.GetString(nameof(AppSettings.LastItemUpdate)) ?? "",
+                BaseUrl =
+                    _db.GetString(nameof(AppSettings.BaseUrl)) ?? "https://muswicksales.ddns.net",
 
                 ForceSubmit =
                     _db.GetString(nameof(AppSettings.ForceSubmit)) == "1",
@@ -85,7 +82,7 @@ namespace POMuswick.Repository
 
     public interface ISettingRepository
     {
-        public void Save(AppSettings Setting);
+        public void SaveChanges(IReadOnlyDictionary<string, string> changes);
         public AppSettings Load();
     }
 }

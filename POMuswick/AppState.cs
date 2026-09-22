@@ -30,15 +30,22 @@ namespace POMuswick
 
         public async void AppResume()
         {
-            if (appSettings.IsLoggedIn)
-            {   
-                var result = await _loginService.ValidateUserAsync();
-                if(result.Status == "1")
+            try
+            {
+                if (appSettings.IsLoggedIn)
                 {
-                   await _navigationService.GoToRootAsync(AppRoutes.Home);
+                    var result = await _loginService.ValidateUserAsync();
+                    if (result.Status == "1" && Shell.Current.CurrentState.Location.ToString() != $"//{AppRoutes.Home}")
+                    {
+                        await _navigationService.GoToRootAsync(AppRoutes.Home);
+                    }
                 }
+                appSettings.IsOrderSubmiting = false;
             }
-            appSettings.IsOrderSubmiting = false;
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"App resume failed: {ex}");
+            }
         }
-    }   
+    }
 }

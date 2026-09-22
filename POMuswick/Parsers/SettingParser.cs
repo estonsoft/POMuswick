@@ -16,7 +16,8 @@ namespace POMuswick.Parsers
             try
             {
                 var settings = response.Split('|');
-                AppSettings appSettings = new(){
+                AppSettings appSettings = new()
+                {
                     HoldForReview = settings.ElementAtOrDefault(0) == "1",
                     ForceSubmit = settings.ElementAtOrDefault(1) == "1",
                     QOHDisplay = settings.ElementAtOrDefault(2) ?? "X",

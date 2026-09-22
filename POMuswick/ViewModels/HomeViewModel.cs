@@ -28,7 +28,6 @@ namespace POMuswick.ViewModels
         private readonly ISettingService _settingService;
         private readonly ICustomerService _customerService;
         private readonly IItemService _itemService;
-        private readonly IAppSyncService _appSyncService;
 
         public HomeViewModel(IAppServices appServices) : base(appServices)
         {
@@ -38,7 +37,6 @@ namespace POMuswick.ViewModels
             _settingService = appServices._settingService;
             _bannerService = appServices._bannerService;
             _itemService = appServices._itemService;
-            _appSyncService = appServices._appSyncService;
         }
 
         public override async Task OnAppearingAsync()
@@ -64,41 +62,44 @@ namespace POMuswick.ViewModels
 
         private async void UpdateBanner()
         {
-            var bannerResult = await _bannerService.GetBannerAsync();
-            var banners = bannerResult.banners;
-            if (banners.Count == 0)
+            try
             {
+                var bannerResult = await _bannerService.GetBannerAsync();
+                var banners = bannerResult?.banners;
+                if (banners == null || banners.Count == 0)
                 {
                     BannerImage = ImageSource.FromFile("logo.jpg");
                     return;
                 }
-            }
-            int iNextIndex = 0;
 
-            foreach (var b in banners)
-            {
-                iNextIndex++;
-
-                if (BannerImage.ToString().Contains(b.BannerName))
+                int currentIndex = -1;
+                foreach (var banner in banners)
                 {
-                    break;
+                    if (BannerImage?.ToString()?.Contains(banner.BannerName) == true)
+                    {
+                        currentIndex = banners.IndexOf(banner);
+                        break;
+                    }
                 }
-            }
 
-            if (iNextIndex >= banners.Count)
-            {
-                iNextIndex = 0;
-            }
-            try
-            {
-                Banner banner = banners[iNextIndex];
+                for (int offset = 1; offset <= banners.Count; offset++)
+                {
+                    int nextIndex = (currentIndex + offset) % banners.Count;
+                    string? bannerUrl = banners[nextIndex].BannerURL;
+                    if (Uri.TryCreate(bannerUrl, UriKind.Absolute, out Uri? uri) &&
+                        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+                    {
+                        BannerImage = ImageSource.FromUri(uri);
+                        return;
+                    }
+                }
 
-                BannerImage = ImageSource.FromUri(new Uri(banner.BannerURL));
+                BannerImage = ImageSource.FromFile("logo.jpg");
             }
-            catch(Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine("Banner Exception"+e.Message);
-            }      
+                System.Diagnostics.Debug.WriteLine($"Banner update failed: {ex}");
+            }
         }
 
         public async Task SetHomeUIControls(AppSettings appSettings)
@@ -230,8 +231,14 @@ namespace POMuswick.ViewModels
         public async Task RefreshDataAsync()
         {
             IsBusy = true;
-            await _appSyncService.SyncApp();
-            IsBusy = false;
+            try
+            {
+                await SyncAppAsync();
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]

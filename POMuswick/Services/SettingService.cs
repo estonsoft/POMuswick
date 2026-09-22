@@ -1,4 +1,3 @@
-using FluentFTP.Helpers;
 using POMuswick.Data;
 using POMuswick.Models;
 using POMuswick.Parsers;
@@ -25,13 +24,20 @@ namespace POMuswick.Services
         {
             var response = await _comm.GetSettings();
             SettingResult result = await _parser.Parse(response);
-            await SaveSetting(result.appSettings);
+            _settingRepository.SaveChanges(new Dictionary<string, string>
+            {
+                [nameof(AppSettings.HoldForReview)] = result.appSettings.HoldForReview ? "1" : "0",
+                [nameof(AppSettings.ForceSubmit)] = result.appSettings.ForceSubmit ? "1" : "0",
+                [nameof(AppSettings.QOHDisplay)] = result.appSettings.QOHDisplay ?? "X",
+                [nameof(AppSettings.BlockItemsNoQOH)] = result.appSettings.BlockItemsNoQOH ? "1" : "0"
+            });
             return result;
         }
 
-        public async Task SaveSetting(AppSettings appSettings)
+        public Task SaveChanges(IReadOnlyDictionary<string, string> changes)
         {
-            _settingRepository.Save(appSettings);
+            _settingRepository.SaveChanges(changes);
+            return Task.CompletedTask;
         }
 
         public async Task<AppSettings> LoadSetting()
@@ -44,7 +50,7 @@ namespace POMuswick.Services
     public interface ISettingService
     {
         public Task<SettingResult> FetchSettingAsync();
-        public Task SaveSetting(AppSettings appSettings);
+        public Task SaveChanges(IReadOnlyDictionary<string, string> changes);
         public Task<AppSettings> LoadSetting();
     }
 }

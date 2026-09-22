@@ -6,6 +6,8 @@ namespace POMuswick
 {
     public partial class AppShell : Shell
     {
+        private static bool _routesRegistered;
+        private static readonly object RouteRegistrationLock = new();
         private readonly INavigationService _navigationService;
         private readonly ISettingService _settingService;
         private readonly IDialogService _dialogService;
@@ -37,21 +39,26 @@ namespace POMuswick
 
         private void RegisterRoutes()
         {
-            Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
-            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
-            Routing.RegisterRoute(nameof(ItemSearchPage), typeof(ItemSearchPage));
-            Routing.RegisterRoute(nameof(CategoryPage), typeof(CategoryPage));
-            Routing.RegisterRoute(nameof(SubcategoryPage), typeof(SubcategoryPage));
-            Routing.RegisterRoute(nameof(MyAccountPage), typeof(MyAccountPage));
-            Routing.RegisterRoute(nameof(ShoppingCartPage), typeof(ShoppingCartPage));
-            Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
-            Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
-            Routing.RegisterRoute(nameof(SubmitOrderPage), typeof(SubmitOrderPage));
-            Routing.RegisterRoute(nameof(PurchaseHistoryPage), typeof(PurchaseHistoryPage));
-            Routing.RegisterRoute(nameof(PurchaseHistoryDetailPage), typeof(PurchaseHistoryDetailPage));
-            Routing.RegisterRoute(nameof(ReorderItemsPage), typeof(ReorderItemsPage));
-            Routing.RegisterRoute(nameof(QuickEntryPage), typeof(QuickEntryPage));
-            Routing.RegisterRoute(nameof(CustomerListPage), typeof(CustomerListPage));
+            lock (RouteRegistrationLock)
+            {
+                if (_routesRegistered)
+                    return;
+
+                Routing.RegisterRoute(nameof(ItemSearchPage), typeof(ItemSearchPage));
+                Routing.RegisterRoute(AppRoutes.Categories, typeof(CategoryPage));
+                Routing.RegisterRoute(nameof(SubcategoryPage), typeof(SubcategoryPage));
+                Routing.RegisterRoute(nameof(MyAccountPage), typeof(MyAccountPage));
+                Routing.RegisterRoute(nameof(ShoppingCartPage), typeof(ShoppingCartPage));
+                Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
+                Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
+                Routing.RegisterRoute(nameof(SubmitOrderPage), typeof(SubmitOrderPage));
+                Routing.RegisterRoute(nameof(PurchaseHistoryPage), typeof(PurchaseHistoryPage));
+                Routing.RegisterRoute(nameof(PurchaseHistoryDetailPage), typeof(PurchaseHistoryDetailPage));
+                Routing.RegisterRoute(nameof(ReorderItemsPage), typeof(ReorderItemsPage));
+                Routing.RegisterRoute(nameof(QuickEntryPage), typeof(QuickEntryPage));
+                Routing.RegisterRoute(nameof(CustomerListPage), typeof(CustomerListPage));
+                _routesRegistered = true;
+            }
         }
 
         public void HideCustomerMenu()
@@ -108,15 +115,18 @@ namespace POMuswick
                 return;
             else
             {
-                AppSettings appSettings = new() { IsLoggedIn = false };
+                AppSettings appSettings = await _settingService.LoadSetting();
                 if (appSettings.IsSalesUser)
                 {
                     await _cartService.SuspendCartItems(appSettings.CustomerNo);
                     await _cartService.ClearCartItems();
                 }
                 await _customerService.ClearCustomer();
-                await _settingService.SaveSetting(appSettings);
-                await _navigationService.GoToAsync(AppRoutes.Login);
+                await _settingService.SaveChanges(new Dictionary<string, string>
+                {
+                    [nameof(AppSettings.IsLoggedIn)] = "0"
+                });
+                await _navigationService.GoToRootAsync(AppRoutes.Login);
             }
         }
 
@@ -125,24 +135,24 @@ namespace POMuswick
             SetNavBarIsVisible(this, true);
         }
 
-        private void MenuShoppingCart_Clicked(object sender, EventArgs e)
+        private async void MenuShoppingCart_Clicked(object sender, EventArgs e)
         {
-            _navigationService.GoToAsync(AppRoutes.ShoppingCart);
+            await _navigationService.GoToAsync(AppRoutes.ShoppingCart);
             Shell.Current.FlyoutIsPresented = false;
         }
-        private void MenuScanBarcode_Clicked(object sender, EventArgs e)
+        private async void MenuScanBarcode_Clicked(object sender, EventArgs e)
         {
-            _navigationService.GoToAsync(AppRoutes.QuickEntry);
+            await _navigationService.GoToAsync(AppRoutes.QuickEntry);
             Shell.Current.FlyoutIsPresented = false;
         }
-        private void MenuMyPurchases_Clicked(object sender, EventArgs e)
+        private async void MenuMyPurchases_Clicked(object sender, EventArgs e)
         {
-            _navigationService.GoToAsync(AppRoutes.PurchaseHistory);
+            await _navigationService.GoToAsync(AppRoutes.PurchaseHistory);
             Shell.Current.FlyoutIsPresented = false;
         }
-        private void MenuCategories_Clicked(object sender, EventArgs e)
+        private async void MenuCategories_Clicked(object sender, EventArgs e)
         {
-            _navigationService.GoToAsync(AppRoutes.Categories);
+            await _navigationService.GoToAsync(AppRoutes.Categories);
             Shell.Current.FlyoutIsPresented = false;
         }
 
@@ -152,19 +162,19 @@ namespace POMuswick
             AppSettings appSettings = await _settingService.LoadSetting();
             if (!appSettings.IsLoggedIn)
             {
-                await _navigationService.GoToAsync(AppRoutes.Login);
+                await _navigationService.GoToRootAsync(AppRoutes.Login);
                 return;
             }
             await Logout();
         }
-        private void MenuMyAccount_Clicked(object sender, EventArgs e)
+        private async void MenuMyAccount_Clicked(object sender, EventArgs e)
         {
-            _navigationService.GoToAsync(AppRoutes.MyAccount);
+            await _navigationService.GoToAsync(AppRoutes.MyAccount);
             Shell.Current.FlyoutIsPresented = false;
         }
-        private void MenuCustomers_Clicked(object sender, EventArgs e)
+        private async void MenuCustomers_Clicked(object sender, EventArgs e)
         {
-            _navigationService.GoToAsync(AppRoutes.CustomerList);
+            await _navigationService.GoToAsync(AppRoutes.CustomerList);
             Shell.Current.FlyoutIsPresented = false;
         }
     }

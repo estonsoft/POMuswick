@@ -49,10 +49,10 @@ public partial class CategoryViewModel : BaseViewModel
         CatNSubCatParameter parameter = new CatNSubCatParameter
         {
             Category = selectedCategory,
-            Subcategory = null
+            Subcategory = new Subcategory { Code = "", Description = "ALL SUBCATEGORIES" }
         };
 
-        await _navigationService.GoToAsync(AppRoutes.SubCategories, new ShellNavigationQueryParameters
+        await _navigationService.GoToAsync(AppRoutes.ItemSearch, new ShellNavigationQueryParameters
         {
             { "CatNSubCatParameter", parameter }
         });

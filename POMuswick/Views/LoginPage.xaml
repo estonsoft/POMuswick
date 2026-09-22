@@ -6,8 +6,9 @@
     xmlns:controls="clr-namespace:POMuswick.Controls"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
-    xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Maui"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:POMuswick.ViewModels;assembly=POMuswick"
+    x:DataType="{x:Type vm:LoginViewModel}"
     Title="Account Login"
     BackgroundColor="White"
     HideSoftInputOnTapped="True"
@@ -15,9 +16,10 @@
     mc:Ignorable="d">
 
     <ContentPage.Content>
-        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <ScrollView Grid.Row="0">
@@ -36,7 +38,7 @@
                             FontSize="14"
                             Text="{Binding AppVersion}"
                             HorizontalOptions="Start"
-                            TextColor="black" />
+                            TextColor="black"/>
                         <ImageButton
                             Padding="0,0,0,10"
                             Aspect="AspectFit"
@@ -45,7 +47,7 @@
                             HeightRequest="50"
                             HorizontalOptions="End"
                             Source="settings.png"
-                            WidthRequest="50" />
+                            WidthRequest="50"/>
                     </Grid>
                     <StackLayout
                         Padding="0,20,0,0"
@@ -59,7 +61,7 @@
                             HorizontalOptions="Center"
                             Source="logo.jpg"
                             StyleClass="FlyoutHeaderStyle"
-                            VerticalOptions="Center" />
+                            VerticalOptions="Center"/>
                         <Label
                             Padding="0,10,0,0"
                             BackgroundColor="White"
@@ -67,7 +69,7 @@
                             FontSize="30"
                             HorizontalOptions="Center"
                             Text="Sign In"
-                            TextColor="black" />
+                            TextColor="black"/>
                         <Entry
                             x:Name="User"
                             Margin="0,40,0,0"
@@ -79,7 +81,7 @@
                             PlaceholderColor="Gray"
                             Text="{Binding User}"
                             VerticalOptions="Center"
-                            WidthRequest="250" />
+                            WidthRequest="250"/>
                         <Entry
                             x:Name="Password"
                             Margin="0,20,0,0"
@@ -92,20 +94,20 @@
                             PlaceholderColor="Gray"
                             Text="{Binding Password}"
                             VerticalOptions="Center"
-                            WidthRequest="250" />
+                            WidthRequest="250"/>
                         <Grid
                             Padding="0,5,0,0"
                             HorizontalOptions="Center"
                             VerticalOptions="Center">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="0.25*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.25*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <CheckBox
                                 x:Name="RememberMe"
@@ -113,14 +115,14 @@
                                 Grid.Column="1"
                                 IsChecked="{Binding RememberMe}"
                                 VerticalOptions="Center"
-                                Color="blue" />
+                                Color="blue"/>
                             <Label
                                 Grid.Row="1"
                                 Grid.Column="2"
                                 FontSize="12"
                                 Text="Remember Me"
                                 TextColor="black"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"/>
                         </Grid>
                         <Button
                             Margin="0,20,0,0"
@@ -135,7 +137,7 @@
                             HorizontalOptions="Center"
                             Text="       Sign In       "
                             TextColor="White"
-                            TextTransform="None" />
+                            TextTransform="None"/>
                     </StackLayout>
                 </StackLayout>
             </ScrollView>
@@ -143,10 +145,12 @@
                 x:Name="LoadingAlert"
                 Title="Validating"
                 Grid.Row="0"
-                Grid.RowSpan="0"
                 IsVisible="{Binding IsBusy}"
                 IsLoading="{Binding IsBusy}"
-                Message="Please wait while we validating the credential…" />
+                SyncStatus="{Binding SyncStatus}"
+                ProgressPercentage="{Binding ProgressPercentage}"
+                ProgressValue="{Binding ProgressValue}"
+                Message="Please wait while we validate your credentials..."/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

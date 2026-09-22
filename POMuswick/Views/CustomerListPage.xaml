@@ -237,7 +237,10 @@
                 Grid.RowSpan="3"
                 IsVisible="{Binding IsBusy}"
                 IsLoading="{Binding IsBusy}"
-                Message="Please wait while we updating the customer"/>
+                SyncStatus="{Binding SyncStatus}"
+                ProgressPercentage="{Binding ProgressPercentage}"
+                ProgressValue="{Binding ProgressValue}"
+                Message="Please wait while we update the customer..."/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

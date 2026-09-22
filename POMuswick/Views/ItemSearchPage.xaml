@@ -15,7 +15,7 @@
 
     <ContentPage.Content>
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
-                SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <!--  Header  -->
@@ -31,8 +31,8 @@
             </Grid.RowDefinitions>
 
             <controls:CustomHeader Grid.Row="0"
-                    Title="{Binding title}"
-                    BackCommand="{Binding BackPressedCommand}"/>
+                                   Title="{Binding title}"
+                                   BackCommand="{Binding BackPressedCommand}"/>
             <StackLayout
                 Grid.Row="1"
                 HorizontalOptions="Center"
@@ -202,9 +202,14 @@
             <CollectionView
                 x:Name="ItemsListSearch"
                 Grid.Row="4"
+                ItemSizingStrategy="MeasureFirstItem"
                 SelectionMode="None"
                 ItemsSource="{Binding LstItems}"
                 VerticalOptions="Fill">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical"
+                            ItemSpacing="0"/>
+                </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <controls:CustomSmallListItem
@@ -224,12 +229,12 @@
                 Grid.Column="0"
                 ZIndex="99"/>
 
-            <controls:CustomToolbar Grid.Row="5" 
-                HomeCommand="{Binding HomePressedCommand}" 
-                CartCommand="{Binding CartPressedCommand}" 
-                HistoryCommand="{Binding HistoryPressedCommand}" 
-                ShopCommand="{Binding ShopPressedCommand}" 
-                ScanCommand="{Binding ScanPressedCommand}"/>
+            <controls:CustomToolbar Grid.Row="5"
+                                    HomeCommand="{Binding HomePressedCommand}"
+                                    CartCommand="{Binding CartPressedCommand}"
+                                    HistoryCommand="{Binding HistoryPressedCommand}"
+                                    ShopCommand="{Binding ShopPressedCommand}"
+                                    ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

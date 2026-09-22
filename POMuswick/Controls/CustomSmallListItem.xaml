@@ -9,9 +9,10 @@
     xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui">
 
     <Grid
+        HorizontalOptions="Fill"
         Padding="5"
         ColumnDefinitions="70,*,Auto"
-        RowDefinitions="Auto,Auto">
+        RowDefinitions="Auto,70,Auto">
 
         <!-- DESCRIPTION -->
 
@@ -21,9 +22,10 @@
             Grid.ColumnSpan="3"
             FontAttributes="Bold"
             FontSize="12"
+            MaxLines="1"
             Text="{Binding Description}"
             TextColor="RoyalBlue"
-            LineBreakMode="TailTruncation" />
+            LineBreakMode="TailTruncation"/>
 
         <!-- IMAGE -->
 
@@ -38,15 +40,17 @@
                 WidthRequest="60"
                 HeightRequest="60"
                 Aspect="AspectFit"
+                HorizontalOptions="Center"
                 Source="{Binding ImageURL}"
                 ErrorPlaceholder="logoicon.png"
-                LoadingPlaceholder="logoicon.png">
+                LoadingPlaceholder="logoicon.png"
+                VerticalOptions="Center">
 
                 <ff:CachedImage.GestureRecognizers>
 
                     <TapGestureRecognizer
                         Command="{Binding Source={x:Reference Root}, Path=ImageViewCommand}"
-                        CommandParameter="{Binding Source={x:Reference Root}, Path=CommandParameter}" />
+                        CommandParameter="{Binding Source={x:Reference Root}, Path=CommandParameter}"/>
 
                 </ff:CachedImage.GestureRecognizers>
 
@@ -68,21 +72,21 @@
                 FontSize="10"
                 FontAttributes="Bold"
                 Text="{Binding ItemNoDisplay}"
-                TextColor="Black" />
+                TextColor="Black"/>
 
             <!-- UPC -->
 
             <Label
                 FontSize="10"
                 Text="{Binding ItemNoDisplayUPC}"
-                TextColor="Gray" />
+                TextColor="Gray"/>
 
             <!-- Category -->
 
             <Label
                 FontSize="10"
                 Text="{Binding CategoryDesc}"
-                TextColor="Gray" />
+                TextColor="Gray"/>
 
             <!-- STOCK -->
 
@@ -93,39 +97,39 @@
                 <Label
                     Text="QOH:"
                     FontSize="10"
-                    IsVisible="{Binding IsQOHVisible}" />
+                    IsVisible="{Binding IsQOHVisible}"/>
 
                 <Label
                     Text="{Binding QOH}"
                     FontSize="10"
                     FontAttributes="Bold"
                     TextColor="Black"
-                    IsVisible="{Binding IsQOHBlackVisible}" />
+                    IsVisible="{Binding IsQOHBlackVisible}"/>
 
                 <Label
                     Text="{Binding QOH}"
                     FontSize="10"
                     FontAttributes="Bold"
                     TextColor="Red"
-                    IsVisible="{Binding IsQOHRedVisible}" />
+                    IsVisible="{Binding IsQOHRedVisible}"/>
 
                 <Label
                     Text="In Stock"
                     FontSize="10"
                     TextColor="Green"
-                    IsVisible="{Binding IsInStockVisible}" />
+                    IsVisible="{Binding IsInStockVisible}"/>
 
                 <Label
                     Text="Out Of Stock"
                     FontSize="10"
                     TextColor="Red"
-                    IsVisible="{Binding IsOutOfStockVisible}" />
+                    IsVisible="{Binding IsOutOfStockVisible}"/>
 
                 <Label
                     Text="{Binding MaxOrderQtyDisplay}"
                     FontSize="10"
                     TextColor="Black"
-                    IsVisible="{Binding IsMaxOrderQtyVisible}" />
+                    IsVisible="{Binding IsMaxOrderQtyVisible}"/>
 
             </HorizontalStackLayout>
 
@@ -138,11 +142,11 @@
                     FontAttributes="Bold"
                     FontSize="14"
                     Text="{Binding PriceDisplay}"
-                    IsVisible="{Binding IsPriceVisible}" />
+                    IsVisible="{Binding IsPriceVisible}"/>
 
                 <Label
                     FontSize="12"
-                    Text="{Binding SizeUOM}" />
+                    Text="{Binding SizeUOM}"/>
 
             </HorizontalStackLayout>
 
@@ -155,19 +159,15 @@
             Grid.Column="2"
             VerticalOptions="Center"
             HorizontalOptions="End"
-
             QtyOrder="{Binding QtyOrder}"
             ItemNo="{Binding ItemNo}"
             MaxOrderQty="{Binding MaxOrderQty}"
             UOM="{Binding UOM}"
-
             IsStepperVisible="{Binding IsStepperVisible}"
             IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
-
             PlusCommand="{Binding Source={x:Reference Root}, Path=PlusCommand}"
             MinusCommand="{Binding Source={x:Reference Root}, Path=MinusCommand}"
-
-            CommandParameter="{Binding Source={x:Reference Root}, Path=CommandParameter}" />
+            CommandParameter="{Binding Source={x:Reference Root}, Path=CommandParameter}"/>
 
         <!-- Divider -->
 
@@ -176,7 +176,7 @@
             Grid.ColumnSpan="3"
             Margin="0,8,0,0"
             HeightRequest="1"
-            Color="LightGray" />
+            Color="LightGray"/>
 
     </Grid>
 
@@ -186,7 +186,7 @@
 
         <VisualStateGroup>
 
-            <VisualState Name="Normal" />
+            <VisualState Name="Normal"/>
 
             <VisualState Name="Selected">
 
@@ -194,7 +194,7 @@
 
                     <Setter
                         Property="BackgroundColor"
-                        Value="#EFEFEF" />
+                        Value="#EFEFEF"/>
 
                 </VisualState.Setters>
 

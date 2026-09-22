@@ -45,7 +45,7 @@
     </Shell.SearchHandler>
 
     <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
-            SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+          SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -101,7 +101,7 @@
         </StackLayout>
 
         <ScrollView Grid.Row="1"
-                Orientation="Vertical">
+                    Orientation="Vertical">
 
             <VerticalStackLayout
                 HorizontalOptions="Fill"
@@ -243,7 +243,7 @@
 
                 <!--  Start Your Cart header  -->
                 <Grid Padding="15,15,0,0"
-                        HorizontalOptions="Fill">
+                      HorizontalOptions="Fill">
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
@@ -253,7 +253,7 @@
                         TextColor="black"
                         WidthRequest="240"/>
                     <HorizontalStackLayout Margin="0,0,10,0"
-                            HorizontalOptions="End">
+                                           HorizontalOptions="End">
                         <Label
                             Margin="0,6,0,0"
                             FontAttributes="Bold"
@@ -286,7 +286,7 @@
 
                 <!--  New Items header  -->
                 <Grid Padding="15,15,0,0"
-                        HorizontalOptions="Fill">
+                      HorizontalOptions="Fill">
                     <Label
                         Margin="0,0,0,0"
                         FontAttributes="Bold"
@@ -296,7 +296,7 @@
                         TextColor="black"
                         WidthRequest="255"/>
                     <HorizontalStackLayout Margin="0,0,10,0"
-                            HorizontalOptions="End">
+                                           HorizontalOptions="End">
                         <Label
                             Margin="-25,6,0,0"
                             FontAttributes="Bold"
@@ -338,7 +338,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <StackLayout Orientation="Vertical"
-                                    VerticalOptions="Fill">
+                                         VerticalOptions="Fill">
                                 <Border Stroke="LightGray">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10"/>
@@ -445,7 +445,7 @@
                                                 Spacing="0"
                                                 VerticalOptions="Center">
                                                 <StackLayout Orientation="Horizontal"
-                                                        WidthRequest="130">
+                                                             WidthRequest="130">
                                                     <Label
                                                         BackgroundColor="White"
                                                         FontAttributes="Bold"
@@ -485,7 +485,7 @@
         </ScrollView>
 
         <controls:CustomToolbar Grid.Row="2"
-                VerticalOptions="End"
+                                VerticalOptions="End"
                                 HomeCommand="{Binding HomePressedCommand}"
                                 CartCommand="{Binding CartPressedCommand}"
                                 HistoryCommand="{Binding HistoryPressedCommand}"
@@ -498,6 +498,9 @@
             Grid.RowSpan="2"
             IsVisible="{Binding IsBusy}"
             IsLoading="{Binding IsBusy}"
-            Message="Please wait while we Refreshing app data..."/>
+            SyncStatus="{Binding SyncStatus}"
+            ProgressPercentage="{Binding ProgressPercentage}"
+            ProgressValue="{Binding ProgressValue}"
+            Message="Please wait while we refresh app data..."/>
     </Grid>
 </ContentPage>

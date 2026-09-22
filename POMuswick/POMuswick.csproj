@@ -93,11 +93,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.9" />
     <PackageReference Include="Scandit.DataCapture.Barcode.Maui" Version="8.4.1" />
     <PackageReference Include="Scandit.DataCapture.Core.Maui" Version="8.4.1" />
-    <PackageReference Include="SourceGear.sqlite3" Version="3.50.4.5" />
-    <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    <PackageReference Include="SourceGear.sqlite3" Version="3.53.4" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
     <PackageReference Include="Syncfusion.Maui.ListView" Version="33.2.15" />
 	<PackageReference Include="Syncfusion.Maui.PdfViewer" Version="33.2.15" />
-	<PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.9" />
+  <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.12" />
 	<PackageReference Include="System.ServiceModel.Security" Version="6.0.0" />
     <PackageReference Include="Zebra.Printer.SDK" Version="5.0.3563" />
     <PackageReference Include="ZXing.Net.Maui" Version="0.10.2" />

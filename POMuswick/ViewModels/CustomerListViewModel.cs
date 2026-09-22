@@ -14,7 +14,6 @@ namespace POMuswick.ViewModels
         private readonly ICatNSubCatService _catNSubCatService;
         private readonly IOrderHistoryService _orderHistoryService;
         private readonly ICartService _cartService;
-        private readonly IAppSyncService _appSyncService;
 
         [ObservableProperty]
         public List<SalesCustomer> _customers;
@@ -33,7 +32,6 @@ namespace POMuswick.ViewModels
             _orderHistoryService = appServices._orderHistoryService;
             _cartService = appServices._cartService;
             _salesPersonCustomersService = appServices._salesPersonCustomersService;
-            _appSyncService = appServices._appSyncService;
         }
 
         public override async Task OnAppearingAsync()
@@ -47,7 +45,7 @@ namespace POMuswick.ViewModels
         {
             IsBusy = true;
             Customers = await _salesPersonCustomersService.GetSalesCustomer("");
-            if(Customers == null || Customers.Count == 0)
+            if (Customers == null || Customers.Count == 0)
             {
                 var customersResult = await _salesPersonCustomersService.FetchSalesPersonCustomersAsync("");
                 Customers = customersResult.salesCustomers;
@@ -67,24 +65,29 @@ namespace POMuswick.ViewModels
         private async Task SelectedCustomerAsync(SalesCustomer customer)
         {
             IsBusy = true;
-            var currentCustomer = await _customerService.GetCustomerAsync();
-            string OldCustNo = currentCustomer.CustNo;
-
-            SalesCustomer salesCustomer = await _salesPersonCustomersService.FindSalesCustomer(customer.CustNo);
-
-
-            if ((salesCustomer.CustNo != null) && (salesCustomer.CustNo != "") && (salesCustomer.CustNo != "0"))
+            try
             {
-                await _appSyncService.SyncApp(salesCustomer.CustNo);
+                var currentCustomer = await _customerService.GetCustomerAsync();
+                string OldCustNo = currentCustomer.CustNo;
+
+                SalesCustomer salesCustomer = await _salesPersonCustomersService.FindSalesCustomer(customer.CustNo);
+
+                if (!string.IsNullOrEmpty(salesCustomer.CustNo) && salesCustomer.CustNo != "0")
+                {
+                    await SyncAppAsync(salesCustomer.CustNo);
+                }
+                Customer newCustomer = BuildCustomer(salesCustomer);
+                await _customerService.SaveCustomerAsync(newCustomer);
+                await _cartService.SuspendCartItems(OldCustNo);
+                await _cartService.ClearCartItems();
+                await _orderHistoryService.ClearOrderHistory();
+                await _cartService.RestoreCart();
+                await _navigationService.GoBackAsync();
             }
-            Customer newCustomer = BuildCustomer(salesCustomer);
-            await _customerService.SaveCustomerAsync(newCustomer);
-            await _cartService.SuspendCartItems(OldCustNo);
-            await _cartService.ClearCartItems();
-            await _orderHistoryService.ClearOrderHistory();
-            await _cartService.RestoreCart();
-            await _navigationService.GoBackAsync();
-            IsBusy = false;
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private Customer BuildCustomer(SalesCustomer cust)

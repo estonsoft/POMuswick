@@ -20,8 +20,14 @@ namespace POMuswick.Parsers
             {
                 Parallel.ForEach(aBanners, s =>
                 {
+                    string bannerName = s.Trim();
+                    if (string.IsNullOrWhiteSpace(bannerName))
+                    {
+                        return;
+                    }
+
                     Banner banner = new Banner();
-                    banner.BannerName = s;
+                    banner.BannerName = bannerName;
                     banner.BannerURL = Constants.BannerUrl + banner.BannerName;
                     lstBanners.Add(banner);
                 });

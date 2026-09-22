@@ -12,6 +12,12 @@ namespace POMuswick.Parsers
         {
             LoginResult result = new();
 
+            if (string.IsNullOrWhiteSpace(response))
+            {
+                result.ErrorMessage = "Empty server response.";
+                return result;
+            }
+
             var info = response.Split('~');
 
             if (info.Length < 2)
@@ -23,6 +29,12 @@ namespace POMuswick.Parsers
             var user = info[0].Split('|');
             var cust = info[1].Split('|');
 
+            if (user.Length == 0 || string.IsNullOrWhiteSpace(user[0]))
+            {
+                result.ErrorMessage = "Invalid login response.";
+                return result;
+            }
+
             result.Status = user[0];
 
             switch (user[0])
@@ -33,9 +45,9 @@ namespace POMuswick.Parsers
 
                     result.Settings = BuildSettings(user);
 
-                    // result.Customer = BuildCustomer(user, cust);
+                    result.Customer = BuildCustomer(user, cust);
 
-                    // result.Location = BuildLocation(cust);
+                    result.Location = BuildLocation(cust);
 
                     result.RefreshData = true;
 
@@ -68,17 +80,24 @@ namespace POMuswick.Parsers
 
         private Location BuildLocation(string[] aCust)
         {
-            return new Location()
+            if (aCust.Count() < 20)
             {
-                LocationId = 1,
-                Name = aCust[14],
-                Address = aCust[15],
-                City = aCust[16],
-                State = aCust[17],
-                Zip = aCust[18],
-                CityStateZip = aCust[16] + ", " + aCust[17] + " " + aCust[18],
-                Phone = aCust[19],
-            };
+                return new Location();
+            }
+            else
+            {
+                return new Location()
+                {
+                    LocationId = 1,
+                    Name = aCust[14],
+                    Address = aCust[15],
+                    City = aCust[16],
+                    State = aCust[17],
+                    Zip = aCust[18],
+                    CityStateZip = aCust[16] + ", " + aCust[17] + " " + aCust[18],
+                    Phone = aCust[19],
+                };
+            }
         }
 
         private Customer BuildCustomer(string[] aUser, string[] aCust)

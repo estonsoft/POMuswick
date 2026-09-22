@@ -22,25 +22,15 @@ namespace POMuswick.Models
 
         public void Reset()
         {
-            IsLoggedIn  = false;
+            IsLoggedIn = false;
             IsCredits = false;
             IsSalesUser = false;
-            UserName  = "";
+            UserName = "";
             HoldForReview = false;
             ForceSubmit = false;
             QOHDisplay = "X";
             IsOrderSubmiting = false;
             BlockItemsNoQOH = false;
-        }
-
-        public void UpdateServerLinks(string baseUrl)
-        {
-            Constants.BaseURL = baseUrl;
-            Constants.SoapUrl = baseUrl + "/RemotePhoneApp.asmx";
-            Constants.LogoUrl = baseUrl + "/images/logo/logo.png";
-            Constants.BannerUrl = baseUrl + "/images/banner phone/";
-            Constants.CategoryImageUrl = baseUrl + "/images/category/";
-            Constants.ItemImageUrl = baseUrl + "/images/items/";
         }
     }
 }

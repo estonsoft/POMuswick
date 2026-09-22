@@ -7,7 +7,7 @@ using POMuswick.UIModels;
 
 namespace POMuswick.ViewModels
 {
-    public partial class ItemSearchViewModel : BaseViewModel
+    public partial class ItemSearchViewModel : BaseViewModel, IQueryAttributable
     {
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
@@ -27,7 +27,7 @@ namespace POMuswick.ViewModels
         [ObservableProperty]
         public bool _inStockOnly;
         [ObservableProperty]
-        public string _searchText;
+        public string _searchText = "";
 
         [ObservableProperty]
         public CachedImage _selectedImage;
@@ -56,9 +56,10 @@ namespace POMuswick.ViewModels
             {
                 catNSubCatParameter = (CatNSubCatParameter)CategoryValue;
             }
+            await RefreshList();
         }
 
-        public async void RefreshList()
+        public async Task RefreshList()
         {
             _appSettings = await _settingService.LoadSetting();
             Category category = catNSubCatParameter.Category;
@@ -74,15 +75,15 @@ namespace POMuswick.ViewModels
             }
             else
             {
-                var items = await _itemService.SearchItemsAsync(InStockOnly,SearchText, category, _appSettings.scanBarcode, subcategory);
+                var items = await _itemService.SearchItemsAsync(InStockOnly, SearchText, category, _appSettings.scanBarcode, subcategory);
                 List<UIItems> uiList = items
                     .Select(x => x.ToUI())
                     .ToList();
-                    LstItems = uiList;
+                LstItems = uiList;
                 // ✅ Only merge keyword items if NO specific category is selected
                 if (string.IsNullOrEmpty(category.Code) || category.Description == "ALL CATEGORIES")
                 {
-                    LstKeywordItems = await _itemService.SearchItemsKeyword(SearchText,InStockOnly);
+                    LstKeywordItems = await _itemService.SearchItemsKeyword(SearchText, InStockOnly);
 
                     foreach (Item itemKeyword in LstKeywordItems)
                     {
@@ -264,7 +265,7 @@ namespace POMuswick.ViewModels
                 Subcategory = subcategoryAll
             };
 
-            RefreshList();
+            await RefreshList();
         }
 
         [RelayCommand]
@@ -311,7 +312,7 @@ namespace POMuswick.ViewModels
         [RelayCommand]
         private async Task RefreshListCommand()
         {
-            RefreshList();
+            await RefreshList();
         }
 
         [RelayCommand]
@@ -333,7 +334,7 @@ namespace POMuswick.ViewModels
                 item.QtyOrder >= item.MaxOrderQty)
                 return;
 
-            _itemService.UpdateItemQtySet(item.ItemNo, 1);
+            await _itemService.UpdateItemQtySet(item.ItemNo, 1);
 
             item.QtyOrder++;
 
@@ -351,7 +352,7 @@ namespace POMuswick.ViewModels
             if (item.QtyOrder <= 0)
                 return;
 
-            _itemService.UpdateItemQtySet(item.ItemNo, -1);
+            await _itemService.UpdateItemQtySet(item.ItemNo, -1);
 
             item.QtyOrder--;
 

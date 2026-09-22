@@ -13,9 +13,9 @@ namespace POMuswick.Services
         private readonly ISalesPersonCustomersService _salesPersonCustomersService;
         private readonly ICartService _cartService;
 
-        public AppSyncService(IBannerService bannerService,IOrderHistoryService orderHistoryService,ISettingService settingService,
-            ICatNSubCatService catNSubCatService,IItemQQHService itemQQHService,ISalesPersonCustomersService salesPersonCustomersService,
-            ICartService cartService,IItemService itemService)
+        public AppSyncService(IBannerService bannerService, IOrderHistoryService orderHistoryService, ISettingService settingService,
+            ICatNSubCatService catNSubCatService, IItemQQHService itemQQHService, ISalesPersonCustomersService salesPersonCustomersService,
+            ICartService cartService, IItemService itemService)
         {
             _bannerService = bannerService;
             _orderHistoryService = orderHistoryService;
@@ -27,29 +27,59 @@ namespace POMuswick.Services
             _itemService = itemService;
         }
 
-        public async Task<AppSyncResult> SyncApp(string selectedCustomer)
+        public async Task<AppSyncResult> SyncApp(string selectedCustomer, IProgress<SyncProgress>? progress = null)
         {
             Location location = new Location();
             location.Refresh();
+            progress?.Report(new SyncProgress("Loading settings", 0));
+            await _settingService.SaveChanges(new Dictionary<string, string>
+            {
+                [nameof(AppSettings.CustomerNo)] = selectedCustomer
+            });
             AppSettings appSettings = await _settingService.LoadSetting();
             if (appSettings.IsLoggedIn)
             {
+                AppSyncResult appSyncResult = new AppSyncResult();
+
+                progress?.Report(new SyncProgress("Loading settings", 10));
+                appSyncResult.settingResult = await _settingService.FetchSettingAsync();
+
+                progress?.Report(new SyncProgress("Loading banners", 20));
+                appSyncResult.bannerResult = await _bannerService.FetchBannerAsync();
+
+                progress?.Report(new SyncProgress("Loading categories", 50));
+                appSyncResult.catNSubcatResult = await _catNSubCatService.GetCategoriesAndSubCategories(selectedCustomer);
+
+                progress?.Report(new SyncProgress("Loading items", 60));
+                appSyncResult.itemResult = await _itemService.FetchItemAsync();
+
+                progress?.Report(new SyncProgress("Loading item quantities", 70));
+                appSyncResult.itemQQHResult = await _itemQQHService.FetchItemQQH2Async();
+
+                progress?.Report(new SyncProgress("Loading order history", 70));
+                appSyncResult.orderHistoryResult = await _orderHistoryService.FetchOrderHistoryAsync();
+
+                progress?.Report(new SyncProgress("Loading customers", 85));
+                appSyncResult.salesPersonCustomersResult = await _salesPersonCustomersService.FetchSalesPersonCustomersAsync("");
+
+                progress?.Report(new SyncProgress("Restoring cart", 95));
                 await _cartService.RestoreCart();
+
+                progress?.Report(new SyncProgress("Sync complete", 100));
+                return appSyncResult;
             }
-            AppSyncResult appSyncResult = new AppSyncResult();
-            appSyncResult.bannerResult = await _bannerService.FetchBannerAsync();
-            appSyncResult.orderHistoryResult = await _orderHistoryService.FetchOrderHistoryAsync();
-            appSyncResult.settingResult = await _settingService.FetchSettingAsync();
-            appSyncResult.catNSubcatResult = await _catNSubCatService.GetCategoriesAndSubCategories(selectedCustomer);
-            appSyncResult.itemResult = await _itemService.FetchItemAsync();
-            appSyncResult.itemQQHResult = await _itemQQHService.FetchItemQQH2Async();
-            appSyncResult.salesPersonCustomersResult = await _salesPersonCustomersService.FetchSalesPersonCustomersAsync("");
-            return appSyncResult;
+            else
+            {
+                progress?.Report(new SyncProgress("User not logged in", 100));
+                return new AppSyncResult();
+            }
         }
     }
 
+    public sealed record SyncProgress(string Status, int Percentage);
+
     public interface IAppSyncService
     {
-        public Task<AppSyncResult> SyncApp(string selectedCustomer = "0");
+        public Task<AppSyncResult> SyncApp(string selectedCustomer = "0", IProgress<SyncProgress>? progress = null);
     }
 }

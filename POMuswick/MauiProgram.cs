@@ -11,8 +11,11 @@ using POMuswick.Views;
 using Scandit.DataCapture.Barcode;
 using Scandit.DataCapture.Core;
 using Scandit.DataCapture.Core.UI.Maui;
-using SQLitePCL;
 using Syncfusion.Maui.Core.Hosting;
+
+#if MAUI_DEVFLOW
+using Microsoft.Maui.DevFlow.Agent;
+#endif
 
 namespace POMuswick
 {
@@ -21,11 +24,14 @@ namespace POMuswick
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+#if MAUI_DEVFLOW
+            builder.AddMauiDevFlowAgent();
+#endif
             builder
                 .UseMauiApp<App>()
                 .ConfigureSyncfusionCore()
                 .UseFFImageLoading()
-                .UseBarcodeScanning() 
+                .UseBarcodeScanning()
                 .UseScanditCore()
                 .UseScanditBarcode(configure =>
                 {
@@ -52,16 +58,6 @@ namespace POMuswick
                     fonts.AddFont("Font Awesome 6 Pro-Solid-900.otf", "FontAwesomePro6Solid");
                     fonts.AddFont("Font Awesome 6 Pro-Thin-100.otf", "FontAwesomePro6Thin");
                 });
-            try
-            {
-                Batteries_V2.Init();
-                System.Diagnostics.Debug.WriteLine("SQLite Batteries.Init OK");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("SQLite Init FAILED: " + ex);
-            }
-
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

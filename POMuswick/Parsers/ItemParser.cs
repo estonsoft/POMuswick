@@ -25,7 +25,7 @@ namespace POMuswick.Parsers
                     {
                         String[] aItem = s.Split("|");
 
-                        if (aItem.Count() < 20)
+                        if (aItem.Length < 20)
                         {
                             return;
                         }
@@ -169,7 +169,7 @@ namespace POMuswick.Parsers
                         }
 
                         item.QtyOrder = 0;
-                        
+
                         itemsToSave.Add(item);
                         processedItemNos.Add(item.ItemNo);
                     }
