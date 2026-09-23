@@ -9,7 +9,7 @@ namespace POMuswick.Views
         public ReorderItemsPage(ReorderViewModel reorderViewModel)
         {
             InitializeComponent();
-            BindingContext = _reorderViewModel= reorderViewModel;
+            BindingContext = _reorderViewModel = reorderViewModel;
         }
 
         protected override async void OnAppearing()

@@ -5,15 +5,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="this">
 
-    <Grid BackgroundColor="#80000000">
+    <Grid BackgroundColor="#66000000">
 
         <Border
             Padding="24"
-            BackgroundColor="White"
+            BackgroundColor="{StaticResource SurfaceAlt}"
             HorizontalOptions="Center"
             VerticalOptions="Center"
-            WidthRequest="320"
-            StrokeShape="RoundRectangle 16">
+            WidthRequest="340"
+            Stroke="{StaticResource Divider}"
+            StrokeShape="RoundRectangle 16"
+            StrokeThickness="1">
+
+            <Border.Shadow>
+                <Shadow
+                    Brush="{StaticResource PrimaryBrush}"
+                    Opacity="0.18"
+                    Radius="18"
+                    Offset="0,8"/>
+            </Border.Shadow>
 
             <VerticalStackLayout Spacing="14">
 
@@ -24,7 +34,7 @@
                     IsRunning="{Binding IsLoading, Source={x:Reference this}}"
                     IsVisible="{Binding IsLoading, Source={x:Reference this}}"
                     WidthRequest="36"
-                    Color="#378ADD"/>
+                    Color="{StaticResource Primary}"/>
 
                 <!-- Title -->
                 <Label
@@ -32,14 +42,14 @@
                     FontSize="20"
                     HorizontalTextAlignment="Center"
                     Text="{Binding Title, Source={x:Reference this}}"
-                    TextColor="#111111"/>
+                    TextColor="{StaticResource Ink}"/>
 
                 <!-- Current operation -->
                 <Label
                     FontSize="15"
                     HorizontalTextAlignment="Center"
                     Text="{Binding SyncStatus, Source={x:Reference this}}"
-                    TextColor="#555555"/>
+                    TextColor="{StaticResource MutedInk}"/>
 
                 <!-- Percentage -->
                 <Label
@@ -47,15 +57,14 @@
                     FontSize="28"
                     HorizontalTextAlignment="Center"
                     Text="{Binding ProgressPercentage, Source={x:Reference this}, StringFormat='{0}%'}"
-                    TextColor="#378ADD"/>
+                    TextColor="{StaticResource Primary}"/>
 
                 <!-- Progress bar -->
                 <ProgressBar
                     Progress="{Binding ProgressValue, Source={x:Reference this}}"
-                    ProgressColor="#378ADD"
-                    BackgroundColor="#E5E5E5"
+                    ProgressColor="{StaticResource Primary}"
+                    BackgroundColor="{StaticResource Gray200}"
                     HeightRequest="8"/>
-
 
                 <!-- Optional message -->
                 <Label
@@ -63,7 +72,7 @@
                     HorizontalTextAlignment="Center"
                     LineBreakMode="WordWrap"
                     Text="{Binding Message, Source={x:Reference this}}"
-                    TextColor="#666666"/>
+                    TextColor="{StaticResource MutedInk}"/>
 
             </VerticalStackLayout>
 

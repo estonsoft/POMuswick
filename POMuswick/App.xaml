@@ -7,11 +7,15 @@
     xmlns:converters="clr-namespace:POMuswick.Converters">
     <Application.Resources>
         <ResourceDictionary>
-             <converters:InverseBoolConverter
+            <converters:InverseBoolConverter
                 x:Key="InverseBoolConverter"/>
+            <converters:StringNotEmptyConverter
+                x:Key="StringNotEmptyConverter"/>
+            <converters:CategoryIconConverter
+                x:Key="CategoryIconConverter"/>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

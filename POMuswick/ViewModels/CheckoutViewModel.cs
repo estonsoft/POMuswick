@@ -142,7 +142,7 @@ public partial class CheckoutViewModel : BaseViewModel, IQueryAttributable
             if (item.QtyOrder > 0)
             {
                 item.PriceOrder = item.Price;
-                item.PriceOrderDisplay = string.Format("{0:C}", item.PriceOrder);
+                item.PriceOrderDisplay = $"${item.PriceOrder:0.00}";
 
                 ICartItems += 1;
                 DCartTotal += item.PriceOrder * item.QtyOrder;
@@ -152,7 +152,7 @@ public partial class CheckoutViewModel : BaseViewModel, IQueryAttributable
 
         SCartItems = ICartItems.ToString();
         SCartPieces = ICartPieces.ToString();
-        SCartTotal = DCartTotal.ToString("0:C2");
+        SCartTotal = $"${DCartTotal:0.00}";
     }
 
     [RelayCommand]

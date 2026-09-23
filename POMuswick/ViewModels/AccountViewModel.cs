@@ -55,9 +55,9 @@ namespace POMuswick.ViewModels
             }
             else
             {
-                CreditLimitText = string.Format("{0:C}", customer.CreditLimit);
+                CreditLimitText = $"${customer.CreditLimit:0.00}";
             }
-            ARBalanceText = string.Format("{0:C}", customer.ARBalance);
+            ARBalanceText = $"${customer.ARBalance:0.00}";
         }
     }
 }

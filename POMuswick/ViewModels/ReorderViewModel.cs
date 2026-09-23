@@ -13,7 +13,7 @@ namespace POMuswick.ViewModels
         private readonly ISettingService _settingService;
         [ObservableProperty]
         List<Item> _reorderList;
-        
+
         public ReorderViewModel(IAppServices appServices) : base(appServices)
         {
             Title = PageTitles.ReorderItems;
@@ -24,11 +24,12 @@ namespace POMuswick.ViewModels
         public override async Task OnAppearingAsync()
         {
             await base.OnAppearingAsync();
+            await RefreshListAsync();
         }
 
         public async Task RefreshListAsync()
         {
-            var itemResult = await _itemService.FetchItemAsync();
+            var itemResult = await _itemService.FetchReorderItemsAsync();
             var itemLookup = itemResult.items.ToDictionary(i => i.ItemNo);
             var itemsToProcess = await _itemService.FetchReorderItemsAsync();
 
@@ -92,6 +93,37 @@ namespace POMuswick.ViewModels
             }
 
             ri.IsStockRowVisible = ri.IsQOHVisible || ri.IsInStockVisible || ri.IsOutOfStockVisible;
+        }
+
+        [RelayCommand]
+        private async Task IncreaseQtyAsync(Item item)
+        {
+            if (item == null || item.QtyOrder >= 999)
+                return;
+
+            if (item.MaxOrderQty > 0 && item.QtyOrder >= item.MaxOrderQty)
+                return;
+
+            await _itemService.UpdateItemQtySet(item.ItemNo, 1);
+            item.QtyOrder++;
+            item.IsStepperVisible = true;
+            item.IsAddToOrderVisible = false;
+        }
+
+        [RelayCommand]
+        private async Task DecreaseQtyAsync(Item item)
+        {
+            if (item == null || item.QtyOrder <= 0)
+                return;
+
+            await _itemService.UpdateItemQtySet(item.ItemNo, -1);
+            item.QtyOrder--;
+
+            if (item.QtyOrder == 0)
+            {
+                item.IsStepperVisible = false;
+                item.IsAddToOrderVisible = true;
+            }
         }
     }
 }

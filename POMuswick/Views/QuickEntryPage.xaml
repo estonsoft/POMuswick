@@ -9,342 +9,425 @@
     xmlns:barcode="clr-namespace:BarcodeScanning;assembly=BarcodeScanning.Native.Maui"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     Title="Quick Entry"
-    BackgroundColor="White"
+    Background="{StaticResource Surface}"
     HideSoftInputOnTapped="True"
     Shell.NavBarIsVisible="False">
 
     <ContentPage.Content>
-        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}"
+              RowDefinitions="52, *, Auto">
 
-            <controls:CustomHeader Grid.Row="0" Title="{Binding title}" BackCommand="{Binding BackPressedCommand}"/>
+            <!--  0. TOP NAVIGATION HEADER  -->
+            <Grid Grid.Row="0"
+                  HeightRequest="52"
+                  Padding="16,0"
+                  ColumnDefinitions="Auto, *"
+                  ColumnSpacing="8"
+                  VerticalOptions="Center">
+                <Button
+                    Grid.Column="0"
+                    Command="{Binding BackPressedCommand}"
+                    FontFamily="FontAwesomeFreeSolid"
+                    FontSize="18"
+                    Text="&#xF060;"
+                    TextColor="{StaticResource Ink}"
+                    Background="Transparent"
+                    Padding="0"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"/>
+                <Label
+                    Grid.Column="1"
+                    Margin="4,0,0,0"
+                    Text="{Binding Title, FallbackValue='Quick Entry'}"
+                    FontSize="19"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource Ink}"
+                    VerticalOptions="Center"/>
+            </Grid>
 
+            <!--  1. SCROLLABLE CONTENT  -->
             <ScrollView Grid.Row="1">
-                <StackLayout
-                    Padding="0,10,0,0"
-                    BackgroundColor="White"
+                <VerticalStackLayout
+                    Padding="16,10,16,20"
+                    Spacing="14"
                     VerticalOptions="Start">
-                    <Grid>
-                        <barcode:CameraView
-                            x:Name="ScannerControl"
-                            CameraEnabled="True"
-                            HeightRequest="200"
-                            HorizontalOptions="Center"
-                            
-                            VerticalOptions="Center"
-                            VibrationOnDetected="True"
-                            WidthRequest="200" />
-                        <!--<Label Text="" TextDecorations="Underline" Margin="0,-105,0,0" HeightRequest="2" WidthRequest="200" FontSize="14" HorizontalOptions="Fill" BackgroundColor="RoyalBlue" TextColor="RoyalBlue"/>-->
-                        <StackLayout
-                            x:Name="TapToScan"
-                            HorizontalOptions="Center"
-                            IsVisible="{Binding TapToScanIsVisible}"
-                            VerticalOptions="Center">
-                            <StackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding OnScannerEnableCommand}" />
-                            </StackLayout.GestureRecognizers>
-                            <Label
-                                FontAttributes="Bold"
-                                FontFamily="FontAwesomePro6Regular"
-                                FontSize="48"
-                                HorizontalOptions="Center"
-                                Text="&#xF030;"
-                                TextColor="Red"
-                                VerticalOptions="Center" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="20"
-                                HorizontalOptions="Center"
-                                Text="Tap To Scan"
-                                TextColor="Red"
-                                VerticalOptions="Center" />
-                        </StackLayout>
-                    </Grid>
 
-                    <StackLayout
-                        Margin="0,10,0,0"
+                    <!-- SCANNER VIEWFINDER CARD -->
+                    <Border
+                        StrokeShape="RoundRectangle 20"
+                        Stroke="{StaticResource Divider}"
+                        StrokeThickness="1"
+                        Background="{StaticResource SurfaceAlt}"
+                        HeightRequest="210"
+                        WidthRequest="210"
                         HorizontalOptions="Center"
-                        Orientation="Horizontal"
                         VerticalOptions="Center">
-                        <Entry
-                            x:Name="ScanItem"
-                            Margin="0,0,0,0"
-                            Text="{Binding ScanItemText, Mode=TwoWay}"
-                            FontSize="18"
-                            HeightRequest="45"
-                            HorizontalOptions="Start"
-                            Keyboard="Numeric"
-                            Placeholder="Item # or UPC"
-                            PlaceholderColor="Gray"
-                            VerticalOptions="Center"
-                            WidthRequest="200" />
-                        <Button
-                            x:Name="EnterButton"
-                            Margin="10,0,0,0"
-                            BackgroundColor="RoyalBlue"
-                            Command="{Binding EnterButtonCommand}"
-                            CornerRadius="10"
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            HeightRequest="35"
-                            HorizontalOptions="Start"
-                            Text="  Enter  "
-                            TextColor="White"
-                            TextTransform="None" />
+                        <Grid>
+                            <barcode:CameraView
+                                x:Name="ScannerControl"
+                                CameraEnabled="True"
+                                HeightRequest="210"
+                                WidthRequest="210"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                VibrationOnDetected="True"/>
 
-                    </StackLayout>
-                    <StackLayout
-                        Margin="0,10,0,0"
-                        Orientation="Vertical"
-                        Spacing="0"
-                        VerticalOptions="Fill">
-                        <Label
-                            x:Name="Description"
-                            Margin="20,0,0,0"
-                            BackgroundColor="White"
-                            FontAttributes="Bold"
-                            FontSize="16"
-                            HorizontalOptions="Fill"
-                            Text="{Binding DescriptionText}"
-                            TextColor="Blue" />
-                        <Label
-                            x:Name="Message"
-                            Margin="0,0,0,0"
-                            BackgroundColor="White"
-                            FontSize="16"
-                            HorizontalOptions="Center"
-                            IsVisible="{Binding MessageIsVisible}"
-                            Text="{Binding MessageText}"
-                            TextColor="Red" />
-                        <StackLayout
-                            Margin="0,5,0,0"
-                            HorizontalOptions="Fill"
-                            Orientation="Horizontal"
-                            VerticalOptions="Center">
-                            <ffImage:CachedImage
-                                x:Name="ImageURL"
-                                Margin="15,15,15,15"
-                                Aspect="AspectFit"
-                                DownsampleToViewSize="true"
-                                HeightRequest="90"
-                                HorizontalOptions="Fill"
-                                RetryCount="100"
-                                VerticalOptions="Fill"
-                                WidthRequest="90"
-                                Source="{Binding ImageURLSource}">
-                                <ffImage:CachedImage.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding ShowImageCommand}" />
-                                </ffImage:CachedImage.GestureRecognizers>
-                            </ffImage:CachedImage>
-                            <StackLayout
-                                Margin="0,0,0,0"
-                                HorizontalOptions="Fill"
-                                Orientation="Vertical"
-                                VerticalOptions="Center">
-                                <StackLayout
-                                    Margin="0,0,0,0"
-                                    HorizontalOptions="Fill"
-                                    Orientation="Horizontal"
-                                    VerticalOptions="Fill">
+                            <!-- Tap to Scan Overlay -->
+                            <VerticalStackLayout
+                                x:Name="TapToScan"
+                                Spacing="6"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                IsVisible="{Binding TapToScanIsVisible}">
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OnScannerEnableCommand}"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontFamily="FontAwesomePro6Regular"
+                                    FontSize="44"
+                                    HorizontalOptions="Center"
+                                    Text="&#xF030;"
+                                    TextColor="{StaticResource Primary}"/>
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    HorizontalOptions="Center"
+                                    Text="Tap To Scan"
+                                    TextColor="{StaticResource Primary}"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!-- MANUAL SEARCH & ENTRY BAR -->
+                    <Border
+                        Background="{StaticResource SurfaceAlt}"
+                        Stroke="{StaticResource Divider}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="6,4"
+                        HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="*, Auto"
+                              VerticalOptions="Center">
+                            <Entry
+                                x:Name="ScanItem"
+                                Text="{Binding ScanItemText, Mode=TwoWay}"
+                                FontSize="15"
+                                HeightRequest="40"
+                                Keyboard="Numeric"
+                                Placeholder="Item # or UPC"
+                                TextColor="{StaticResource Ink}"
+                                BackgroundColor="Transparent"
+                                Margin="8,0"
+                                VerticalOptions="Center"/>
+                            <Button
+                                Grid.Column="1"
+                                x:Name="EnterButton"
+                                Background="{StaticResource Primary}"
+                                Command="{Binding EnterButtonCommand}"
+                                CornerRadius="8"
+                                FontAttributes="Bold"
+                                FontSize="13"
+                                HeightRequest="36"
+                                Padding="16,0"
+                                Text="Enter"
+                                TextColor="{StaticResource White}"
+                                TextTransform="None"
+                                VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- SYSTEM FEEDBACK / STATUS MESSAGE -->
+                    <Label
+                        x:Name="Message"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        IsVisible="{Binding MessageIsVisible}"
+                        Text="{Binding MessageText}"
+                        TextColor="{StaticResource Primary}"/>
+
+                    <!-- SCANNED PRODUCT RESULT CARD -->
+                    <Border
+                        Background="{StaticResource SurfaceAlt}"
+                        Stroke="{StaticResource Divider}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 16"
+                        Padding="14"
+                        HorizontalOptions="Fill">
+                        <Border.Shadow>
+                            <Shadow Brush="#000000"
+                                    Offset="0,3"
+                                    Radius="8"
+                                    Opacity="0.05"/>
+                        </Border.Shadow>
+
+                        <VerticalStackLayout Spacing="10">
+
+                            <!-- Header: Item Number & UPC Tags -->
+                            <Grid ColumnDefinitions="Auto, Auto, *">
+                                <Border
+                                    Grid.Column="0"
+                                    BackgroundColor="#F1F5F9"
+                                    StrokeShape="RoundRectangle 6"
+                                    StrokeThickness="0"
+                                    Padding="8,3"
+                                    VerticalOptions="Center">
                                     <Label
                                         x:Name="ItemNoDisplay"
-                                        Margin="5,5,0,0"
-                                        BackgroundColor="White"
                                         FontAttributes="Bold"
-                                        FontSize="16"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding ItemNoDisplayText}"
-                                        TextColor="Black" />
-                                    <Label
-                                        x:Name="ItemNoDisplayUPC"
-                                        Margin="10,8,0,0"
-                                        BackgroundColor="White"
                                         FontSize="12"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding ItemNoDisplayUPCText}"
-                                        TextColor="Black" />
-                                </StackLayout>
+                                        Text="{Binding ItemNoDisplayText}"
+                                        TextColor="Black"/>
+                                </Border>
+
                                 <Label
-                                    BackgroundColor="White"
-                                    FontSize="14"
-                                    HorizontalOptions="Fill"
+                                    Grid.Column="1"
+                                    x:Name="ItemNoDisplayUPC"
+                                    Margin="8,0,0,0"
+                                    FontSize="12"
+                                    Text="{Binding ItemNoDisplayUPCText}"
+                                    TextColor="{StaticResource MutedInk}"
+                                    VerticalOptions="Center"/>
+
+                                <!-- Category Badge -->
+                                <Label
+                                    Grid.Column="2"
+                                    FontSize="12"
+                                    HorizontalOptions="End"
                                     Text="{Binding CategoryDesc}"
-                                    TextColor="Black" />
-                                <StackLayout
-                                    x:Name="StockRow"
-                                    IsVisible="{Binding StockRowIsVisible}"
-                                    HorizontalOptions="Fill"
-                                    Orientation="Horizontal"
-                                    VerticalOptions="Fill">
+                                    TextColor="{StaticResource MutedInk}"
+                                    VerticalOptions="Center"/>
+                            </Grid>
+
+                            <!-- Middle Section: Image + Info Hierarchy -->
+                            <Grid ColumnDefinitions="100, *"
+                                  ColumnSpacing="12">
+                                <ffImage:CachedImage
+                                    Grid.Column="0"
+                                    x:Name="ImageURL"
+                                    Aspect="AspectFit"
+                                    DownsampleToViewSize="true"
+                                    HeightRequest="90"
+                                    WidthRequest="90"
+                                    RetryCount="100"
+                                    ErrorPlaceholder="logoicon.png"
+                                    Source="{Binding ImageURLSource}"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                                    <ffImage:CachedImage.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ShowImageCommand}"/>
+                                    </ffImage:CachedImage.GestureRecognizers>
+                                </ffImage:CachedImage>
+
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="4"
+                                                     VerticalOptions="Center">
                                     <Label
-                                        x:Name="QOHLabel"
-                                        Margin="5,0,0,0"
-                                        BackgroundColor="White"
-                                        FontSize="14"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding QOHLabelText}"
-                                        TextColor="Black"
-                                        VerticalOptions="Fill"
-                                        IsVisible="{Binding QOHLabelIsVisible}" />
-                                    <Label
-                                        x:Name="QOHRed"
-                                        Margin="0,0,0,0"
-                                        BackgroundColor="White"
+                                        x:Name="Description"
                                         FontAttributes="Bold"
-                                        FontSize="14"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding QOH}"
-                                        TextColor="Red"
-                                        VerticalOptions="Fill"
-                                        IsVisible="{Binding QOHRedIsVisible}" />
-                                    <Label
-                                        x:Name="QOHBlack"
-                                        Margin="0,0,0,0"
-                                        BackgroundColor="White"
-                                        FontAttributes="Bold"
-                                        FontSize="14"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding QOH}"
-                                        TextColor="Black"
-                                        VerticalOptions="Fill"
-                                        IsVisible="{Binding QOHBlackIsVisible}" />
+                                        FontSize="15"
+                                        Text="{Binding DescriptionText}"
+                                        TextColor="{StaticResource Ink}"
+                                        MaxLines="2"
+                                        LineBreakMode="TailTruncation"/>
+
+                                    <!-- Price & UOM -->
+                                    <HorizontalStackLayout Spacing="4"
+                                                           VerticalOptions="End">
+                                        <Label
+                                            x:Name="PriceDisplay"
+                                            FontAttributes="Bold"
+                                            FontSize="20"
+                                            Text="{Binding PriceDisplayText}"
+                                            TextColor="Red"
+                                            VerticalOptions="Center"/>
+                                        <Label
+                                            x:Name="SizeUOM"
+                                            FontSize="12"
+                                            Text="{Binding SizeUOMText}"
+                                            TextColor="Red"
+                                            Margin="0,0,0,2"
+                                            VerticalOptions="End"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Stock & Order Limit Indicators -->
+                            <HorizontalStackLayout
+                                x:Name="StockRow"
+                                IsVisible="{Binding StockRowIsVisible}"
+                                Spacing="6"
+                                VerticalOptions="Center">
+
+                                <Label
+                                    x:Name="QOHLabel"
+                                    FontSize="12"
+                                    Text="{Binding QOHLabelText}"
+                                    TextColor="Black"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding QOHLabelIsVisible}"/>
+                                <Label
+                                    x:Name="QOHRed"
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    Text="{Binding QOH}"
+                                    TextColor="{StaticResource Primary}"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding QOHRedIsVisible}"/>
+                                <Label
+                                    x:Name="QOHBlack"
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    Text="{Binding QOH}"
+                                    TextColor="Black"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding QOHBlackIsVisible}"/>
+
+                                <Border
+                                    BackgroundColor="#DCFCE7"
+                                    StrokeShape="RoundRectangle 6"
+                                    StrokeThickness="0"
+                                    Padding="6,2"
+                                    IsVisible="{Binding QOHInStockIsVisible}"
+                                    VerticalOptions="Center">
                                     <Label
                                         x:Name="QOHInStock"
-                                        Margin="5,0,0,0"
-                                        BackgroundColor="White"
-                                        FontSize="12"
-                                        HorizontalOptions="Fill"
+                                        FontSize="11"
+                                        FontAttributes="Bold"
                                         Text="In Stock"
-                                        TextColor="Black"
-                                        VerticalOptions="Fill"
-                                        IsVisible="{Binding QOHInStockIsVisible}" />
+                                        TextColor="#166534"/>
+                                </Border>
+
+                                <Border
+                                    BackgroundColor="#FEE2E2"
+                                    StrokeShape="RoundRectangle 6"
+                                    StrokeThickness="0"
+                                    Padding="6,2"
+                                    IsVisible="{Binding QOHOutOfStockIsVisible}"
+                                    VerticalOptions="Center">
                                     <Label
                                         x:Name="QOHOutOfStock"
-                                        Margin="5,0,0,0"
-                                        BackgroundColor="White"
-                                        FontSize="12"
-                                        HorizontalOptions="Fill"
-                                        Text="Out Of Stock"
-                                        TextColor="Red"
-                                        VerticalOptions="Fill"
-                                        IsVisible="{Binding QOHOutOfStockIsVisible}" />
-                                    <Label
-                                        x:Name="MaxOrderQty"
-                                        Margin="5,0,0,0"
-                                        BackgroundColor="White"
-                                        FontSize="12"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding MaxOrderQtyText}"
-                                        TextColor="Black"
-                                        VerticalOptions="Fill"
-                                        IsVisible="{Binding MaxOrderQtyIsVisible}" />
-                                </StackLayout>
-                                <StackLayout
-                                    Margin="0,0,0,0"
-                                    Orientation="Horizontal"
-                                    WidthRequest="130">
-                                    <Label
-                                        x:Name="PriceDisplay"
-                                        BackgroundColor="White"
+                                        FontSize="11"
                                         FontAttributes="Bold"
-                                        FontSize="20"
-                                        HorizontalOptions="Fill"
-                                        MaxLines="1"
-                                        Text="{Binding PriceDisplayText}"
-                                        TextColor="Red"
-                                        VerticalOptions="Fill" />
+                                        Text="Out Of Stock"
+                                        TextColor="{StaticResource Primary}"/>
+                                </Border>
+
+                                <Label
+                                    x:Name="MaxOrderQty"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    Text="{Binding MaxOrderQtyText}"
+                                    TextColor="Black"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding MaxOrderQtyIsVisible}"/>
+                            </HorizontalStackLayout>
+
+                            <!-- Unified Capsule Stepper -->
+                            <Border
+                                x:Name="QuickEntryStepper"
+                                HeightRequest="38"
+                                Padding="0"
+                                Background="{StaticResource SurfaceAlt}"
+                                Stroke="{StaticResource Divider}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 10"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                IsVisible="{Binding QuickEntryStepperIsVisible}">
+                                <Grid ColumnDefinitions="42, 1, 60, 1, 42"
+                                      VerticalOptions="Fill">
+                                    <ImageButton
+                                        Grid.Column="0"
+                                        x:Name="MinusButton"
+                                        BackgroundColor="Transparent"
+                                        Command="{Binding MinusButtonCommand}"
+                                        HeightRequest="24"
+                                        WidthRequest="24"
+                                        Source="blue_minus.png"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"/>
+
+                                    <BoxView Grid.Column="1"
+                                             WidthRequest="1"
+                                             Color="{StaticResource Divider}"
+                                             VerticalOptions="Fill"/>
+
                                     <Label
-                                        x:Name="SizeUOM"
-                                        Margin="0,6,0,0"
-                                        BackgroundColor="White"
-                                        FontSize="14"
-                                        HorizontalOptions="Fill"
-                                        Text="{Binding SizeUOMText}"
-                                        TextColor="Red"
-                                        VerticalOptions="Fill" />
-                                </StackLayout>
-                            </StackLayout>
-                        </StackLayout>
-                    </StackLayout>
-                    <StackLayout
-                        x:Name="QuickEntryStepper"
-                        Margin="0,0,0,0"
-                        HorizontalOptions="Center"
-                        Orientation="Horizontal"
-                        VerticalOptions="Center"
-                        IsVisible="{Binding QuickEntryStepperIsVisible}">
-                        <ImageButton
-                            x:Name="MinusButton"
-                            Margin="0,5,0,5"
-                            BackgroundColor="Transparent"
-                            Command="{Binding MinusButtonCommand}"
-                            HeightRequest="50"
-                            HorizontalOptions="Center"
-                            Source="blue_minus.png"
-                            VerticalOptions="Center"
-                            WidthRequest="40" />
-                        <Label
-                            x:Name="QtyStepper"
-                            Margin="10,0,0,0"
-                            FontAttributes="Bold"
-                            FontSize="24"
-                            HorizontalOptions="Center"
-                            Text="{Binding QtyStepperText}"
-                            TextColor="black"
-                            VerticalOptions="Center" />
-                        <ImageButton
-                            x:Name="PlusButton"
-                            Margin="10,5,0,5"
-                            BackgroundColor="Transparent"
-                            Command="{Binding PlusButtonCommand}"
-                            HeightRequest="50"
-                            HorizontalOptions="Center"
-                            Source="blue_plus.png"
-                            VerticalOptions="Center"
-                            WidthRequest="40" />
-                    </StackLayout>
-                    <Button
-                        x:Name="AddToOrderButton"
-                        Margin="0,0,0,0"
-                        Padding="0,0,0,0"
-                        BackgroundColor="Blue"
-                        Command="{Binding AddToOrderButtonCommand}"
-                        CornerRadius="10"
-                        FontAttributes="Bold"
-                        FontSize="14"
-                        HeightRequest="35"
-                        HorizontalOptions="Center"
-                        Text="     Add     "
-                        TextColor="White"
-                        TextTransform="None"
-                        IsVisible="{Binding AddToOrderButtonIsVisible}" />
-                    <Button
-                        x:Name="UpdateOrderButton"
-                        Margin="0,0,0,0"
-                        Padding="0,0,0,0"
-                        BackgroundColor="Blue"
-                        Command="{Binding AddToOrderButtonCommand}"
-                        CornerRadius="10"
-                        FontAttributes="Bold"
-                        FontSize="14"
-                        HeightRequest="35"
-                        HorizontalOptions="Center"
-                        Text="     Update Qty     "
-                        TextColor="white"
-                        TextTransform="None"
-                        IsVisible="{Binding UpdateOrderButtonIsVisible}" />
-                </StackLayout>
+                                        Grid.Column="2"
+                                        x:Name="QtyStepper"
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center"
+                                        Text="{Binding QtyStepperText}"
+                                        TextColor="Black"/>
+
+                                    <BoxView Grid.Column="3"
+                                             WidthRequest="1"
+                                             Color="{StaticResource Divider}"
+                                             VerticalOptions="Fill"/>
+
+                                    <ImageButton
+                                        Grid.Column="4"
+                                        x:Name="PlusButton"
+                                        BackgroundColor="Transparent"
+                                        Command="{Binding PlusButtonCommand}"
+                                        HeightRequest="24"
+                                        WidthRequest="24"
+                                        Source="blue_plus.png"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Action Buttons -->
+                            <Button
+                                x:Name="AddToOrderButton"
+                                Background="{StaticResource Primary}"
+                                Command="{Binding AddToOrderButtonCommand}"
+                                CornerRadius="10"
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                HeightRequest="44"
+                                HorizontalOptions="Fill"
+                                Text="Add to Order"
+                                TextColor="{StaticResource White}"
+                                TextTransform="None"
+                                IsVisible="{Binding AddToOrderButtonIsVisible}"/>
+
+                            <Button
+                                x:Name="UpdateOrderButton"
+                                Background="{StaticResource Primary}"
+                                Command="{Binding AddToOrderButtonCommand}"
+                                CornerRadius="10"
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                HeightRequest="44"
+                                HorizontalOptions="Fill"
+                                Text="Update Qty"
+                                TextColor="{StaticResource White}"
+                                TextTransform="None"
+                                IsVisible="{Binding UpdateOrderButtonIsVisible}"/>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
             </ScrollView>
-            <controls:CustomToolbar Grid.Row="2" 
-                HomeCommand="{Binding HomePressedCommand}" 
-                CartCommand="{Binding CartPressedCommand}" 
-                HistoryCommand="{Binding HistoryPressedCommand}" 
-                ShopCommand="{Binding ShopPressedCommand}" 
-                ScanCommand="{Binding ScanPressedCommand}"/>
+
+            <!--  2. BOTTOM TOOLBAR  -->
+            <controls:CustomToolbar Grid.Row="2"
+                                    HeightRequest="80"
+                                    HomeCommand="{Binding HomePressedCommand}"
+                                    CartCommand="{Binding CartPressedCommand}"
+                                    HistoryCommand="{Binding HistoryPressedCommand}"
+                                    ShopCommand="{Binding ShopPressedCommand}"
+                                    ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -7,28 +7,14 @@
     xmlns:controls="clr-namespace:POMuswick.Controls"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     Title="Customers"
+    Background="{StaticResource Surface}"
     HideSoftInputOnTapped="True"
     Shell.NavBarIsVisible="false">
 
-    <NavigationPage.TitleView>
-        <StackLayout
-            Orientation="Horizontal"
-            Spacing="10"
-            VerticalOptions="Center">
-
-            <Label
-                Padding="10,0,0,0"
-                FontSize="16"
-                Text="Muswick Wholesale Grocers"
-                TextColor="White"
-                VerticalTextAlignment="Center"/>
-        </StackLayout>
-    </NavigationPage.TitleView>
-
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Color x:Key="BannerBackground">White</Color>
-            <Color x:Key="Accent">#96d1ff</Color>
+            <Color x:Key="BannerBackground">{StaticResource Surface}</Color>
+            <Color x:Key="Accent">{StaticResource Primary}</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -36,65 +22,72 @@
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
               SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="52"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader x:Name="CustomHeader"
-                                   Grid.Row="0"
-                                   Title="{Binding Title}"
-                                   BackCommand="{Binding BackPressedCommand}"/>
-            <StackLayout Grid.Row="1">
-                <BoxView
-                    BackgroundColor="gray"
-                    HeightRequest="3"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Fill"
-                    Color="lightgray"/>
-                <StackLayout
-                    Margin="0,0,0,-5"
-                    Orientation="Vertical"
-                    VerticalOptions="Start">
-                    <StackLayout
-                        Margin="0,-5,0,0"
-                        HorizontalOptions="Center"
-                        Orientation="Horizontal"
-                        VerticalOptions="Center">
-                        <Entry
-                            x:Name="CustomerSearch"
-                            Margin="0,0,0,0"
-                            FontSize="14"
-                            HeightRequest="40"
-                            HorizontalOptions="Start"
-                            Placeholder="Search Customers"
-                            Text="{Binding CustomerSearchText,Mode=TwoWay}"
-                            PlaceholderColor="Gray"
-                            VerticalOptions="Center"
-                            WidthRequest="200"/>
-                        <Label
-                            Margin="5,6.5,0,0"
-                            FontAttributes="Bold"
-                            FontFamily="FontAwesomeFreeSolid"
-                            FontSize="15"
-                            HorizontalOptions="Start"
-                            Text="&#xF002;"
-                            TextColor="RoyalBlue"
-                            VerticalOptions="Center">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding SearchCustomerCommand}"/>
-                            </Label.GestureRecognizers>
-                        </Label>
-                    </StackLayout>
-                    <BoxView
-                        BackgroundColor="gray"
-                        HeightRequest="3"
+            <Grid Grid.Row="0"
+                  HeightRequest="52"
+                  Padding="14,0"
+                  ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="8"
+                  VerticalOptions="Center">
+                <Button
+                    Grid.Column="0"
+                    Command="{Binding BackPressedCommand}"
+                    FontFamily="FontAwesomeFreeSolid"
+                    FontSize="18"
+                    Text="&#xF060;"
+                    TextColor="{StaticResource Ink}"
+                    Background="Transparent"
+                    Padding="0"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"/>
+                <Label
+                    Grid.Column="1"
+                    Margin="4,0,0,0"
+                    Text="{Binding Title, FallbackValue='Customers'}"
+                    FontSize="19"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource Ink}"
+                    VerticalOptions="Center"/>
+            </Grid>
+            <Border Grid.Row="1"
+                    Margin="14,6,14,4"
+                    Padding="8,2"
+                    Background="{StaticResource White}"
+                    Stroke="{StaticResource Divider}"
+                    StrokeShape="RoundRectangle 14"
+                    StrokeThickness="1">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="8">
+                    <Entry
+                        x:Name="CustomerSearch"
+                        Grid.Column="0"
+                        ClearButtonVisibility="WhileEditing"
+                        FontSize="14"
+                        HeightRequest="40"
                         HorizontalOptions="Fill"
-                        VerticalOptions="Fill"
-                        Color="lightgray"/>
-                </StackLayout>
-            </StackLayout>
+                        Placeholder="Search Customers"
+                        Text="{Binding CustomerSearchText, Mode=TwoWay}"
+                        PlaceholderColor="{StaticResource MutedInk}"
+                        VerticalOptions="Center"/>
+                    <Label Grid.Column="1"
+                           Margin="4,0,6,0"
+                           FontFamily="FontAwesomeFreeSolid"
+                           FontSize="16"
+                           Text="&#xF002;"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SearchCustomerCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+            </Border>
             <Grid Grid.Row="2"
                   HorizontalOptions="Fill"
                   VerticalOptions="Fill">
@@ -106,119 +99,113 @@
                     SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <controls:CustomerStackLayout
-                                Grid.Row="1"
-                                CustNo="{Binding CustNo}"
-                                Orientation="Vertical">
-                                <controls:CustomerStackLayout.GestureRecognizers>
+                            <Border
+                                Margin="12,4"
+                                Padding="14"
+                                Background="{StaticResource White}"
+                                Stroke="{StaticResource Divider}"
+                                StrokeShape="RoundRectangle 14"
+                                StrokeThickness="1">
+                                <Border.Shadow>
+                                    <Shadow Brush="{StaticResource Ink}"
+                                            Offset="0,3"
+                                            Radius="8"
+                                            Opacity="0.05"/>
+                                </Border.Shadow>
+                                <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectedCustomerCommand}"
                                                           CommandParameter="{Binding .}"/>
-                                </controls:CustomerStackLayout.GestureRecognizers>
-                                <VerticalStackLayout Margin="10">
-                                    <HorizontalStackLayout>
+                                </Border.GestureRecognizers>
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                                      RowSpacing="8">
+                                    <Grid Grid.Row="0"
+                                          ColumnDefinitions="Auto,*,Auto"
+                                          ColumnSpacing="8">
                                         <Label
-                                            BackgroundColor="White"
+                                            Grid.Column="0"
+                                            Background="{StaticResource SurfaceAlt}"
+                                            Padding="7,3"
                                             FontAttributes="Bold"
                                             FontSize="12"
                                             Text="{Binding CustNo}"
-                                            TextColor="RoyalBlue"/>
+                                            TextColor="{StaticResource Primary}"
+                                            VerticalOptions="Center"/>
                                         <Label
-                                            Margin="10,0,0,0"
-                                            BackgroundColor="White"
+                                            Grid.Column="1"
                                             FontAttributes="Bold"
-                                            FontSize="12"
+                                            FontSize="15"
                                             Text="{Binding CompanyName}"
-                                            TextColor="RoyalBlue"/>
-                                    </HorizontalStackLayout>
-                                    <Label
-                                        BackgroundColor="White"
-                                        FontSize="11"
-                                        Text="{Binding Address1}"
-                                        TextColor="Black"/>
-                                    <Label
-                                        BackgroundColor="White"
-                                        FontSize="11"
-                                        Text="{Binding CityStateZip}"
-                                        TextColor="Black"/>
-                                    <Label
-                                        BackgroundColor="White"
-                                        FontSize="11"
-                                        Text="{Binding Phone}"
-                                        TextColor="Black"/>
-                                    <Label
-                                        BackgroundColor="White"
-                                        HeightRequest="3"
-                                        Text=""
-                                        TextColor="Black"/>
-                                    <HorizontalStackLayout>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontSize="11"
-                                            Text="Credit Limit"
-                                            TextColor="Black"
-                                            WidthRequest="70"/>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontAttributes="Bold"
-                                            FontSize="11"
-                                            Text="{Binding CreditLimitDisplay}"
-                                            TextColor="Black"
-                                            WidthRequest="65"/>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontSize="11"
-                                            Text="Due"
-                                            TextColor="Black"
-                                            WidthRequest="35"/>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontAttributes="Bold"
-                                            FontSize="11"
-                                            Text="{Binding ARBalanceDisplay}"
-                                            TextColor="Black"
-                                            WidthRequest="80"/>
-                                    </HorizontalStackLayout>
-                                    <Label
-                                        BackgroundColor="White"
-                                        FontAttributes="Bold"
-                                        FontSize="11"
-                                        Text="{Binding TermsDesc}"
-                                        TextColor="Black"/>
-                                    <HorizontalStackLayout>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontSize="11"
-                                            Text="Last Payment"
-                                            TextColor="Black"
-                                            WidthRequest="70"/>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontAttributes="Bold"
-                                            FontSize="11"
-                                            Text="{Binding LastPaymentDate}"
-                                            TextColor="Black"
-                                            WidthRequest="70"/>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontSize="11"
-                                            Text="Last Order"
-                                            TextColor="Black"
-                                            WidthRequest="55"/>
-                                        <Label
-                                            BackgroundColor="White"
-                                            FontAttributes="Bold"
-                                            FontSize="11"
-                                            Text="{Binding LastOrderDate}"
-                                            TextColor="Black"/>
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
-                                <BoxView
-                                    BackgroundColor="gray"
-                                    HeightRequest="1"
-                                    HorizontalOptions="Fill"
-                                    VerticalOptions="Fill"
-                                    Color="lightgray"/>
-                            </controls:CustomerStackLayout>
+                                            TextColor="{StaticResource Ink}"
+                                            VerticalOptions="Center"/>
+                                        <Label Grid.Column="2"
+                                               FontFamily="FontAwesomeFreeSolid"
+                                               FontSize="13"
+                                               Text="&#xF054;"
+                                               TextColor="{StaticResource Primary}"
+                                               VerticalOptions="Center"/>
+                                    </Grid>
+                                    <VerticalStackLayout Grid.Row="1"
+                                                         Spacing="2">
+                                        <Label FontSize="12"
+                                               Text="{Binding Address1}"
+                                               TextColor="{StaticResource Ink}"/>
+                                        <Label FontSize="12"
+                                               Text="{Binding CityStateZip}"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                        <Label FontSize="12"
+                                               Text="{Binding Phone}"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                    </VerticalStackLayout>
+                                    <Grid Grid.Row="2"
+                                          ColumnDefinitions="*,*"
+                                          ColumnSpacing="8">
+                                        <Border Padding="8,5"
+                                                Background="{StaticResource SurfaceAlt}"
+                                                Stroke="{StaticResource Divider}"
+                                                StrokeShape="RoundRectangle 8"
+                                                StrokeThickness="1">
+                                            <HorizontalStackLayout Spacing="4">
+                                                <Label FontSize="11"
+                                                       Text="Credit"
+                                                       TextColor="{StaticResource MutedInk}"/>
+                                                <Label FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       Text="{Binding CreditLimitDisplay}"
+                                                       TextColor="{StaticResource Ink}"/>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                        <Border Grid.Column="1"
+                                                Padding="8,5"
+                                                Background="{StaticResource SurfaceAlt}"
+                                                Stroke="{StaticResource Divider}"
+                                                StrokeShape="RoundRectangle 8"
+                                                StrokeThickness="1">
+                                            <HorizontalStackLayout Spacing="4">
+                                                <Label FontSize="11"
+                                                       Text="Due"
+                                                       TextColor="{StaticResource MutedInk}"/>
+                                                <Label FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       Text="{Binding ARBalanceDisplay}"
+                                                       TextColor="{StaticResource Ink}"/>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </Grid>
+                                    <Grid Grid.Row="3"
+                                          ColumnDefinitions="*,*"
+                                          ColumnSpacing="8">
+                                        <Label FontSize="11"
+                                               FontAttributes="Bold"
+                                               Text="{Binding TermsDesc}"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                        <Label Grid.Column="1"
+                                               FontSize="11"
+                                               HorizontalTextAlignment="End"
+                                               Text="{Binding LastOrderDate}"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

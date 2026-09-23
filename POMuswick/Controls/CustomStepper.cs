@@ -1,8 +1,9 @@
 ﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace POMuswick.Controls;
 
-public class CustomStepper : Grid
+public partial class CustomStepper : ContentView
 {
     public static readonly BindableProperty ItemNoProperty = BindableProperty.Create("ItemNo", typeof(int), typeof(CustomStepper), 0);
     public static readonly BindableProperty QtyOrderProperty = BindableProperty.Create("QtyOrder", typeof(int), typeof(CustomStepper), 0);
@@ -11,6 +12,7 @@ public class CustomStepper : Grid
     public static readonly BindableProperty TextProperty = BindableProperty.Create(propertyName: "Text", returnType: typeof(int), declaringType: typeof(CustomStepper), defaultValue: 0, defaultBindingMode: BindingMode.TwoWay);
     public static readonly BindableProperty IsStepperVisibleProperty = BindableProperty.Create(propertyName: "IsStepperVisible", returnType: typeof(bool), declaringType: typeof(CustomStepper), defaultValue: false, defaultBindingMode: BindingMode.TwoWay);
     public static readonly BindableProperty IsAddToOrderVisibleProperty = BindableProperty.Create(propertyName: "IsAddToOrderVisible", returnType: typeof(bool), declaringType: typeof(CustomStepper), defaultValue: false, defaultBindingMode: BindingMode.TwoWay);
+    public static readonly BindableProperty IsMaxOrderQtyVisibleProperty = BindableProperty.Create(propertyName: "IsMaxOrderQtyVisible", returnType: typeof(bool), declaringType: typeof(CustomStepper), defaultValue: false);
 
     public int ItemNo
     {
@@ -54,6 +56,12 @@ public class CustomStepper : Grid
         set { SetValue(IsAddToOrderVisibleProperty, value); }
     }
 
+    public bool IsMaxOrderQtyVisible
+    {
+        get { return (bool)GetValue(IsMaxOrderQtyVisibleProperty); }
+        set { SetValue(IsMaxOrderQtyVisibleProperty, value); }
+    }
+
     public static readonly BindableProperty PlusCommandProperty =
             BindableProperty.Create(
                 nameof(PlusCommand),
@@ -90,101 +98,62 @@ public class CustomStepper : Grid
         set => SetValue(CommandParameterProperty, value);
     }
 
-    private void Plus_Clicked(object sender, EventArgs e)
+    private async void Plus_Clicked(object sender, EventArgs e)
     {
-        
+
         if (PlusCommand?.CanExecute(CommandParameter) == true)
-            PlusCommand.Execute(CommandParameter);
+        {
+            await ExecuteCommandAsync(PlusCommand, CommandParameter);
+            RefreshFromParameter();
+        }
     }
 
-    private void Minus_Clicked(object sender, EventArgs e)
+    private async void Minus_Clicked(object sender, EventArgs e)
     {
         if (MinusCommand?.CanExecute(CommandParameter) == true)
-            MinusCommand.Execute(CommandParameter);
+        {
+            await ExecuteCommandAsync(MinusCommand, CommandParameter);
+            RefreshFromParameter();
+        }
     }
-    
 
-    ImageButton PlusBtn;
-    ImageButton MinusBtn;
-    VerticalStackLayout QtyStack;
-    Label QtyLabel;
-    Border QtyLabelBorder;
-    Label InCartLabel;
-    Button AddToOrderBtn;
+    private static async Task ExecuteCommandAsync(ICommand command, object? parameter)
+    {
+        if (command is IAsyncRelayCommand asyncCommand)
+        {
+            await asyncCommand.ExecuteAsync(parameter);
+            return;
+        }
+
+        command.Execute(parameter);
+    }
+
+    private void RefreshFromParameter()
+    {
+        if (CommandParameter == null)
+            return;
+
+        Type parameterType = CommandParameter.GetType();
+        int? quantity = parameterType.GetProperty(nameof(QtyOrder))?.GetValue(CommandParameter) as int?;
+        bool? stepperVisible = parameterType.GetProperty(nameof(IsStepperVisible))?.GetValue(CommandParameter) as bool?;
+        bool? addVisible = parameterType.GetProperty(nameof(IsAddToOrderVisible))?.GetValue(CommandParameter) as bool?;
+
+        if (quantity.HasValue)
+        {
+            QtyOrder = quantity.Value;
+            Text = quantity.Value;
+        }
+
+        if (stepperVisible.HasValue)
+            IsStepperVisible = stepperVisible.Value;
+
+        if (addVisible.HasValue)
+            IsAddToOrderVisible = addVisible.Value;
+    }
+
 
     public CustomStepper()
     {
-        ColumnDefinitions = new ColumnDefinitionCollection
-        {
-            new ColumnDefinition { Width = GridLength.Auto },
-            new ColumnDefinition { Width = GridLength.Auto },
-            new ColumnDefinition { Width = GridLength.Auto },
-            new ColumnDefinition { Width = GridLength.Star }
-        };
-
-        // FIX: Solved the type instantiation error by using RowDefinitionCollection
-        RowDefinitions = new RowDefinitionCollection();
-
-        ColumnSpacing = 4;
-        VerticalOptions = LayoutOptions.Center;
-
-        PlusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_plus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
-        PlusBtn.Clicked += Plus_Clicked;
-        PlusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
-
-        MinusBtn = new ImageButton { MaximumWidthRequest = 40, MaximumHeightRequest = 40, Source = "blue_minus.png", Aspect = Aspect.AspectFit, BackgroundColor = Colors.Transparent, VerticalOptions = LayoutOptions.Center };
-        MinusBtn.Clicked += Minus_Clicked;
-        MinusBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
-
-        AddToOrderBtn = new Button { Text = "Add", HeightRequest = 40, WidthRequest = 100, CornerRadius = 20, Padding = Thickness.Zero, TextTransform = TextTransform.None, FontSize = 16, FontAttributes = FontAttributes.Bold, BackgroundColor = Colors.LightGray, TextColor = Colors.Blue, VerticalOptions = LayoutOptions.Center };
-        AddToOrderBtn.Clicked += Plus_Clicked;
-        AddToOrderBtn.SetBinding(IsVisibleProperty, new Binding(nameof(IsAddToOrderVisible), source: this));
-
-        QtyStack = new VerticalStackLayout { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center, Spacing = 2 };
-
-        QtyLabel = new Label
-        {
-            WidthRequest = 35,
-            HeightRequest = 30,
-            Margin = Thickness.Zero,
-            TextColor = Colors.Black,
-            FontSize = 20,
-            FontAttributes = FontAttributes.Bold,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center,
-            HorizontalTextAlignment = TextAlignment.Center,
-            VerticalTextAlignment = TextAlignment.Center,
-            BackgroundColor = Colors.Transparent,
-        };
-
-        QtyLabel.SetBinding(Label.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay, source: this));
-
-        QtyLabelBorder = new Border
-        {
-            Stroke = Colors.LightGray,
-            StrokeThickness = 1,
-            HeightRequest = 32,
-            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 4 },
-            Padding = Thickness.Zero,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center,
-            Content = QtyLabel
-        };
-
-        InCartLabel = new Label { Text = "In Cart", WidthRequest = 45, Margin = Thickness.Zero, TextColor = Colors.Gray, FontSize = 10, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center, HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1 };
-
-        QtyStack.Children.Add(QtyLabelBorder);
-        QtyStack.Children.Add(InCartLabel);
-        QtyStack.SetBinding(IsVisibleProperty, new Binding(nameof(IsStepperVisible), source: this));
-
-        Grid.SetColumn(MinusBtn, 0);
-        Grid.SetColumn(QtyStack, 1);
-        Grid.SetColumn(PlusBtn, 2);
-        Grid.SetColumn(AddToOrderBtn, 3);
-
-        Children.Add(MinusBtn);
-        Children.Add(QtyStack);
-        Children.Add(PlusBtn);
-        Children.Add(AddToOrderBtn);
+        InitializeComponent();
     }
 }

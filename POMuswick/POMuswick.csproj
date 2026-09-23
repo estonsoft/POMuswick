@@ -77,6 +77,13 @@
     <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
     <!-- Custom Fonts -->
     <MauiFont Include="Resources\Fonts\*" />
+    <MauiFont Include="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf" Alias="FontAwesomeBrandsReg" />
+    <MauiFont Include="Resources\Fonts\Font Awesome 5 Free-Regular-400.otf" Alias="FontAwesomeFreeReg" />
+    <MauiFont Include="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf" Alias="FontAwesomeFreeSolid" />
+    <MauiFont Include="Resources\Fonts\Font Awesome 6 Pro-Light-300.otf" Alias="FontAwesomePro6Light" />
+    <MauiFont Include="Resources\Fonts\Font Awesome 6 Pro-Regular-400.otf" Alias="FontAwesomePro6Regular" />
+    <MauiFont Include="Resources\Fonts\Font Awesome 6 Pro-Solid-900.otf" Alias="FontAwesomePro6Solid" />
+    <MauiFont Include="Resources\Fonts\Font Awesome 6 Pro-Thin-100.otf" Alias="FontAwesomePro6Thin" />
     <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>

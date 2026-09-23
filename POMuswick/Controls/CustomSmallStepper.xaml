@@ -22,7 +22,7 @@
             Source="blue_minus.png"
             IsVisible="{Binding Source={x:Reference Root},Path=IsStepperVisible}"
             Command="{Binding Source={x:Reference Root},Path=MinusCommand}"
-            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}" />
+            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}"/>
 
         <!-- Qty -->
 
@@ -50,7 +50,7 @@
                     VerticalTextAlignment="Center"
                     FontSize="14"
                     FontAttributes="Bold"
-                    Text="{Binding Source={x:Reference Root},Path=QtyOrder}" />
+                    Text="{Binding Source={x:Reference Root},Path=QtyOrder}"/>
 
             </Border>
 
@@ -73,23 +73,26 @@
             Source="blue_plus.png"
             IsVisible="{Binding Source={x:Reference Root},Path=IsStepperVisible}"
             Command="{Binding Source={x:Reference Root},Path=PlusCommand}"
-            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}" />
+            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}"/>
 
         <!-- Add -->
 
         <Button
             Grid.Column="3"
-            Margin="20,0"
-            HeightRequest="32"
-            CornerRadius="15"
+            Margin="8,0,0,0"
+            WidthRequest="72"
+            HeightRequest="34"
+            CornerRadius="17"
             Text="Add"
-            FontSize="14"
+            FontSize="12"
             FontAttributes="Bold"
-            TextColor="Blue"
-            BackgroundColor="LightGray"
+            TextColor="{StaticResource White}"
+            BackgroundColor="{StaticResource Primary}"
+            BorderWidth="0"
+            Padding="0"
             IsVisible="{Binding Source={x:Reference Root},Path=IsAddToOrderVisible}"
             Command="{Binding Source={x:Reference Root},Path=PlusCommand}"
-            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}" />
+            CommandParameter="{Binding Source={x:Reference Root},Path=CommandParameter}"/>
 
     </Grid>
 

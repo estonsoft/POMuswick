@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="POMuswick.Controls.CustomStepper"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Grid VerticalOptions="Center">
+
+        <!-- Unified Stepper Pill Container [- | qty | +] -->
+        <VerticalStackLayout
+            HorizontalOptions="End"
+            VerticalOptions="Center"
+            Spacing="2"
+            IsVisible="{Binding Source={x:Reference Root}, Path=IsStepperVisible}">
+            <Border
+                HeightRequest="36"
+                Padding="0"
+                Background="{StaticResource SurfaceAlt}"
+                Stroke="{StaticResource Divider}"
+                StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8"/>
+                </Border.StrokeShape>
+
+                <Grid ColumnDefinitions="32, 1, 38, 1, 32"
+                      VerticalOptions="Fill">
+
+                    <!-- Minus Action -->
+                    <Button
+                        Grid.Column="0"
+                        Padding="0"
+                        FontFamily="FontAwesomeFreeSolid"
+                        FontSize="13"
+                        Text="&#xF068;"
+                        TextColor="{StaticResource Primary}"
+                        Background="Transparent"
+                        BorderWidth="0"
+                        VerticalOptions="Fill"
+                        HorizontalOptions="Fill"
+                        Clicked="Minus_Clicked"/>
+
+                    <!-- Vertical Divider Left -->
+                    <BoxView
+                        Grid.Column="1"
+                        WidthRequest="1"
+                        Color="{StaticResource Primary}"
+                        VerticalOptions="Fill"/>
+
+                    <!-- Order Quantity Display -->
+                    <Label
+                        Grid.Column="2"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        FontFamily="OpenSansSemiBold"
+                        TextColor="{StaticResource Ink}"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"
+                        Text="{Binding Source={x:Reference Root}, Path=Text, Mode=TwoWay}"/>
+
+                    <!-- Vertical Divider Right -->
+                    <BoxView
+                        Grid.Column="3"
+                        WidthRequest="1"
+                        Color="{StaticResource Primary}"
+                        VerticalOptions="Fill"/>
+
+                    <!-- Plus Action -->
+                    <Button
+                        Grid.Column="4"
+                        Padding="0"
+                        FontFamily="FontAwesomeFreeSolid"
+                        FontSize="13"
+                        Text="&#xF067;"
+                        TextColor="{StaticResource Primary}"
+                        Background="Transparent"
+                        BorderWidth="0"
+                        VerticalOptions="Fill"
+                        HorizontalOptions="Fill"
+                        Clicked="Plus_Clicked"/>
+                </Grid>
+            </Border>
+
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="2">
+                <Label
+                    FontSize="9"
+                    FontFamily="OpenSansRegular"
+                    Text="In Cart"
+                    TextColor="{StaticResource MutedInk}"
+                    HorizontalTextAlignment="Center"/>
+                <Label
+                    FontSize="9"
+                    FontFamily="OpenSansRegular"
+                    TextColor="{StaticResource MutedInk}"
+                    HorizontalTextAlignment="Center"
+                    IsVisible="{Binding Source={x:Reference Root}, Path=IsMaxOrderQtyVisible}"
+                    Text="{Binding Source={x:Reference Root}, Path=MaxOrderQty, StringFormat='| Max allowed: {0}'}"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- Initial "Add" Button (when stepper is not active) -->
+        <Button
+            WidthRequest="78"
+            HeightRequest="25"
+            CornerRadius="18"
+            Padding="0"
+            FontSize="13"
+            FontAttributes="Bold"
+            FontFamily="OpenSansSemiBold"
+            Text="Add"
+            TextTransform="None"
+            Background="{StaticResource Primary}"
+            TextColor="{StaticResource White}"
+            BorderWidth="0"
+            HorizontalOptions="End"
+            VerticalOptions="Center"
+            IsVisible="{Binding Source={x:Reference Root}, Path=IsAddToOrderVisible}"
+            Clicked="Plus_Clicked"/>
+
+    </Grid>
+</ContentView>

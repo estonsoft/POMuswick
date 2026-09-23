@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="POMuswick.Views.ReorderItemsPage"
+    x:Name="ReorderPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:POMuswick.Controls"
@@ -9,202 +10,188 @@
     xmlns:modal="clr-namespace:POMuswick"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     Title="Reorder Items"
+    Background="{StaticResource Surface}"
     HideSoftInputOnTapped="True">
 
-    <NavigationPage.TitleView>
-        <StackLayout
-            Orientation="Horizontal"
-            Spacing="10"
-            VerticalOptions="Center">
-
-            <Label
-                Padding="10,0,0,0"
-                FontSize="16"
-                Text="Muswick Wholesale Grocers"
-                TextColor="White"
-                VerticalTextAlignment="Center" />
-        </StackLayout>
-    </NavigationPage.TitleView>
-
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Color x:Key="BannerBackground">White</Color>
-            <Color x:Key="Accent">#96d1ff</Color>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
     <ContentPage.Content>
-        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="60" />
+                <RowDefinition Height="52"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" Title="{Binding title}" BackCommand="{Binding BackPressedCommand}"/>
+            <Grid Grid.Row="0"
+                  HeightRequest="52"
+                  Padding="14,0"
+                  ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="8"
+                  VerticalOptions="Center">
+                <Button
+                    Grid.Column="0"
+                    Command="{Binding BackPressedCommand}"
+                    FontFamily="FontAwesomeFreeSolid"
+                    FontSize="18"
+                    Text="&#xF060;"
+                    TextColor="{StaticResource Ink}"
+                    Background="Transparent"
+                    Padding="0"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"/>
+                <Label
+                    Grid.Column="1"
+                    Margin="4,0,0,0"
+                    Text="{Binding Title, FallbackValue='Reorder Items'}"
+                    FontSize="19"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource Ink}"
+                    VerticalOptions="Center"/>
+            </Grid>
             <CollectionView
                 x:Name="ReorderItemsList"
                 Grid.Row="1"
+                BackgroundColor="Transparent"
                 ItemsSource="{Binding ReorderList}"
                 SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="modal:Item">
-                        <Grid
-                            Padding="0,5"
-                            BackgroundColor="White"
-                            ColumnDefinitions="120, *"
-                            RowDefinitions="Auto, Auto, Auto, Auto, 1">
+                        <Border
+                            Margin="12,6"
+                            Padding="12"
+                            BackgroundColor="{StaticResource White}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1">
+                            <Grid ColumnDefinitions="104,*"
+                                  RowDefinitions="Auto,Auto,Auto,Auto"
+                                  RowSpacing="8">
+                                <Label Grid.Row="0"
+                                       Grid.ColumnSpan="2"
+                                       FontAttributes="Bold"
+                                       FontSize="17"
+                                       Text="{Binding Description}"
+                                       TextColor="{StaticResource Ink}"/>
 
-                            <!--  Header: Description  -->
-                            <Label
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="15"
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                Text="{Binding Description}"
-                                TextColor="Blue" />
+                                <Border Grid.Row="1"
+                                        Grid.Column="0"
+                                        Margin="0,0,12,0"
+                                        Padding="6"
+                                        BackgroundColor="{StaticResource SurfaceAlt}"
+                                        Stroke="{StaticResource Divider}"
+                                        StrokeShape="RoundRectangle 12"
+                                        StrokeThickness="1"
+                                        HeightRequest="92"
+                                        WidthRequest="92">
+                                    <ffImage:CachedImage Aspect="AspectFit"
+                                                         DownsampleToViewSize="True"
+                                                         Source="{Binding ImageURL}"/>
+                                </Border>
 
-                            <!--  Image Column  -->
-                            <ffImage:CachedImage
-                                Grid.Row="1"
-                                Grid.RowSpan="2"
-                                Grid.Column="0"
-                                Margin="15"
-                                Aspect="AspectFit"
-                                DownsampleToViewSize="true"
-                                HeightRequest="90"
-                                Source="{Binding ImageURL}"
-                                WidthRequest="90" />
-
-                            <!--  Info Column  -->
-                            <VerticalStackLayout
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Spacing="2"
-                                VerticalOptions="Center">
-                                <HorizontalStackLayout Spacing="10">
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        Text="{Binding ItemNoDisplay}"
-                                        TextColor="Black" />
-                                    <Label
-                                        FontSize="12"
-                                        Text="{Binding ItemNoDisplayUPC}"
-                                        TextColor="Black"
-                                        VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-
-                                <Label
-                                    Margin="0,-2,0,0"
-                                    FontSize="14"
-                                    Text="{Binding CategoryDesc}"
-                                    TextColor="Black" />
-
-                                <!--  Stock Row  -->
-                                <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}" Spacing="5">
-                                    <Label
-                                        IsVisible="{Binding IsQOHVisible}"
-                                        Text="QOH:"
-                                        TextColor="Black" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        IsVisible="{Binding IsQOHRedVisible}"
-                                        Text="{Binding QOH}"
-                                        TextColor="Red" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        IsVisible="{Binding IsQOHBlackVisible}"
-                                        Text="{Binding QOH}"
-                                        TextColor="Black" />
-                                    <Label
-                                        IsVisible="{Binding IsInStockVisible}"
-                                        Text="In Stock"
-                                        TextColor="{Binding QOHColor}" />
-                                    <Label
-                                        IsVisible="{Binding IsOutOfStockVisible}"
-                                        Text="Out Of Stock"
-                                        TextColor="Red" />
-                                </HorizontalStackLayout>
-
-                                <!--  Price & Stepper  -->
-                                <Grid Margin="0,5,0,0" ColumnDefinitions="Auto, *">
-                                    <HorizontalStackLayout IsVisible="{Binding IsLoggedIn}" Spacing="5">
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="20"
-                                            Text="{Binding PriceDisplay}"
-                                            TextColor="Black" />
-                                        <Label
-                                            Margin="0,0,0,3"
-                                            FontSize="14"
-                                            Text="{Binding SizeUOM}"
-                                            TextColor="Black"
-                                            VerticalOptions="End" />
+                                <VerticalStackLayout Grid.Row="1"
+                                                     Grid.Column="1"
+                                                     Spacing="3"
+                                                     VerticalOptions="Center">
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label FontAttributes="Bold"
+                                               FontSize="15"
+                                               Text="{Binding ItemNoDisplay}"
+                                               TextColor="{StaticResource Ink}"/>
+                                        <Label FontSize="12"
+                                               Text="{Binding ItemNoDisplayUPC}"
+                                               TextColor="{StaticResource MutedInk}"
+                                               VerticalOptions="Center"/>
                                     </HorizontalStackLayout>
+                                    <Label FontSize="13"
+                                           Text="{Binding CategoryDesc}"
+                                           TextColor="{StaticResource MutedInk}"/>
+                                    <HorizontalStackLayout IsVisible="{Binding IsStockRowVisible}"
+                                                           Spacing="5">
+                                        <Label IsVisible="{Binding IsQOHVisible}"
+                                               Text="QOH:"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                        <Label FontAttributes="Bold"
+                                               IsVisible="{Binding IsQOHRedVisible}"
+                                               Text="{Binding QOH}"
+                                               TextColor="{StaticResource Primary}"/>
+                                        <Label FontAttributes="Bold"
+                                               IsVisible="{Binding IsQOHBlackVisible}"
+                                               Text="{Binding QOH}"
+                                               TextColor="{StaticResource Ink}"/>
+                                        <Label IsVisible="{Binding IsInStockVisible}"
+                                               Text="In Stock"
+                                               TextColor="{Binding QOHColor}"/>
+                                        <Label IsVisible="{Binding IsOutOfStockVisible}"
+                                               Text="Out Of Stock"
+                                               TextColor="{StaticResource Primary}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
 
-                                    <controls:CustomStepper
-                                        Grid.Column="1"
-                                        Margin="0,0,10,0"
-                                        HorizontalOptions="End"
-                                        IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
-                                        IsStepperVisible="{Binding IsStepperVisible}"
-                                        IsVisible="{Binding IsLoggedIn}"
-                                        ItemNo="{Binding ItemNo}"
-                                        Text="{Binding QtyOrder}" />
+                                <Grid Grid.Row="2"
+                                      Grid.ColumnSpan="2"
+                                      ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="12">
+                                    <HorizontalStackLayout IsVisible="{Binding IsLoggedIn}"
+                                                           Spacing="5"
+                                                           VerticalOptions="Center">
+                                        <Label FontAttributes="Bold"
+                                               FontSize="19"
+                                               Text="{Binding PriceDisplay}"
+                                               TextColor="{StaticResource Primary}"/>
+                                        <Label FontSize="13"
+                                               Text="{Binding SizeUOM}"
+                                               TextColor="{StaticResource MutedInk}"
+                                               VerticalOptions="End"/>
+                                    </HorizontalStackLayout>
+                                    <controls:CustomStepper Grid.Column="1"
+                                                            HorizontalOptions="End"
+                                                            PlusCommand="{Binding Source={x:Reference ReorderPage}, Path=BindingContext.IncreaseQtyCommand}"
+                                                            MinusCommand="{Binding Source={x:Reference ReorderPage}, Path=BindingContext.DecreaseQtyCommand}"
+                                                            CommandParameter="{Binding .}"
+                                                            IsAddToOrderVisible="{Binding IsAddToOrderVisible}"
+                                                            IsStepperVisible="{Binding IsStepperVisible}"
+                                                            IsMaxOrderQtyVisible="{Binding IsMaxOrderQtyVisible}"
+                                                            IsVisible="{Binding IsLoggedIn}"
+                                                            ItemNo="{Binding ItemNo}"
+                                                            MaxOrderQty="{Binding MaxOrderQty}"
+                                                            Text="{Binding QtyOrder}"/>
                                 </Grid>
-                            </VerticalStackLayout>
 
-                            <!--  Footer: Purchase History  -->
-                            <VerticalStackLayout
-                                Grid.Row="3"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="15,0,0,5"
-                                Spacing="0">
-                                <HorizontalStackLayout Spacing="5">
-                                    <Label
-                                        FontSize="12"
-                                        Text="Last Purchased On"
-                                        TextColor="Gray"
-                                        WidthRequest="115" />
-                                    <Label
-                                        FontSize="12"
-                                        Text="{Binding LastPurchDateDisplay}"
-                                        TextColor="Black" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="5">
-                                    <Label
-                                        FontSize="12"
-                                        Text="Last Purchased Qty"
-                                        TextColor="Gray"
-                                        WidthRequest="115" />
-                                    <Label
-                                        FontSize="12"
-                                        Text="{Binding QtyLastOrderDisplay}"
-                                        TextColor="Black" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-
-                            <!--  Separator  -->
-                            <BoxView
-                                Grid.Row="4"
-                                Grid.ColumnSpan="2"
-                                HeightRequest="1"
-                                Color="LightGray" />
-                        </Grid>
+                                <Grid Grid.Row="3"
+                                      Grid.ColumnSpan="2"
+                                      ColumnDefinitions="Auto,*"
+                                      RowDefinitions="Auto,Auto"
+                                      RowSpacing="2">
+                                    <Label FontSize="12"
+                                           Text="Last Purchased On"
+                                           TextColor="{StaticResource MutedInk}"/>
+                                    <Label Grid.Column="1"
+                                           FontSize="12"
+                                           Text="{Binding LastPurchDateDisplay}"
+                                           TextColor="{StaticResource Ink}"/>
+                                    <Label Grid.Row="1"
+                                           FontSize="12"
+                                           Text="Last Purchased Qty"
+                                           TextColor="{StaticResource MutedInk}"/>
+                                    <Label Grid.Row="1"
+                                           Grid.Column="1"
+                                           FontSize="12"
+                                           Text="{Binding QtyLastOrderDisplay}"
+                                           TextColor="{StaticResource Ink}"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <controls:CustomToolbar Grid.Row="2" 
-                HomeCommand="{Binding HomePressedCommand}" 
-                CartCommand="{Binding CartPressedCommand}" 
-                HistoryCommand="{Binding HistoryPressedCommand}" 
-                ShopCommand="{Binding ShopPressedCommand}" 
-                ScanCommand="{Binding ScanPressedCommand}"/>
+            <controls:CustomToolbar Grid.Row="2"
+                                    HomeCommand="{Binding HomePressedCommand}"
+                                    CartCommand="{Binding CartPressedCommand}"
+                                    HistoryCommand="{Binding HistoryPressedCommand}"
+                                    ShopCommand="{Binding ShopPressedCommand}"
+                                    ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

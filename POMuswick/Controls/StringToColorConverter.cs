@@ -4,7 +4,7 @@ namespace POMuswick.Controls;
 
 class StringToColorConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var valueAsString = value?.ToString() ?? string.Empty;
 
@@ -18,7 +18,7 @@ class StringToColorConverter : IValueConverter
         };
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return null;
     }

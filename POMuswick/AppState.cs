@@ -11,7 +11,7 @@ namespace POMuswick
         private readonly ICustomerService _customerService;
         private readonly INavigationService _navigationService;
         private readonly ILoginService _loginService;
-        private static AppSettings appSettings;
+        private static AppSettings appSettings = new();
 
         public AppState(ISettingService settingService, ICustomerService customerService, INavigationService navigationService, ILoginService loginService)
         {
@@ -32,7 +32,8 @@ namespace POMuswick
         {
             try
             {
-                if (appSettings.IsLoggedIn)
+                if (appSettings.IsLoggedIn &&
+                    Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
                 {
                     var result = await _loginService.ValidateUserAsync();
                     if (result.Status == "1" && Shell.Current.CurrentState.Location.ToString() != $"//{AppRoutes.Home}")
@@ -41,6 +42,10 @@ namespace POMuswick
                     }
                 }
                 appSettings.IsOrderSubmiting = false;
+            }
+            catch (HttpRequestException)
+            {
+                System.Diagnostics.Debug.WriteLine("App resume skipped because the network is unavailable.");
             }
             catch (Exception ex)
             {

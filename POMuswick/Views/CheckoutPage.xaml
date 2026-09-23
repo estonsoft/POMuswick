@@ -11,233 +11,376 @@
     Shell.NavBarIsVisible="False"
     Shell.TabBarIsVisible="False">
 
-    <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+    <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+          SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="60" />
+            <RowDefinition Height="56"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
         <!--  HEADER  -->
-        <controls:CustomHeader Grid.Row="0" Title="{Binding Title}" BackCommand="{Binding BackPressedCommand}"/>
+        <Grid Grid.Row="0"
+              HeightRequest="52"
+              Padding="14,0"
+              ColumnDefinitions="Auto,*,Auto"
+              ColumnSpacing="8"
+              Background="{StaticResource White}"
+              VerticalOptions="Center">
+            <Button
+                Grid.Column="0"
+                Command="{Binding BackPressedCommand}"
+                FontFamily="FontAwesomeFreeSolid"
+                FontSize="18"
+                Text="&#xF060;"
+                TextColor="{StaticResource Ink}"
+                Background="Transparent"
+                Padding="0"
+                WidthRequest="36"
+                HeightRequest="36"
+                VerticalOptions="Center"/>
+
+            <Label
+                Grid.Column="1"
+                Margin="4,0,0,0"
+                Text="{Binding Title, FallbackValue='Checkout'}"
+                FontSize="19"
+                FontAttributes="Bold"
+                TextColor="{StaticResource Ink}"
+                VerticalOptions="Center"/>
+
+            <Border
+                Grid.Column="2"
+                Background="{StaticResource Primary}"
+                MinimumWidthRequest="148"
+                Padding="14,8"
+                Stroke="{StaticResource Primary}"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="1"
+                VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding PlaceOrderCommand}"/>
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="6"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center">
+                    <Label
+                        FontFamily="FontAwesomeFreeSolid"
+                        FontSize="18"
+                        Text="&#xF07A;"
+                        TextColor="{StaticResource White}"
+                        VerticalOptions="Center"/>
+                    <Label
+                        Text="Place Order"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource White}"
+                        VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Border>
+        </Grid>
 
         <!--  BODY  -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="0">
-                <BoxView
-                    x:Name="DeliveryBlock"
-                    HeightRequest="3"
-                    Color="Gray" />
-
                 <!--  DELIVERY / PICKUP  -->
-                <Grid>
+                <Border
+                    Margin="16,8"
+                    Padding="12"
+                    Background="{StaticResource SurfaceAlt}"
+                    Stroke="{StaticResource Divider}"
+                    StrokeShape="RoundRectangle 14"
+                    StrokeThickness="1">
+                    <Grid ColumnDefinitions="*,1,*">
+                        <!--  Mode Selection  -->
+                        <Grid Grid.Column="0">
 
-                    <!--  DELIVERY  -->
-                    <Border
-                        x:Name="Delivery"
-                        Margin="10"
-                        BackgroundColor="LightGray"
-                        IsVisible="{Binding IsDeliveryHighlighted}"
-                        Stroke="White"
-                        StrokeShape="RoundRectangle 10">
+                            <!--  DELIVERY  -->
+                            <Border
+                                x:Name="Delivery"
+                                Margin="0"
+                                Padding="6"
+                                Background="Transparent"
+                                IsVisible="{Binding IsDeliveryHighlighted}"
+                                HorizontalOptions="Start"
+                                StrokeThickness="0">
 
-                        <VerticalStackLayout Padding="10">
-                            <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Fill">
-                                <Label
-                                    Margin="5"
-                                    FontFamily="FontAwesomeFreeSolid"
-                                    FontSize="18"
-                                    Text="&#xF0D1;"
-                                    TextColor="Blue"
-                                    VerticalOptions="Center" />
-                                <Label
-                                    Margin="5"
-                                    FontSize="16"
-                                    Text="Delivery"
-                                    TextColor="Blue"
-                                    VerticalOptions="Center" />
-                                <Label
-                                    Margin="5"
-                                    FontFamily="FontAwesomeFreeSolid"
-                                    IsVisible="{Binding IsDeliveryHighlighted}"
-                                    Text="&#xF00C;"
-                                    TextColor="Blue"
-                                    VerticalOptions="Center" />
-                            </HorizontalStackLayout>
+                                <VerticalStackLayout Padding="10"
+                                                     Spacing="8">
+                                    <HorizontalStackLayout HorizontalOptions="Start"
+                                                           VerticalOptions="Fill"
+                                                           Spacing="4">
+                                        <Label
+                                            Margin="5"
+                                            FontFamily="FontAwesomeFreeSolid"
+                                            FontSize="18"
+                                            Text="&#xF0D1;"
+                                            TextColor="{StaticResource Primary}"
+                                            VerticalOptions="Center"/>
+                                        <Label
+                                            Margin="5"
+                                            FontSize="16"
+                                            Text="Delivery"
+                                            TextColor="{StaticResource Ink}"
+                                            VerticalOptions="Center"/>
+                                        <Label
+                                            Margin="5"
+                                            FontFamily="FontAwesomeFreeSolid"
+                                            IsVisible="{Binding IsDeliveryHighlighted}"
+                                            Text="&#xF00C;"
+                                            TextColor="{StaticResource Primary}"
+                                            VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
 
-                            <VerticalStackLayout Margin="5">
-                                <Label FontSize="11" Text="{Binding CompanyName}" />
-                                <Label
-                                    x:Name="DeliveryAddress"
-                                    FontSize="11"
-                                    TextColor="Red"
-                                    Text="{Binding CompanyAddress}" />
-                                <Label FontSize="11" Text="{Binding CompanyCityStateZip}" />
-                            </VerticalStackLayout>
-                        </VerticalStackLayout>
-                    </Border>
+                                    <VerticalStackLayout Margin="5"
+                                                         HorizontalOptions="Start"
+                                                         Spacing="3">
+                                        <Label FontSize="11"
+                                               HorizontalTextAlignment="Start"
+                                               Text="{Binding CompanyName}"
+                                               TextColor="{StaticResource Ink}"/>
+                                        <Label
+                                            x:Name="DeliveryAddress"
+                                            FontSize="11"
+                                            HorizontalTextAlignment="Start"
+                                            TextColor="{StaticResource Primary}"
+                                            Text="{Binding CompanyAddress}"/>
+                                        <Label FontSize="11"
+                                               HorizontalTextAlignment="Start"
+                                               Text="{Binding CompanyCityStateZip}"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
 
-                    <!--  PICKUP  -->
-                    <Border
-                        x:Name="Pickup"
-                        Margin="10"
-                        BackgroundColor="LightGray"
-                        IsVisible="{Binding IsPickupHighlighted}"
-                        Stroke="White"
-                        StrokeShape="RoundRectangle 10">
+                            <!--  PICKUP  -->
+                            <Border
+                                x:Name="Pickup"
+                                Margin="0"
+                                Padding="6"
+                                Background="Transparent"
+                                IsVisible="{Binding IsPickupHighlighted}"
+                                HorizontalOptions="End"
+                                StrokeThickness="0">
 
-                        <VerticalStackLayout Padding="10">
-                            <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Fill">
-                                <Label
-                                    Margin="5"
-                                    FontFamily="FontAwesomeFreeSolid"
-                                    FontSize="18"
-                                    Text="&#xF474;"
-                                    TextColor="Blue"
-                                    VerticalOptions="Center" />
-                                <Label
-                                    Margin="5"
-                                    FontSize="16"
-                                    Text="Pickup"
-                                    TextColor="Blue"
-                                    VerticalOptions="Center" />
-                                <Label
-                                    Margin="5"
-                                    FontFamily="FontAwesomeFreeSolid"
-                                    IsVisible="{Binding IsPickupHighlighted}"
-                                    Text="&#xF00C;"
-                                    TextColor="Blue"
-                                    VerticalOptions="Center" />
-                            </HorizontalStackLayout>
+                                <VerticalStackLayout Padding="10"
+                                                     Spacing="8">
+                                    <HorizontalStackLayout HorizontalOptions="start"
+                                                           VerticalOptions="Fill"
+                                                           Spacing="4">
+                                        <Label
+                                            Margin="5"
+                                            FontFamily="FontAwesomeFreeSolid"
+                                            FontSize="18"
+                                            Text="&#xF474;"
+                                            TextColor="{StaticResource Primary}"
+                                            VerticalOptions="Center"/>
+                                        <Label
+                                            Margin="5"
+                                            FontSize="16"
+                                            Text="Pickup"
+                                            TextColor="{StaticResource Ink}"
+                                            VerticalOptions="Center"/>
+                                        <Label
+                                            Margin="5"
+                                            FontFamily="FontAwesomeFreeSolid"
+                                            IsVisible="{Binding IsPickupHighlighted}"
+                                            Text="&#xF00C;"
+                                            TextColor="{StaticResource Primary}"
+                                            VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
 
-                            <VerticalStackLayout Margin="5">
-                                <Label FontSize="11" Text="{Binding LocationName}" />
-                                <Label FontSize="11" Text="{Binding LocationAddress}" />
-                                <Label FontSize="11" Text="{Binding LocationCityStateZip}" />
-                            </VerticalStackLayout>
-                        </VerticalStackLayout>
-                    </Border>
+                                    <VerticalStackLayout Margin="5"
+                                                         HorizontalOptions="start"
+                                                         Spacing="3">
+                                        <Label FontSize="11"
+                                               HorizontalTextAlignment="Start"
+                                               Text="{Binding LocationName}"
+                                               TextColor="{StaticResource Ink}"/>
+                                        <Label FontSize="11"
+                                               HorizontalTextAlignment="Start"
+                                               Text="{Binding LocationAddress}"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                        <Label FontSize="11"
+                                               HorizontalTextAlignment="Start"
+                                               Text="{Binding LocationCityStateZip}"
+                                               TextColor="{StaticResource MutedInk}"/>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
 
-                </Grid>
+                        </Grid>
 
-                <BoxView
-                    BackgroundColor="gray"
-                    HeightRequest="3"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Fill"
-                    Color="LightGray" />
+                        <BoxView Grid.Column="1"
+                                 Margin="4,8"
+                                 Background="{StaticResource Divider}"
+                                 Color="{StaticResource Divider}"
+                                 VerticalOptions="Fill"/>
 
-                <!--  SUMMARY  -->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="200" />
-                    </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="2"
+                              RowDefinitions="64,64"
+                              ColumnDefinitions="*,*"
+                              ColumnSpacing="6"
+                              RowSpacing="6">
+                            <Border Grid.Row="0"
+                                    Grid.Column="0"
+                                    Padding="8,7"
+                                    Background="{StaticResource White}"
+                                    HorizontalOptions="Fill"
+                                    Stroke="{StaticResource Divider}"
+                                    StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="1"
+                                    VerticalOptions="Fill">
+                                <VerticalStackLayout Spacing="1"
+                                                     HorizontalOptions="Start">
+                                    <Label Text="{Binding SCartItems}"
+                                           FontSize="17"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Primary}"
+                                           HorizontalTextAlignment="Start"/>
+                                    <Label Text="Items"
+                                           FontSize="11"
+                                           TextColor="{StaticResource MutedInk}"
+                                           HorizontalTextAlignment="Start"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Row="0"
+                                    Grid.Column="1"
+                                    Padding="8,7"
+                                    Background="{StaticResource White}"
+                                    HorizontalOptions="Fill"
+                                    Stroke="{StaticResource Divider}"
+                                    StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="1"
+                                    VerticalOptions="Fill">
+                                <VerticalStackLayout Spacing="1"
+                                                     HorizontalOptions="Start">
+                                    <Label Text="{Binding SCartPieces}"
+                                           FontSize="17"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Primary}"
+                                           HorizontalTextAlignment="Start"/>
+                                    <Label Text="Pieces"
+                                           FontSize="11"
+                                           TextColor="{StaticResource MutedInk}"
+                                           HorizontalTextAlignment="Start"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Row="1"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Padding="8,7"
+                                    Background="{StaticResource White}"
+                                    HorizontalOptions="Fill"
+                                    Stroke="{StaticResource Divider}"
+                                    StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="1"
+                                    VerticalOptions="Fill">
+                                <VerticalStackLayout Spacing="1"
+                                                     HorizontalOptions="Start">
+                                    <Label Text="{Binding SCartTotal}"
+                                           FontSize="17"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Primary}"
+                                           HorizontalTextAlignment="Start"/>
+                                    <Label Text="Total"
+                                           FontSize="11"
+                                           TextColor="{StaticResource MutedInk}"
+                                           HorizontalTextAlignment="Start"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
 
-                    <VerticalStackLayout Padding="20">
-                        <Label Text="{Binding SCartItems, StringFormat='Items: {0}'}" />
-                        <Label Text="{Binding SCartPieces, StringFormat='Pieces: {0}'}" />
-                        <Label Text="{Binding SCartTotal, StringFormat='Total: {0}'}" />
-                    </VerticalStackLayout>
-
-                    <VerticalStackLayout Grid.Column="1" Padding="20">
-                        <Button
-                            BackgroundColor="Blue"
-                            Command="{Binding PlaceOrderCommand}"
-                            Text="Place Order"
-                            TextColor="White" />
-
-                        <HorizontalStackLayout>
-                            <CheckBox
-                                x:Name="HoldForReviewCheckbox"
-                                IsChecked="{Binding HoldForReview}"
-                                VerticalOptions="Center"
-                                Color="Blue" />
-                            <Label
-                                x:Name="HoldForReviewLabel"
-                                Text="Hold For Review"
-                                VerticalOptions="Center" />
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Grid>
-
-                <!--  ITEM HEADER  -->
-                <Label
-                    BackgroundColor="White"
-                    FontAttributes="Bold"
-                    FontSize="20"
-                    HorizontalOptions="Center"
-                    Text="Items"
-                    TextColor="Blue" />
-
-
-                <BoxView
-                    BackgroundColor="gray"
-                    HeightRequest="3"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Fill"
-                    Color="lightgray" />
+                <HorizontalStackLayout
+                    Margin="16,0,16,8"
+                    HorizontalOptions="Start"
+                    Spacing="4"
+                    VerticalOptions="Center">
+                    <CheckBox
+                        x:Name="HoldForReviewCheckbox"
+                        IsChecked="{Binding HoldForReview}"
+                        VerticalOptions="Center"
+                        Color="{StaticResource Primary}"/>
+                    <Label
+                        x:Name="HoldForReviewLabel"
+                        Text="Hold For Review"
+                        FontSize="11"
+                        TextColor="{StaticResource Ink}"
+                        VerticalOptions="Center"/>
+                </HorizontalStackLayout>
 
                 <!--  CART LIST  -->
                 <CollectionView
                     x:Name="ItemsListCart"
+                    Margin="0,4,0,0"
                     ItemsSource="{Binding ItemList}"
                     SelectionMode="None">
 
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <VerticalStackLayout>
-                                <VerticalStackLayout Padding="10">
+                            <Border
+                                Margin="16,4"
+                                Padding="12"
+                                Background="{StaticResource White}"
+                                Stroke="{StaticResource Divider}"
+                                StrokeShape="RoundRectangle 14"
+                                StrokeThickness="1">
+                                <VerticalStackLayout Spacing="8">
                                     <Label
                                         FontAttributes="Bold"
                                         Text="{Binding Description}"
-                                        TextColor="Blue" />
+                                        FontSize="15"
+                                        TextColor="{StaticResource Ink}"/>
 
-                                    <HorizontalStackLayout>
+                                    <Grid ColumnDefinitions="96,*"
+                                          ColumnSpacing="12">
                                         <ffimageloading:CachedImage
-                                            Margin="5"
+                                            Grid.Column="0"
                                             Aspect="AspectFit"
                                             ErrorPlaceholder="logoicon.png"
-                                            HeightRequest="90"
+                                            HeightRequest="88"
                                             LoadingPlaceholder="logoicon.png"
                                             Source="{Binding ImageURL}"
-                                            WidthRequest="90" />
+                                            WidthRequest="88"/>
 
-                                        <VerticalStackLayout VerticalOptions="Center">
-                                            <HorizontalStackLayout>
-                                                <Label FontAttributes="Bold" Text="{Binding ItemNoDisplay}" />
-                                                <Label Text="{Binding ItemNoDisplayUPC}" />
+                                        <VerticalStackLayout Grid.Column="1"
+                                                             Spacing="4"
+                                                             VerticalOptions="Center">
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label FontAttributes="Bold"
+                                                       Text="{Binding ItemNoDisplay}"
+                                                       TextColor="{StaticResource Ink}"/>
+                                                <Label Text="{Binding ItemNoDisplayUPC}"
+                                                       TextColor="{StaticResource MutedInk}"/>
                                             </HorizontalStackLayout>
-                                            <Label Text="{Binding CategoryDesc}" />
-                                            <HorizontalStackLayout WidthRequest="150">
+                                            <Label Text="{Binding CategoryDesc}"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource MutedInk}"/>
+                                            <HorizontalStackLayout Spacing="4">
                                                 <Label
-                                                    Margin="5,0,0,0"
-                                                    BackgroundColor="White"
                                                     FontAttributes="Bold"
-                                                    FontSize="20"
+                                                    FontSize="18"
                                                     IsVisible="{Binding IsLoggedIn}"
                                                     MaxLines="1"
                                                     Text="{Binding PriceDisplay}"
-                                                    TextColor="Black" />
+                                                    TextColor="{StaticResource Primary}"/>
                                                 <Label
-                                                    Margin="0,5,0,0"
-                                                    BackgroundColor="White"
-                                                    FontSize="14"
+                                                    FontSize="12"
                                                     IsVisible="{Binding IsLoggedIn}"
                                                     Text="{Binding SizeUOM}"
-                                                    TextColor="Black" />
+                                                    TextColor="{StaticResource Ink}"
+                                                    VerticalOptions="End"/>
                                             </HorizontalStackLayout>
-                                            <Label Text="{Binding QtyOrder, StringFormat='Qty: {0}'}" />
+                                            <Label Text="{Binding QtyOrder, StringFormat='Qty: {0}'}"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource Ink}"/>
                                         </VerticalStackLayout>
-                                    </HorizontalStackLayout>
+                                    </Grid>
                                 </VerticalStackLayout>
-                                <BoxView
-                                    BackgroundColor="gray"
-                                    HeightRequest="3"
-                                    HorizontalOptions="Fill"
-                                    VerticalOptions="Fill"
-                                    Color="lightgray" />
-                            </VerticalStackLayout>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
@@ -245,12 +388,12 @@
         </ScrollView>
 
         <!--  TOOLBAR  -->
-        <controls:CustomToolbar Grid.Row="2" 
-                HomeCommand="{Binding HomePressedCommand}" 
-                CartCommand="{Binding CartPressedCommand}" 
-                HistoryCommand="{Binding HistoryPressedCommand}" 
-                ShopCommand="{Binding ShopPressedCommand}" 
-                ScanCommand="{Binding ScanPressedCommand}"/>
+        <controls:CustomToolbar Grid.Row="2"
+                                HomeCommand="{Binding HomePressedCommand}"
+                                CartCommand="{Binding CartPressedCommand}"
+                                HistoryCommand="{Binding HistoryPressedCommand}"
+                                ShopCommand="{Binding ShopPressedCommand}"
+                                ScanCommand="{Binding ScanPressedCommand}"/>
 
     </Grid>
 </ContentPage>

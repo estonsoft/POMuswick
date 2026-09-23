@@ -10,141 +10,114 @@
     xmlns:vm="clr-namespace:POMuswick.ViewModels;assembly=POMuswick"
     x:DataType="{x:Type vm:LoginViewModel}"
     Title="Account Login"
-    BackgroundColor="White"
+    BackgroundColor="{StaticResource Surface}"
     HideSoftInputOnTapped="True"
     Shell.NavBarIsVisible="False"
     mc:Ignorable="d">
 
     <ContentPage.Content>
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
-              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+              Padding="24,16,24,24"
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}"
+              RowDefinitions="Auto,*,Auto">
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  HorizontalOptions="Fill"
+                  Padding="{OnIdiom Phone='0,0', Tablet='12,0'}">
+                <Border
+                    HorizontalOptions="Start"
+                    Padding="10,5"
+                    Stroke="{StaticResource Divider}"
+                    StrokeShape="RoundRectangle 12">
+                    <Label
+                        x:Name="AppVersion"
+                        Style="{StaticResource CaptionText}"
+                        Text="{Binding AppVersion, StringFormat='Version {0}'}"
+                        VerticalOptions="Center"/>
+                </Border>
+                <ImageButton
+                    Grid.Column="1"
+                    BackgroundColor="Transparent"
+                    Command="{Binding SettingCommand}"
+                    HeightRequest="44"
+                    WidthRequest="44">
+                    <ImageButton.Source>
+                        <FontImageSource
+                            Color="{StaticResource Primary}"
+                            FontFamily="FontAwesomeFreeSolid"
+                            Glyph="&#xF013;"
+                            Size="18"/>
+                    </ImageButton.Source>
+                </ImageButton>
+            </Grid>
 
-            <ScrollView Grid.Row="0">
-                <StackLayout
-                    Padding="0,0,0,0"
-                    BackgroundColor="White"
-                    VerticalOptions="Start">
-                    <Grid
-                        Padding="5,5,0,0"
-                        BackgroundColor="White"
-                        VerticalOptions="Start">
-                        <Label
-                            x:Name="AppVersion"
-                            Padding="0,0,0,0"
-                            BackgroundColor="White"
-                            FontSize="14"
-                            Text="{Binding AppVersion}"
-                            HorizontalOptions="Start"
-                            TextColor="black"/>
-                        <ImageButton
-                            Padding="0,0,0,10"
-                            Aspect="AspectFit"
-                            BackgroundColor="Transparent"
-                            Command="{Binding SettingCommand}"
-                            HeightRequest="50"
-                            HorizontalOptions="End"
-                            Source="settings.png"
-                            WidthRequest="50"/>
-                    </Grid>
-                    <StackLayout
-                        Padding="0,20,0,0"
-                        BackgroundColor="White"
-                        VerticalOptions="Start">
-                        <ffimageloading:CachedImage
-                            x:Name="Logo"
-                            Margin="6"
-                            Aspect="AspectFit"
-                            HeightRequest="50"
-                            HorizontalOptions="Center"
-                            Source="logo.jpg"
-                            StyleClass="FlyoutHeaderStyle"
-                            VerticalOptions="Center"/>
-                        <Label
-                            Padding="0,10,0,0"
-                            BackgroundColor="White"
-                            FontAttributes="Bold"
-                            FontSize="30"
-                            HorizontalOptions="Center"
-                            Text="Sign In"
-                            TextColor="black"/>
-                        <Entry
-                            x:Name="User"
-                            Margin="0,40,0,0"
-                            FontSize="18"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
-                            HeightRequest="40"
-                            HorizontalOptions="Center"
-                            Placeholder="Username"
-                            PlaceholderColor="Gray"
-                            Text="{Binding User}"
-                            VerticalOptions="Center"
-                            WidthRequest="250"/>
-                        <Entry
-                            x:Name="Password"
-                            Margin="0,20,0,0"
-                            FontSize="18"
-                            HeightRequest="40"
-                            HorizontalOptions="Center"
-                            IsPassword="true"
-                            Placeholder="Password"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
-                            PlaceholderColor="Gray"
-                            Text="{Binding Password}"
-                            VerticalOptions="Center"
-                            WidthRequest="250"/>
-                        <Grid
-                            Padding="0,5,0,0"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="0.25*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <CheckBox
-                                x:Name="RememberMe"
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                IsChecked="{Binding RememberMe}"
-                                VerticalOptions="Center"
-                                Color="blue"/>
-                            <Label
-                                Grid.Row="1"
-                                Grid.Column="2"
-                                FontSize="12"
-                                Text="Remember Me"
-                                TextColor="black"
-                                VerticalOptions="Center"/>
-                        </Grid>
-                        <Button
-                            Margin="0,20,0,0"
-                            Padding="0,0,0,0"
-                            BackgroundColor="blue"
-                            Command="{Binding LoginCommand}"
-                            CornerRadius="10"
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
-                            HeightRequest="35"
-                            HorizontalOptions="Center"
-                            Text="       Sign In       "
-                            TextColor="White"
-                            TextTransform="None"/>
-                    </StackLayout>
-                </StackLayout>
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout
+                    MaximumWidthRequest="620"
+                    HorizontalOptions="Fill"
+                    Padding="{OnIdiom Phone='0,12', Tablet='24,20'}"
+                    Spacing="24"
+                    VerticalOptions="Center">
+                    <ffimageloading:CachedImage
+                        x:Name="Logo"
+                        Aspect="AspectFit"
+                        HeightRequest="128"
+                        HorizontalOptions="Center"
+                        ErrorPlaceholder="logoicon.png"
+                        LoadingPlaceholder="logoicon.png"
+                        RetryCount="3"
+                        Source="logo.jpg"
+                        StyleClass="FlyoutHeaderStyle"
+                        WidthRequest="{OnIdiom Phone='220', Tablet='280'}"/>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Style="{StaticResource PageTitle}"
+                               Text="Welcome back"/>
+                        <Label Style="{StaticResource BodyText}"
+                               Text="Sign in to manage your wholesale orders."
+                               TextColor="{StaticResource MutedInk}"/>
+                    </VerticalStackLayout>
+                    <Border Background="{StaticResource WhiteBrush}"
+                            MaximumWidthRequest="560"
+                            HorizontalOptions="Fill"
+                            Padding="{OnIdiom Phone='20', Tablet='28'}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeShape="RoundRectangle 18">
+                        <VerticalStackLayout Spacing="16">
+                            <Entry x:Name="User"
+                                   Placeholder="Username"
+                                   Text="{Binding User}"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                            <Entry x:Name="Password"
+                                   IsPassword="True"
+                                   Placeholder="Password"
+                                   Text="{Binding Password}"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="8">
+                                <CheckBox x:Name="RememberMe"
+                                          IsChecked="{Binding RememberMe}"
+                                          VerticalOptions="Center"/>
+                                <Label Grid.Column="1"
+                                       Style="{StaticResource CaptionText}"
+                                       Text="Remember me on this device"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                            <Button Command="{Binding LoginCommand}"
+                                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                    Text="Sign in"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
             </ScrollView>
+            <Label Grid.Row="2"
+                   Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center"
+                   Text="Muswick Wholesale Grocers"/>
             <controls:CustomAlertDialog
                 x:Name="LoadingAlert"
                 Title="Validating"
                 Grid.Row="0"
+                Grid.RowSpan="3"
                 IsVisible="{Binding IsBusy}"
                 IsLoading="{Binding IsBusy}"
                 SyncStatus="{Binding SyncStatus}"

@@ -229,7 +229,7 @@ namespace POMuswick.ViewModels
                 IsBusy = false;
                 if ((DCartTotal < customer.MinOrderAmount) && IsDeliveryHighlighted)
                 {
-                    bool bContinue = await _dialogService.ConfirmAsync("Muswick Wholesale Grocers", "Your order total must be at least " + string.Format("{0:C}", customer.MinOrderAmount) + " to avoid a " + string.Format("{0:C}", customer.ShippingFee) + " shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "YES", "NO");
+                    bool bContinue = await _dialogService.ConfirmAsync("Muswick Wholesale Grocers", $"Your order total must be at least ${customer.MinOrderAmount:0.00} to avoid a ${customer.ShippingFee:0.00} shipping fee.  Do you wish to continue?  Yes to continue and place order.  No to go back and add more items to your order.", "YES", "NO");
 
                     if (bContinue)
                     {

@@ -137,7 +137,7 @@ namespace POMuswick.ViewModels
                         i.IsAddToOrderVisible = false;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     i.IsStepperVisible = false;
                     i.IsAddToOrderVisible = true;

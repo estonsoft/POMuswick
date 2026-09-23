@@ -67,7 +67,7 @@ namespace POMuswick.ViewModels
             OrderDateDisplay = OrdHeader.OrderDateDisplay;
             Items = OrdHeader.Items;
             Pieces = OrdHeader.Pieces;
-            TotalDisplay = OrdHeader.TotalDisplay;
+            TotalDisplay = $"${OrdHeader.Total:0.00}";
 
             var itemResult = await _itemService.FetchNewItemAsync(false);
             List<Item> lstItem = itemResult.items;
@@ -84,6 +84,7 @@ namespace POMuswick.ViewModels
             foreach (var d in OrderDetailList)
             {
                 d.IsLoggedIn = appSettings.IsLoggedIn;
+                d.PriceDisplay = $"${d.Price:0.00}";
 
                 // Sync Item information
                 if (itemLookup.TryGetValue(d.ItemNo, out var item))

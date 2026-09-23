@@ -2,15 +2,15 @@ using System.Globalization;
 
 namespace POMuswick.Converters;
 
-public class InverseBoolConverter : IValueConverter
+public sealed class StringNotEmptyConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is bool b && !b;
+        return !string.IsNullOrWhiteSpace(value?.ToString());
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is bool b && !b;
+        throw new NotSupportedException();
     }
 }

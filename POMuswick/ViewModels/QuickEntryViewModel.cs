@@ -10,7 +10,7 @@ namespace POMuswick.ViewModels
     {
         private readonly INavigationService _navigationService;
         private readonly ISettingService _settingService;
-         private readonly IItemService _itemService;
+        private readonly IItemService _itemService;
         private AppSettings appSetting;
         [ObservableProperty]
         int iQty = 1;
@@ -78,12 +78,13 @@ namespace POMuswick.ViewModels
         bool _messageIsVisible;
         [ObservableProperty]
         bool _tapToScanIsVisible;
-        
+
         [ObservableProperty]
         bool _maxOrderQtyIsVisible = false;
 
         public QuickEntryViewModel(IAppServices appServices) : base(appServices)
         {
+            Title = "Scan";
             _navigationService = appServices._navigationService;
             _settingService = appServices._settingService;
             _itemService = appServices._itemService;
@@ -323,7 +324,7 @@ namespace POMuswick.ViewModels
                 ScanItemText = "";
                 return;
             }
-            if(await _itemService.GetItemQty(item.ItemNo) > 0)
+            if (await _itemService.GetItemQty(item.ItemNo) > 0)
             {
                 SetMessage("Item Already In Shopping Cart");
             }

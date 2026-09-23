@@ -214,7 +214,7 @@ namespace POMuswick.ViewModels
             }
             else
             {
-                await _navigationService.GoToAsync(AppRoutes.ItemSearch);
+                await _navigationService.GoToAsync(AppRoutes.ReorderItems);
             }
         }
 
@@ -245,6 +245,43 @@ namespace POMuswick.ViewModels
         public async Task MenuTappedAsync()
         {
             Shell.Current.FlyoutIsPresented = true;
+        }
+
+        [RelayCommand]
+        private async Task IncreaseQtyAsync(UIItems item)
+        {
+            if (item == null)
+                return;
+
+            if (item.QtyOrder >= 999)
+                return;
+
+            if (item.MaxOrderQty > 0 &&
+                item.QtyOrder >= item.MaxOrderQty)
+                return;
+
+            await _itemService.UpdateItemQtySet(item.ItemNo, 1);
+
+            item.QtyOrder++;
+            item.IsStepperVisible = true;
+            item.IsAddToOrderVisible = false;
+        }
+
+        [RelayCommand]
+        private async Task DecreaseQtyAsync(UIItems item)
+        {
+            if (item == null || item.QtyOrder <= 0)
+                return;
+
+            await _itemService.UpdateItemQtySet(item.ItemNo, -1);
+
+            item.QtyOrder--;
+
+            if (item.QtyOrder == 0)
+            {
+                item.IsStepperVisible = false;
+                item.IsAddToOrderVisible = true;
+            }
         }
     }
 }

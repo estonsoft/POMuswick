@@ -46,7 +46,7 @@ namespace POMuswick.Parsers
                 OrderDate = GetDateTime("Order Date", order[2]),
                 OrderDateDisplay = order[2],
                 Total = GetDecimalValue("Order Total", order[3], 0),
-                TotalDisplay = string.Format("{0:C}", GetDecimalValue("Order Total", order[3], 0)),
+                TotalDisplay = $"${GetDecimalValue("Order Total", order[3], 0):0.00}",
                 Items = GetIntegerValue("Items", order[4], 0),
                 Pieces = GetIntegerValue("Pieces", order[5], 0)
             };
@@ -62,7 +62,7 @@ namespace POMuswick.Parsers
                 QtyOrdered = GetIntegerValue("Qty Ordered", order[8], 0),
                 QtyShipped = GetIntegerValue("Qty Shipped", order[8], 0),
                 Price = GetDecimalValue("Price", order[9], 0),
-                PriceDisplay = string.Format("{0:C}", GetDecimalValue("Price", order[9], 0)),
+                PriceDisplay = $"${GetDecimalValue("Price", order[9], 0):0.00}",
                 UPC = order[10],
                 Description = order[11],
                 UOM = order[12],

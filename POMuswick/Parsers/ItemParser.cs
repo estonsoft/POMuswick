@@ -56,9 +56,9 @@ namespace POMuswick.Parsers
                         item.SizeDisplay = aItem[16].Trim();
                         item.Form = aItem[17].Trim();
                         item.Price = GetIntegerValue("Price Value", aItem[18], 0);
-                        item.PriceDisplay = string.Format("{0:C}", item.Price);
+                        item.PriceDisplay = $"${item.Price:0.00}";
                         item.Tax = GetDecimalValue("Tax", aItem[19].Trim(), 0);
-                        item.TaxDisplay = string.Format("{0:C}", item.Tax);
+                        item.TaxDisplay = $"${item.Tax:0.00}";
                         item.CategoryRank = GetIntegerValue("Category Rank", aItem[20].Trim(), 0);
                         item.SellUnitsInPurchaseUnit = GetIntegerValue("Sell Units in Purchase Unit", aItem[21].Trim(), 1);
                         item.Status = aItem[22];

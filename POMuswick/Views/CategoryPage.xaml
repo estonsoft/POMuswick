@@ -9,6 +9,7 @@
     xmlns:ios="http://schemas.microsoft.com/dotnet/2021/maui/ios"
     x:Name="CategoriesPage"
     Title="Product Categories"
+    BackgroundColor="{StaticResource Surface}"
     HideSoftInputOnTapped="True">
 
     <Shell.SearchHandler>
@@ -20,16 +21,40 @@
 
     <ContentPage.Content>
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
-                SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="56"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0"
-                    Title="{Binding Title}"
-                    BackCommand="{Binding BackPressedCommand}"/>
+            <Grid Grid.Row="0"
+                  HeightRequest="52"
+                  Padding="14,0"
+                  ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="8"
+                  VerticalOptions="Center">
+                <Button
+                    Grid.Column="0"
+                    Command="{Binding BackPressedCommand}"
+                    FontFamily="FontAwesomeFreeSolid"
+                    FontSize="18"
+                    Text="&#xF060;"
+                    TextColor="{StaticResource Ink}"
+                    Background="Transparent"
+                    Padding="0"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"/>
+                <Label
+                    Grid.Column="1"
+                    Margin="4,0,0,0"
+                    Text="{Binding Title, FallbackValue='Product Categories'}"
+                    FontSize="19"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource Ink}"
+                    VerticalOptions="Center"/>
+            </Grid>
 
             <CollectionView
                 x:Name="CategoriesListSearch"
@@ -39,72 +64,76 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <!--  Use a plain layout as the DataTemplate content for MAUI  -->
-                        <VerticalStackLayout
-                            Margin="0,0,0,0"
-                            Spacing="0"
-                            VerticalOptions="Start">
-                            <VerticalStackLayout.GestureRecognizers>
+                        <Border
+                            Margin="12,5"
+                            Padding="10,9"
+                            Background="{StaticResource White}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1">
+                            <Border.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CategoriesSelectedCommand}"
                                     CommandParameter="{Binding .}"/>
-                            </VerticalStackLayout.GestureRecognizers>
-                            <Label
-                                Margin="0,0,0,0"
-                                BackgroundColor="Aqua"
-                                IsVisible="False"
-                                Text="{Binding Code}"/>
-                            <HorizontalStackLayout
-                                Margin="20,5,0,0"
-                                HorizontalOptions="Start"
-                                VerticalOptions="Center">
-                                <ffimageloading:CachedImage
-                                    Margin="5,5,5,5"
-                                    Aspect="AspectFit"
-                                    HeightRequest="90"
-                                    HorizontalOptions="Fill"
-                                    Source="{Binding ImageURL}"
-                                    VerticalOptions="Fill"
-                                    WidthRequest="90"/>
-                                <StackLayout
-                                    Margin="0,0,0,0"
-                                    HorizontalOptions="Start"
-                                    Orientation="Vertical"
-                                    VerticalOptions="Center">
+                            </Border.GestureRecognizers>
+                            <Border.Shadow>
+                                <Shadow Brush="{StaticResource Ink}"
+                                        Offset="0,3"
+                                        Radius="8"
+                                        Opacity="0.05"/>
+                            </Border.Shadow>
+                            <Grid ColumnDefinitions="78,*,Auto"
+                                  ColumnSpacing="12">
+                                <Border Grid.Column="0"
+                                        Padding="0"
+                                        Background="{StaticResource SurfaceAlt}"
+                                        Stroke="{StaticResource Divider}"
+                                        StrokeShape="RoundRectangle 10"
+                                        StrokeThickness="1"
+                                        HeightRequest="72"
+                                        WidthRequest="72">
                                     <Label
-                                        Margin="5,0,0,0"
-                                        BackgroundColor="White"
+                                        FontFamily="FontAwesomeFreeSolid"
+                                        FontSize="30"
+                                        Text="{Binding Description, Converter={StaticResource CategoryIconConverter}}"
+                                        TextColor="{StaticResource Primary}"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center"/>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="3"
+                                                     VerticalOptions="Center">
+                                    <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
-                                        HorizontalOptions="Start"
                                         LineBreakMode="WordWrap"
+                                        MaxLines="2"
                                         Text="{Binding Description}"
-                                        TextColor="Blue"
-                                        VerticalOptions="Start"/>
-                                </StackLayout>
-                            </HorizontalStackLayout>
-                            <BoxView
-                                HeightRequest="3"
-                                HorizontalOptions="Fill"
-                                IsVisible="false"
-                                VerticalOptions="Fill"
-                                Color="Gray"/>
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroupList>
-                                    <VisualStateGroup Name="CommonStates">
-                                        <!--  Normal State  -->
-                                        <VisualState Name="Normal"/>
-
-                                        <!--  Selected State  -->
-                                        <VisualState Name="Selected">
-                                            <VisualState.Setters>
-                                                <Setter Property="BackgroundColor"
-                                                        Value="LightGray"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateGroupList>
-                            </VisualStateManager.VisualStateGroups>
-                        </VerticalStackLayout>
+                                        TextColor="{StaticResource Ink}"
+                                        VerticalOptions="Center"/>
+                                    <Label
+                                        FontSize="11"
+                                        Text="Select to browse"
+                                        TextColor="{StaticResource MutedInk}"/>
+                                </VerticalStackLayout>
+                                <Border Grid.Column="2"
+                                        Padding="0"
+                                        Background="{StaticResource SurfaceAlt}"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 16"
+                                        HeightRequest="30"
+                                        WidthRequest="30"
+                                        VerticalOptions="Center">
+                                    <Label
+                                        FontFamily="FontAwesomeFreeSolid"
+                                        FontSize="12"
+                                        Text="&#xF054;"
+                                        TextColor="{StaticResource Primary}"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

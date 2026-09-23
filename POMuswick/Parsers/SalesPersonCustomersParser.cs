@@ -40,11 +40,11 @@ namespace POMuswick.Parsers
                         c.ARBalance = 0;
                         c.ARBalance = GetDecimalValue("AR Balance", aCust[6], 0);
 
-                        c.ARBalanceDisplay = string.Format("{0:C2}", c.ARBalance);
+                        c.ARBalanceDisplay = $"${c.ARBalance:0.00}";
                         c.CreditLimit = GetDecimalValue("Credit Limit", aCust[7], 0);
                         if (c.CreditLimit > 0)
                         {
-                            c.CreditLimitDisplay = string.Format("{0:C2}", c.CreditLimit);
+                            c.CreditLimitDisplay = $"${c.CreditLimit:0.00}";
                         }
                         else
                         {

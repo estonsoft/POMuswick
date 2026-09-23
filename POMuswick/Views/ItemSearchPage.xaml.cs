@@ -24,6 +24,16 @@ namespace POMuswick.Views
         {
             return true;
         }
+
+        private async void OnTappedSearch(object sender, EventArgs e)
+        {
+            await _viewModel.RefreshList();
+        }
+
+        private async void OnInStockChanged(object sender, CheckedChangedEventArgs e)
+        {
+            await _viewModel.RefreshList();
+        }
     }
 }
 

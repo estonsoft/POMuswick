@@ -63,12 +63,11 @@ namespace POMuswick
 
         public void HideCustomerMenu()
         {
-            foreach (ShellItem item in Items)
+            for (int index = Items.Count - 1; index >= 0; index--)
             {
-                if (item.Title == "Customers")
+                if (ReferenceEquals(Items[index], custMenu) || Items[index].Title == "Customers")
                 {
-                    Items.Remove(item);
-                    break;
+                    Items.RemoveAt(index);
                 }
             }
             bIsCustMenuVisible = false;
@@ -89,7 +88,7 @@ namespace POMuswick
 
         public void ShowCustomerMenu()
         {
-            if (!bIsCustMenuVisible)
+            if (!bIsCustMenuVisible && !Items.Contains(custMenu))
             {
                 bIsCustMenuVisible = true;
                 Items.Add(custMenu);

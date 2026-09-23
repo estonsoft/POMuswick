@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="POMuswick.Controls.PurchaseHistoryItemCell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:POMuswick.Controls"
+    x:Name="this">
+
+    <Grid Padding="12,6">
+        <Border BackgroundColor="{StaticResource White}"
+                StrokeThickness="1"
+                Stroke="{StaticResource Divider}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="14"/>
+            </Border.StrokeShape>
+
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource Ink}"
+                        Offset="0,3"
+                        Radius="8"
+                        Opacity="0.05"/>
+            </Border.Shadow>
+
+            <Grid Padding="16"
+                  RowDefinitions="Auto, Auto, Auto"
+                  RowSpacing="12">
+
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="Auto, *">
+                    <HorizontalStackLayout Grid.Column="0"
+                                           Spacing="6"
+                                           VerticalOptions="Center">
+                        <Border BackgroundColor="{StaticResource SurfaceAlt}"
+                                StrokeShape="RoundRectangle 6"
+                                StrokeThickness="0"
+                                Padding="8,4">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="Order #"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource MutedInk}"/>
+                                <Label Text="{Binding OrderNo}"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Ink}"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <Border Grid.Column="1"
+                            BackgroundColor="{StaticResource SurfaceAlt}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="8,5"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center">
+                        <Label Text="{Binding OrderDateDisplay}"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource MutedInk}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Border>
+                </Grid>
+
+                <HorizontalStackLayout Grid.Row="1"
+                                       Spacing="10"
+                                       VerticalOptions="Center">
+                    <Border BackgroundColor="{StaticResource SurfaceAlt}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="10,5">
+                        <HorizontalStackLayout Spacing="5">
+                            <Label Text="{Binding Items}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Ink}"/>
+                            <Label Text="Items"
+                                   FontSize="13"
+                                   TextColor="{StaticResource MutedInk}"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Border BackgroundColor="{StaticResource SurfaceAlt}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="10,5">
+                        <HorizontalStackLayout Spacing="5">
+                            <Label Text="{Binding Pieces}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Ink}"/>
+                            <Label Text="Pieces"
+                                   FontSize="13"
+                                   TextColor="{StaticResource MutedInk}"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </HorizontalStackLayout>
+
+                <Grid Grid.Row="2"
+                      ColumnDefinitions="*, Auto"
+                      VerticalOptions="Center">
+                    <VerticalStackLayout Grid.Column="0"
+                                         Spacing="1"
+                                         VerticalOptions="Center">
+                        <Label Text="Total Amount"
+                               FontSize="11"
+                               TextColor="{StaticResource MutedInk}"/>
+                        <Label Text="{Binding TotalDisplay}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Ink}"/>
+                    </VerticalStackLayout>
+
+                    <Border Grid.Column="1"
+                            BackgroundColor="{StaticResource SurfaceAlt}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,7"
+                            VerticalOptions="Center">
+                        <controls:OrderLabel
+                            FontSize="13"
+                            FontAttributes="Bold"
+                            OrderNo="{Binding OrderNo}"
+                            Text="View Details →"
+                            TextColor="{StaticResource Primary}"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DetailsCommand}"
+                                    CommandParameter="{Binding .}"/>
+                            </Label.GestureRecognizers>
+                        </controls:OrderLabel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentView>

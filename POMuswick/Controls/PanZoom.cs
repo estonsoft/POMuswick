@@ -23,8 +23,8 @@ namespace Profit_Order.Controls
         double panTotalX;
         double panTotalY;
 
-        ContentPage contentPage;
-        View Content;
+        private ContentPage? contentPage;
+        private View? Content;
         public void Setup(ContentPage cp, View content)
         {
             contentPage = cp;
@@ -130,7 +130,7 @@ namespace Profit_Order.Controls
             }
         }
 
-        private void PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
+        private void PinchUpdated(object? sender, PinchGestureUpdatedEventArgs e)
         {
             if (sender != contentPage.Content)
                 return;
@@ -195,7 +195,7 @@ namespace Profit_Order.Controls
             }
         }
 
-        public void OnPanUpdated(object sender, PanUpdatedEventArgs e)
+        public void OnPanUpdated(object? sender, PanUpdatedEventArgs e)
         {
             if (sender != contentPage.Content)
                 return;
