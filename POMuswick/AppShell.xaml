@@ -184,37 +184,61 @@
         </DataTemplate>
     </Shell.FlyoutFooterTemplate>
 
-    <FlyoutItem Title="Home"
-                FlyoutDisplayOptions="AsMultipleItems">
+    <TabBar
+        x:Name="MainTabBar"
+        Route="MainTabs">
         <ShellContent
-            x:Name="MenuLogin"
-            Title="Login  ›"
-            ContentTemplate="{DataTemplate views:LoginPage}"
-            Route="LoginPage"
-            FlyoutItemIsVisible="False"
-            Shell.NavBarIsVisible="False"
-            StyleClass="MenuItemLayoutStyle">
-            <ShellContent.Icon FontSize="16">
-                <FontImageSource
-                    FontFamily="FontAwesomeFreeSolid"
-                    Glyph="&#xF015;"
-                    Color="{StaticResource Primary}"/>
+            Title="Home"
+            Route="HomeTab"
+            ContentTemplate="{DataTemplate views:HomePage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FontAwesomeFreeSolid"
+                                 Glyph="&#xF015;"
+                                 Color="{StaticResource Primary}"/>
             </ShellContent.Icon>
         </ShellContent>
         <ShellContent
-            x:Name="MenuHome"
-            Title="Home  ›"
-            ContentTemplate="{DataTemplate views:HomePage}"
-            Route="HomePage"
-            StyleClass="MenuItemLayoutStyle">
-            <ShellContent.Icon FontSize="16">
-                <FontImageSource
-                    FontFamily="FontAwesomeFreeSolid"
-                    Glyph="&#xF015;"
-                    Color="{StaticResource Primary}"/>
+            x:Name="CartTab"
+            Title="Cart"
+            Route="CartTab"
+            ContentTemplate="{DataTemplate views:ShoppingCartPage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FontAwesomeFreeSolid"
+                                 Glyph="&#xF07A;"
+                                 Color="{StaticResource Primary}"/>
             </ShellContent.Icon>
         </ShellContent>
-    </FlyoutItem>
+        <ShellContent
+            Title="History"
+            Route="HistoryTab"
+            ContentTemplate="{DataTemplate views:PurchaseHistoryPage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FontAwesomeFreeSolid"
+                                 Glyph="&#xF571;"
+                                 Color="{StaticResource Primary}"/>
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent
+            Title="Shop"
+            Route="ShopTab"
+            ContentTemplate="{DataTemplate views:CategoryPage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FontAwesomeFreeSolid"
+                                 Glyph="&#xF0CA;"
+                                 Color="{StaticResource Primary}"/>
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent
+            Title="Scan"
+            Route="ScanTab"
+            ContentTemplate="{DataTemplate views:QuickEntryPage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FontAwesomePro6Regular"
+                                 Glyph="&#xF464;"
+                                 Color="{StaticResource Primary}"/>
+            </ShellContent.Icon>
+        </ShellContent>
+    </TabBar>
 
     <MenuItem
         x:Name="MenuShoppingCart"

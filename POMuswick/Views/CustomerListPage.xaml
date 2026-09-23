@@ -210,13 +210,6 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
-            <controls:CustomToolbar x:Name="CustomToolbar"
-                                    Grid.Row="3"
-                                    HomeCommand="{Binding HomePressedCommand}"
-                                    CartCommand="{Binding CartPressedCommand}"
-                                    HistoryCommand="{Binding HistoryPressedCommand}"
-                                    ShopCommand="{Binding ShopPressedCommand}"
-                                    ScanCommand="{Binding ScanPressedCommand}"/>
             <controls:CustomAlertDialog
                 x:Name="LoadingAlert"
                 Title="Updating Customer"

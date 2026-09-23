@@ -17,17 +17,17 @@
 
     <ContentPage.Content>
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
-                SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="55"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="80"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <controls:CustomHeader Grid.Row="0"
-                    Title="{Binding Title}"
-                    BackCommand="{Binding BackPressedCommand}"/>
+                                   Title="{Binding Title}"
+                                   BackCommand="{Binding BackPressedCommand}"/>
 
             <StackLayout
                 Grid.Row="1"
@@ -90,12 +90,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <controls:CustomToolbar Grid.Row="3"
-                                    HomeCommand="{Binding HomePressedCommand}"
-                                    CartCommand="{Binding CartPressedCommand}"
-                                    HistoryCommand="{Binding HistoryPressedCommand}"
-                                    ShopCommand="{Binding ShopPressedCommand}"
-                                    ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

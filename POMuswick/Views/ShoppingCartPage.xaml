@@ -7,8 +7,7 @@
     xmlns:local="clr-namespace:POMuswick.ViewModels"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     Title="Shopping Cart"
-    HideSoftInputOnTapped="True"
-    Shell.TabBarIsVisible="False">
+    HideSoftInputOnTapped="True">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -310,14 +309,6 @@
             Message="Please wait while we validating the order…"/>
 
         <!--  5. BOTTOM TOOLBAR (FIXED 80)  -->
-        <controls:CustomToolbar
-            Grid.Row="4"
-            HeightRequest="80"
-            HomeCommand="{Binding HomePressedCommand}"
-            CartCommand="{Binding CartPressedCommand}"
-            HistoryCommand="{Binding HistoryPressedCommand}"
-            ShopCommand="{Binding ShopPressedCommand}"
-            ScanCommand="{Binding ScanPressedCommand}"/>
 
     </Grid>
 </ContentPage>

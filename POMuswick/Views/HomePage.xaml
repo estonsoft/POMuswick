@@ -300,13 +300,6 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <controls:CustomToolbar Grid.Row="2"
-                                VerticalOptions="End"
-                                HomeCommand="{Binding HomePressedCommand}"
-                                CartCommand="{Binding CartPressedCommand}"
-                                HistoryCommand="{Binding HistoryPressedCommand}"
-                                ShopCommand="{Binding ShopPressedCommand}"
-                                ScanCommand="{Binding ScanPressedCommand}"/>
 
         <controls:CustomAlertDialog
             x:Name="LoadingAlert"

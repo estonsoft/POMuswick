@@ -421,13 +421,6 @@
             </ScrollView>
 
             <!--  2. BOTTOM TOOLBAR  -->
-            <controls:CustomToolbar Grid.Row="2"
-                                    HeightRequest="80"
-                                    HomeCommand="{Binding HomePressedCommand}"
-                                    CartCommand="{Binding CartPressedCommand}"
-                                    HistoryCommand="{Binding HistoryPressedCommand}"
-                                    ShopCommand="{Binding ShopPressedCommand}"
-                                    ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

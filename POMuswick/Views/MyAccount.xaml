@@ -1,20 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage HideSoftInputOnTapped="True"
-    x:Class="POMuswick.Views.MyAccountPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:POMuswick.Controls"
-    Title="My Account">
+             x:Class="POMuswick.Views.MyAccountPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:POMuswick.Controls"
+             Title="My Account">
 
     <ContentPage.Content>
-        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}" SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
+        <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
+                SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="60" />
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <controls:CustomHeader Grid.Row="0" Title="{Binding title}" BackCommand="{Binding BackPressedCommand}"/>
+            <controls:CustomHeader Grid.Row="0"
+                    Title="{Binding title}"
+                    BackCommand="{Binding BackPressedCommand}"/>
 
             <VerticalStackLayout
                 Grid.Row="1"
@@ -29,7 +32,7 @@
                     HorizontalOptions="Start"
                     Text="{Binding CompanyNameText}"
                     TextColor="Blue"
-                    VerticalOptions="Start" />
+                    VerticalOptions="Start"/>
                 <Label
                     x:Name="Address"
                     BackgroundColor="White"
@@ -37,7 +40,7 @@
                     HorizontalOptions="Start"
                     Text="{Binding AddressText}"
                     TextColor="Black"
-                    VerticalOptions="Start" />
+                    VerticalOptions="Start"/>
                 <Label
                     x:Name="CityStateZip"
                     BackgroundColor="White"
@@ -45,7 +48,7 @@
                     HorizontalOptions="Start"
                     Text="{Binding CityStateZipText}"
                     TextColor="Black"
-                    VerticalOptions="Start" />
+                    VerticalOptions="Start"/>
                 <Label
                     x:Name="Phone"
                     BackgroundColor="White"
@@ -53,7 +56,7 @@
                     HorizontalOptions="Start"
                     Text="{Binding PhoneText}"
                     TextColor="Black"
-                    VerticalOptions="Start" />
+                    VerticalOptions="Start"/>
                 <Label
                     x:Name="Email"
                     BackgroundColor="White"
@@ -61,8 +64,9 @@
                     HorizontalOptions="Start"
                     Text="{Binding EmailText}"
                     TextColor="Black"
-                    VerticalOptions="Start" />
-                <StackLayout HorizontalOptions="Start" Orientation="Horizontal">
+                    VerticalOptions="Start"/>
+                <StackLayout HorizontalOptions="Start"
+                        Orientation="Horizontal">
                     <Label
                         BackgroundColor="White"
                         FontSize="16"
@@ -70,7 +74,7 @@
                         Text="Credit Limit:"
                         TextColor="Black"
                         VerticalOptions="Start"
-                        WidthRequest="90" />
+                        WidthRequest="90"/>
                     <Label
                         x:Name="CreditLimit"
                         BackgroundColor="White"
@@ -79,9 +83,10 @@
                         HorizontalOptions="Start"
                         Text="{Binding CreditLimitText}"
                         TextColor="Black"
-                        VerticalOptions="Start" />
+                        VerticalOptions="Start"/>
                 </StackLayout>
-                <StackLayout HorizontalOptions="Start" Orientation="Horizontal">
+                <StackLayout HorizontalOptions="Start"
+                        Orientation="Horizontal">
                     <Label
                         BackgroundColor="White"
                         FontSize="16"
@@ -89,7 +94,7 @@
                         Text="AR Balance:"
                         TextColor="Black"
                         VerticalOptions="Start"
-                        WidthRequest="90" />
+                        WidthRequest="90"/>
                     <Label
                         x:Name="ARBalance"
                         BackgroundColor="White"
@@ -98,16 +103,10 @@
                         HorizontalOptions="Start"
                         Text="{Binding ARBalanceText}"
                         TextColor="Black"
-                        VerticalOptions="Start" />
+                        VerticalOptions="Start"/>
                 </StackLayout>
             </VerticalStackLayout>
 
-            <controls:CustomToolbar Grid.Row="2" 
-                HomeCommand="{Binding HomePressedCommand}" 
-                CartCommand="{Binding CartPressedCommand}" 
-                HistoryCommand="{Binding HistoryPressedCommand}" 
-                ShopCommand="{Binding ShopPressedCommand}" 
-                ScanCommand="{Binding ScanPressedCommand}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

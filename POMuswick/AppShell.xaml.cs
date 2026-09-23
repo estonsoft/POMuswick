@@ -33,7 +33,6 @@ namespace POMuswick
             custMenu = MenuCustomers;
             myAccountMenu = MenuMyAccount;
 
-            Shell.SetTabBarIsVisible(this, false);
             Shell.SetNavBarIsVisible(this, false);
         }
 
@@ -132,6 +131,11 @@ namespace POMuswick
         public void ShowNavBar()
         {
             SetNavBarIsVisible(this, true);
+        }
+
+        public void SetCartTabCount(int count)
+        {
+            CartTab.Title = count > 0 ? $"Cart ({count})" : "Cart";
         }
 
         private async void MenuShoppingCart_Clicked(object sender, EventArgs e)

@@ -101,7 +101,7 @@ namespace POMuswick.ViewModels
             var cartPieces = await _cartService.GetCartPieces();
             if (cartPieces > 0)
             {
-                RefreshList();
+                await RefreshListAsync();
             }
             else
             {
@@ -110,7 +110,7 @@ namespace POMuswick.ViewModels
             }
         }
 
-        public async void RefreshList()
+        public async Task RefreshListAsync()
         {
             var cartItems = await _cartService.GetCartItems();
             List<UIItems> uiList = cartItems
@@ -185,6 +185,18 @@ namespace POMuswick.ViewModels
             }
             UpdateTotals();
         }
+
+        public async void RefreshList()
+        {
+            try
+            {
+                await RefreshListAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Cart refresh failed: {ex}");
+            }
+        }
         public void UpdateTotals()
         {
             ICartItems = 0;
@@ -204,6 +216,9 @@ namespace POMuswick.ViewModels
             CartItems = ICartItems.ToString();
             CartPieces = ICartPieces.ToString();
             CartTotal = DCartTotal.ToString("0.00");
+
+            if (Shell.Current is AppShell shell)
+                shell.SetCartTabCount(ICartItems);
         }
 
         [RelayCommand]

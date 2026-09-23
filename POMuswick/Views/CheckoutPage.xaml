@@ -16,7 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="56"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!--  HEADER  -->
@@ -388,12 +388,6 @@
         </ScrollView>
 
         <!--  TOOLBAR  -->
-        <controls:CustomToolbar Grid.Row="2"
-                                HomeCommand="{Binding HomePressedCommand}"
-                                CartCommand="{Binding CartPressedCommand}"
-                                HistoryCommand="{Binding HistoryPressedCommand}"
-                                ShopCommand="{Binding ShopPressedCommand}"
-                                ScanCommand="{Binding ScanPressedCommand}"/>
 
     </Grid>
 </ContentPage>
