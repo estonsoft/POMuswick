@@ -310,7 +310,7 @@ namespace POMuswick.ViewModels
         }
 
         [RelayCommand]
-        private async Task RefreshListCommand()
+        private async Task RefreshListAsync()
         {
             await RefreshList();
         }

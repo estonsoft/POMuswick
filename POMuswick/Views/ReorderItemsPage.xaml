@@ -85,8 +85,14 @@
                                         HeightRequest="92"
                                         WidthRequest="92">
                                     <ffImage:CachedImage Aspect="AspectFit"
+                                                         CacheType="All"
                                                          DownsampleToViewSize="True"
-                                                         Source="{Binding ImageURL}"/>
+                                                         ErrorPlaceholder="logoicon.png"
+                                                         HeightRequest="80"
+                                                         LoadingPlaceholder="logoicon.png"
+                                                         RetryCount="2"
+                                                         Source="{Binding ImageURL}"
+                                                         WidthRequest="80"/>
                                 </Border>
 
                                 <VerticalStackLayout Grid.Row="1"

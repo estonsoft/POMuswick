@@ -3,7 +3,7 @@ using POMuswick.Views;
 public static class AppRoutes
 {
     public const string Login = nameof(LoginPage);
-    public const string Home = nameof(HomePage);
+    public const string Home = "MainTabs/HomeTab";
     public const string ShoppingCart = nameof(ShoppingCartPage);
     public const string Checkout = nameof(CheckoutPage);
     public const string SubmitOrder = nameof(SubmitOrderPage);

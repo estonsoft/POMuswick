@@ -44,7 +44,7 @@
                     VerticalOptions="Center"/>
                 <Label Grid.Column="1"
                        Margin="4,0,0,0"
-                       Text="{Binding title, FallbackValue='Search Products'}"
+                       Text="{Binding Title, FallbackValue='Search Products'}"
                        FontSize="19"
                        FontAttributes="Bold"
                        TextColor="{StaticResource Ink}"

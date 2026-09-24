@@ -48,11 +48,15 @@ namespace POMuswick.ViewModels
                 // Instant lookup via Dictionary
                 if (itemLookup.TryGetValue(ri.ItemNo, out var matchingItem))
                 {
+                    ri.ImageURL = matchingItem.ImageURL;
                     ri.QtyOrder = matchingItem.QtyOrder;
                     ri.MaxOrderQty = matchingItem.MaxOrderQty;
                     ri.IsMaxOrderQtyVisible = matchingItem.IsMaxOrderQtyVisible;
                     ri.MaxOrderQtyDisplay = matchingItem.MaxOrderQtyDisplay;
                 }
+
+                if (string.IsNullOrWhiteSpace(ri.ImageURL))
+                    ri.ImageURL = $"{Constants.ItemImageUrl}{ri.ItemNo}.jpg";
 
                 // Visibility Logic
                 ri.IsStepperVisible = ri.QtyOrder != 0;
