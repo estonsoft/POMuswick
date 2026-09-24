@@ -36,7 +36,8 @@ namespace POMuswick
                     Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
                 {
                     var result = await _loginService.ValidateUserAsync();
-                    if (result.Status == "1" && Shell.Current.CurrentState.Location.ToString() != $"//{AppRoutes.Home}")
+                    if (result.Status == "1" &&
+                        !Shell.Current.CurrentState.Location.ToString().EndsWith("/HomeTab", StringComparison.Ordinal))
                     {
                         await _navigationService.GoToRootAsync(AppRoutes.Home);
                     }

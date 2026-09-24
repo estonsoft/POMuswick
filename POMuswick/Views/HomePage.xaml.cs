@@ -14,27 +14,13 @@ namespace POMuswick.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            try
-            {
-                await _viewModel.OnAppearingAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Home page load failed: {ex}");
-            }
+            await _viewModel.OnAppearingAsync();
         }
 
         protected override async void OnDisappearing()
         {
             base.OnDisappearing();
-            try
-            {
-                await _viewModel.OnDisappearingAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Home page unload failed: {ex}");
-            }
+            await _viewModel.OnDisappearingAsync();
         }
 
         protected override bool OnBackButtonPressed()

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using POMuswick.Common;
+using POMuswick.Models;
 using POMuswick.Services;
 
 namespace POMuswick.ViewModels
@@ -14,6 +15,7 @@ namespace POMuswick.ViewModels
         private readonly ICatNSubCatService _catNSubCatService;
         private readonly IOrderHistoryService _orderHistoryService;
         private readonly ICartService _cartService;
+        private readonly ISettingService _settingService;
 
         [ObservableProperty]
         public List<SalesCustomer> _customers;
@@ -32,6 +34,7 @@ namespace POMuswick.ViewModels
             _orderHistoryService = appServices._orderHistoryService;
             _cartService = appServices._cartService;
             _salesPersonCustomersService = appServices._salesPersonCustomersService;
+            _settingService = appServices._settingService;
         }
 
         public override async Task OnAppearingAsync()
@@ -69,6 +72,11 @@ namespace POMuswick.ViewModels
             {
                 var currentCustomer = await _customerService.GetCustomerAsync();
                 string OldCustNo = currentCustomer.CustNo;
+
+                await _settingService.SaveChanges(new Dictionary<string, string>
+                {
+                    [nameof(AppSettings.CustomerNo)] = currentCustomer.CustNo
+                });
 
                 SalesCustomer salesCustomer = await _salesPersonCustomersService.FindSalesCustomer(customer.CustNo);
 

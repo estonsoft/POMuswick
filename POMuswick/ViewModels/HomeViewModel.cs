@@ -37,15 +37,17 @@ namespace POMuswick.ViewModels
             _settingService = appServices._settingService;
             _bannerService = appServices._bannerService;
             _itemService = appServices._itemService;
+
+            InitializeTimer();
         }
 
         public override async Task OnAppearingAsync()
         {
             await base.OnAppearingAsync();
+
             var appSetting = await _settingService.LoadSetting();
             await SetHomeUIControls(appSetting);
             await RefreshNewItemsList(appSetting);
-            InitializeTimer();
         }
 
         private void InitializeTimer()

@@ -22,7 +22,14 @@ public class NavigationService : INavigationService
 
     public async Task GoToRootAsync(string route)
     {
-        await Shell.Current.GoToAsync($"//{route}");
+        var rootRoute = route switch
+        {
+            AppRoutes.Login => $"//{AppRoutes.Login}",
+            AppRoutes.Home => "//MainTabs/HomeTab",
+            _ => $"//{route}"
+        };
+
+        await Shell.Current.GoToAsync(rootRoute);
     }
 
     public async Task GoBackAsync()

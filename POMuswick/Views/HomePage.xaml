@@ -247,7 +247,7 @@
 
                 <CollectionView
                     x:Name="CartSection"
-                    HeightRequest="280"
+                    HeightRequest="300"
                     ItemsSource="{Binding LstItems}"
                     ItemsLayout="HorizontalList"
                     SelectionMode="None"
@@ -286,7 +286,7 @@
 
                 <CollectionView
                     x:Name="NewItemList"
-                    HeightRequest="280"
+                    HeightRequest="300"
                     ItemsSource="{Binding LstItems}"
                     ItemsLayout="HorizontalList"
                     SelectionMode="None"
