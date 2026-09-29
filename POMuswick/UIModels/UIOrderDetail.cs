@@ -2,7 +2,7 @@
 
 namespace POMuswick.UIModels
 {
-    public partial class UIOrderDetail : ObservableObject
+    public partial class UIOrderDetail : ObservableObject, IListItemDisplay
     {
 
         [ObservableProperty] public string _orderNo;
@@ -47,5 +47,6 @@ namespace POMuswick.UIModels
         [ObservableProperty] public int _maxOrderQty;
         [ObservableProperty] public Boolean _isMaxOrderQtyVisible;
         [ObservableProperty] public string _maxOrderQtyDisplay;
+        [ObservableProperty] public Boolean _isPriceVisible = true;
     }
 }

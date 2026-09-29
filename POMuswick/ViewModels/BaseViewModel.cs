@@ -7,24 +7,41 @@ namespace POMuswick.ViewModels;
 public partial class BaseViewModel : ObservableObject
 {
     private readonly IAppServices _appServices;
-    [ObservableProperty]
-    public bool isBusy;
+    private readonly AppLoadingState _loadingState;
 
     [ObservableProperty]
     public string _title = string.Empty;
 
-    [ObservableProperty]
-    private string _syncStatus = string.Empty;
+    // Shared app-wide loading state so the loading overlay isn't tied to a single page's ViewModel.
+    public bool IsBusy
+    {
+        get => _loadingState.IsBusy;
+        set => _loadingState.IsBusy = value;
+    }
 
-    [ObservableProperty]
-    private int _progressPercentage;
+    public string SyncStatus
+    {
+        get => _loadingState.SyncStatus;
+        set => _loadingState.SyncStatus = value;
+    }
 
-    [ObservableProperty]
-    private double _progressValue;
+    public int ProgressPercentage
+    {
+        get => _loadingState.ProgressPercentage;
+        set => _loadingState.ProgressPercentage = value;
+    }
+
+    public double ProgressValue
+    {
+        get => _loadingState.ProgressValue;
+        set => _loadingState.ProgressValue = value;
+    }
 
     public BaseViewModel(IAppServices appServices)
     {
         _appServices = appServices;
+        _loadingState = appServices._appLoadingState;
+        _loadingState.PropertyChanged += (_, e) => OnPropertyChanged(e.PropertyName);
     }
 
     protected void ResetSyncProgress()

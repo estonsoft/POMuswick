@@ -10,24 +10,27 @@ namespace POMuswick.ViewModels
     public partial class HomeViewModel : BaseViewModel
     {
         [ObservableProperty]
-        List<UIItems> lstItems;
+        List<UIItems>? lstItems = new();
 
         [ObservableProperty]
-        ImageSource bannerImage;
+        ImageSource? bannerImage = null;
 
         [ObservableProperty]
-        string welcomeTitle;
+        string welcomeTitle = "";
         [ObservableProperty]
-        string customerTitle;
+        string customerTitle = "";
 
         [ObservableProperty]
-        string searchText;
+        string searchText = "";
 
         private readonly INavigationService _navigationService;
         private readonly IBannerService _bannerService;
         private readonly ISettingService _settingService;
         private readonly ICustomerService _customerService;
         private readonly IItemService _itemService;
+        private bool _isActive;
+        private bool _isTimerRunning;
+
 
         public HomeViewModel(IAppServices appServices) : base(appServices)
         {
@@ -37,26 +40,41 @@ namespace POMuswick.ViewModels
             _settingService = appServices._settingService;
             _bannerService = appServices._bannerService;
             _itemService = appServices._itemService;
-
-            InitializeTimer();
+            BannerImage = ImageSource.FromFile("logo.jpg");
+            var appSetting = _settingService.LoadSetting().Result;
+            _ = SetHomeUIControls(appSetting);
+            _ = RefreshNewItemsList(appSetting);
         }
 
         public override async Task OnAppearingAsync()
         {
             await base.OnAppearingAsync();
-
-            var appSetting = await _settingService.LoadSetting();
-            await SetHomeUIControls(appSetting);
-            await RefreshNewItemsList(appSetting);
+            _isActive = true;
+            StartTimer();
         }
 
-        private void InitializeTimer()
+        public override Task OnDisappearingAsync()
         {
-            BannerImage = ImageSource.FromFile("logo.jpg");
+            _isActive = false;
+            return base.OnDisappearingAsync();
+        }
+
+        private void StartTimer()
+        {
+            if (_isTimerRunning)
+                return;
+
+            _isTimerRunning = true;
             Application.Current?.Dispatcher.StartTimer(
                 TimeSpan.FromSeconds(5),
                 () =>
                 {
+                    if (!_isActive)
+                    {
+                        _isTimerRunning = false;
+                        return false;
+                    }
+
                     UpdateBanner();
                     return true;
                 });
@@ -121,7 +139,6 @@ namespace POMuswick.ViewModels
         }
         public async Task RefreshNewItemsList(AppSettings appSettings)
         {
-            LstItems = null;
             var itemResult = await _itemService.FetchNewItemAsync(true);
             foreach (var item in itemResult.items)
             {
@@ -200,9 +217,9 @@ namespace POMuswick.ViewModels
         public async Task NewItemsAllAsync()
         {
             await _navigationService.GoToAsync(AppRoutes.ItemSearch, new ShellNavigationQueryParameters
-        {
-            { "NEW ITEMS", "NEW ITEMS" }
-        });
+            {
+                { "NEW ITEMS", "NEW ITEMS" }
+            });
         }
         [RelayCommand]
         public async Task PastPurchasesAsync()

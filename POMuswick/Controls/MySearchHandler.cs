@@ -2,7 +2,7 @@
 
 public class MySearchHandler : SearchHandler
 {
-    string searchText;
+    string searchText = "";
     public MySearchHandler()
     {
         FontSize = 12;

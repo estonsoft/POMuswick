@@ -74,6 +74,7 @@ namespace POMuswick
             builder.Services.AddSingleton<AppState>();
             builder.Services.AddSingleton<CommManager>();
             builder.Services.AddSingleton<Database>();
+            builder.Services.AddSingleton<AppLoadingState>();
 
             builder.Services.AddTransient<BannerParser>();
             builder.Services.AddTransient<CatNSubCatParser>();

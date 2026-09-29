@@ -116,6 +116,7 @@
             <controls:CustomAlertDialog
                 x:Name="LoadingAlert"
                 Title="Validating"
+                Padding="-24,-16,-24,-24"
                 Grid.Row="0"
                 Grid.RowSpan="3"
                 IsVisible="{Binding IsBusy}"

@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace POMuswick.UIModels
 {
-    public partial class UIItems : ObservableObject
+    public partial class UIItems : ObservableObject, IListItemDisplay
     {
 
         [ObservableProperty] public int _itemNo;

@@ -4,7 +4,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:POMuswick.Controls"
-    xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui">
+    xmlns:uimodels="clr-namespace:POMuswick.UIModels"
+    xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+    x:DataType="uimodels:IListItemDisplay">
 
     <Border
         Margin="10,8"
@@ -13,14 +15,6 @@
         Stroke="{StaticResource Divider}"
         StrokeShape="RoundRectangle 12"
         StrokeThickness="1">
-
-        <Border.Shadow>
-            <Shadow
-                Brush="{StaticResource PrimaryBrush}"
-                Opacity="0.08"
-                Radius="10"
-                Offset="0,3"/>
-        </Border.Shadow>
 
         <Grid ColumnDefinitions="92,*,Auto"
               RowDefinitions="Auto,Auto,Auto"

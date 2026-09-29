@@ -38,11 +38,19 @@ public partial class LoginViewModel : BaseViewModel
 
     public override async Task OnAppearingAsync()
     {
+        await base.OnAppearingAsync();
+        // IsBusy = true;
         Customer customer = await _customerService.GetCustomerAsync();
         RememberMe = customer.RememberMe;
         AppVersion = Constants.Version;
         if (RememberMe)
             User = customer.User;
+    }
+
+    public override async Task OnDisappearingAsync()
+    {
+        await base.OnDisappearingAsync();
+        IsBusy = false;
     }
 
     [RelayCommand]

@@ -836,6 +836,26 @@ namespace POMuswick
             return _database.Query<SalesCustomer>(sQuery);
         }
 
+        public List<SalesCustomer> GetSalesCustomers(string SearchCustomer, int skip, int take)
+        {
+            String sOrderBy = " order by CompanyName ";
+            String sQuery = "select * from [SalesCustomer] ";
+
+            if (SearchCustomer != null)
+            {
+                if (SearchCustomer.Trim().Replace("'", "") != "")
+                {
+                    sQuery += " where (CompanyName like '%" + SearchCustomer.Trim().Replace("'", "") + "%' ";
+                    sQuery += " or CustNo = '" + SearchCustomer.Trim() + "') ";
+                }
+            }
+
+            sQuery += sOrderBy;
+            sQuery += " limit ? offset ? ";
+
+            return _database.Query<SalesCustomer>(sQuery, take, skip);
+        }
+
         public SalesCustomer FindSalesCustomer(string CustNo)
         {
             return _database.Find<SalesCustomer>(s => s.CustNo == CustNo);

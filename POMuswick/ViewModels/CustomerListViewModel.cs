@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using POMuswick.Common;
 using POMuswick.Models;
@@ -8,6 +9,8 @@ namespace POMuswick.ViewModels
 {
     public partial class CustomerListViewModel : BaseViewModel
     {
+        private const int PageSize = 50;
+
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
         private readonly ISalesPersonCustomersService _salesPersonCustomersService;
@@ -17,8 +20,12 @@ namespace POMuswick.ViewModels
         private readonly ICartService _cartService;
         private readonly ISettingService _settingService;
 
+        private int _loadedCount;
+        private bool _hasMoreCustomers = true;
+        private bool _isLoadingMore;
+
         [ObservableProperty]
-        public List<SalesCustomer> _customers;
+        public ObservableCollection<SalesCustomer> _customers = new();
 
         [ObservableProperty]
         public string _customerSearchText;
@@ -47,12 +54,13 @@ namespace POMuswick.ViewModels
         public async Task RefreshListAsync()
         {
             IsBusy = true;
-            Customers = await _salesPersonCustomersService.GetSalesCustomer("");
-            if (Customers == null || Customers.Count == 0)
+            var firstPage = await _salesPersonCustomersService.GetSalesCustomer("", 0, PageSize);
+            if (firstPage == null || firstPage.Count == 0)
             {
                 var customersResult = await _salesPersonCustomersService.FetchSalesPersonCustomersAsync("");
-                Customers = customersResult.salesCustomers;
+                firstPage = customersResult.salesCustomers?.Take(PageSize).ToList() ?? new List<SalesCustomer>();
             }
+            ResetPaging(firstPage);
             IsBusy = false;
         }
 
@@ -60,8 +68,39 @@ namespace POMuswick.ViewModels
         public async Task SearchCustomerAsync()
         {
             IsBusy = true;
-            Customers = await _salesPersonCustomersService.GetSalesCustomer(CustomerSearchText);
+            var firstPage = await _salesPersonCustomersService.GetSalesCustomer(CustomerSearchText, 0, PageSize);
+            ResetPaging(firstPage);
             IsBusy = false;
+        }
+
+        [RelayCommand]
+        public async Task LoadMoreCustomersAsync()
+        {
+            if (_isLoadingMore || !_hasMoreCustomers)
+                return;
+
+            _isLoadingMore = true;
+            try
+            {
+                var nextPage = await _salesPersonCustomersService.GetSalesCustomer(CustomerSearchText ?? "", _loadedCount, PageSize);
+                foreach (var customer in nextPage)
+                {
+                    Customers.Add(customer);
+                }
+                _loadedCount += nextPage.Count;
+                _hasMoreCustomers = nextPage.Count == PageSize;
+            }
+            finally
+            {
+                _isLoadingMore = false;
+            }
+        }
+
+        private void ResetPaging(List<SalesCustomer> firstPage)
+        {
+            Customers = new ObservableCollection<SalesCustomer>(firstPage);
+            _loadedCount = firstPage.Count;
+            _hasMoreCustomers = firstPage.Count == PageSize;
         }
 
         [RelayCommand]

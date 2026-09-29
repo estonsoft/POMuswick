@@ -13,14 +13,16 @@ namespace POMuswick
         private readonly ILoginService _loginService;
         private static AppSettings appSettings = new();
 
-        public AppState(ISettingService settingService, ICustomerService customerService, INavigationService navigationService, ILoginService loginService)
+        public AppState(ISettingService settingService, ICustomerService customerService, INavigationService navigationService, ILoginService loginService, ISettingRepository settingRepository)
         {
             _settingService = settingService;
             _customerService = customerService;
             _navigationService = navigationService;
             _loginService = loginService;
 
-            appSettings = _settingService.LoadSetting().Result;
+            // settingRepository.Load() is synchronous under the hood; call it directly
+            // instead of blocking on the async ISettingService wrapper via .Result during startup.
+            appSettings = settingRepository.Load();
         }
 
         public static string GetbaseUrl()

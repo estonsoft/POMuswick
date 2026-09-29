@@ -37,6 +37,11 @@ namespace POMuswick.Services
             return await _SalesPersonCustomersRepository.GetSalesCustomers(search);
         }
 
+        public async Task<List<SalesCustomer>> GetSalesCustomer(string search, int skip, int take)
+        {
+            return await _SalesPersonCustomersRepository.GetSalesCustomers(search, skip, take);
+        }
+
         public async Task Clear()
         {
             await _SalesPersonCustomersRepository.Clear();
@@ -48,6 +53,7 @@ namespace POMuswick.Services
         public Task<SalesPersonCustomersResult> FetchSalesPersonCustomersAsync(string user);
         public Task<SalesCustomer> FindSalesCustomer(string custNo);
         public Task<List<SalesCustomer>> GetSalesCustomer(string search);
-         public Task Clear();
+        public Task<List<SalesCustomer>> GetSalesCustomer(string search, int skip, int take);
+        public Task Clear();
     }
 }

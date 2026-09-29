@@ -11,31 +11,31 @@ namespace POMuswick.Repository
         }
         public Task Save(List<SalesCustomer> salesPersonCustomers)
         {
-            _db.SaveSalesCustomer(salesPersonCustomers);
-           return Task.CompletedTask;
+            return Task.Run(() => _db.SaveSalesCustomer(salesPersonCustomers));
         }
 
         public Task<List<SalesCustomer>> Load()
         {
-            var salesPersonCustomers = _db.GetSalesCustomers();
-            return Task.FromResult(salesPersonCustomers ?? new List<SalesCustomer>());
+            return Task.Run(() => _db.GetSalesCustomers() ?? new List<SalesCustomer>());
         }
 
         public Task Clear()
         {
-            _db.DeleteSalesCustomers();
-            return Task.CompletedTask;
+            return Task.Run(() => _db.DeleteSalesCustomers());
         }
 
-        public async Task<SalesCustomer> FindSalesCustomer(string custNo)
+        public Task<SalesCustomer> FindSalesCustomer(string custNo)
         {
-            var salesPersonCustomers = _db.FindSalesCustomer(custNo);
-            return salesPersonCustomers;
+            return Task.Run(() => _db.FindSalesCustomer(custNo));
         }
-        public async Task<List<SalesCustomer>> GetSalesCustomers(string search)
+        public Task<List<SalesCustomer>> GetSalesCustomers(string search)
         {
-            var salesPersonCustomers = _db.GetSalesCustomers(search);
-            return salesPersonCustomers;
+            return Task.Run(() => _db.GetSalesCustomers(search));
+        }
+
+        public Task<List<SalesCustomer>> GetSalesCustomers(string search, int skip, int take)
+        {
+            return Task.Run(() => _db.GetSalesCustomers(search, skip, take));
         }
     }
 
@@ -43,7 +43,8 @@ namespace POMuswick.Repository
     {
         public Task Save(List<SalesCustomer> SalesPersonCustomerss);
         public Task<List<SalesCustomer>> Load();
-        public Task<List<SalesCustomer>>GetSalesCustomers(string search);
+        public Task<List<SalesCustomer>> GetSalesCustomers(string search);
+        public Task<List<SalesCustomer>> GetSalesCustomers(string search, int skip, int take);
         public Task Clear();
         public Task<SalesCustomer> FindSalesCustomer(string custNo);
     }

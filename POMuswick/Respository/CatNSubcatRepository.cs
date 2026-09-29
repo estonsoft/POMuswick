@@ -21,22 +21,19 @@ namespace POMuswick.Repository
         }
 
 
-        public async Task<List<Category>> LoadCategories()
+        public Task<List<Category>> LoadCategories()
         {
-            var categories = _db.GetCategories();
-            return categories ?? new List<Category>();
+            return Task.Run(() => _db.GetCategories() ?? new List<Category>());
         }
 
-        public async Task<List<Subcategory>> LoadSubCategories(string cateCode)
+        public Task<List<Subcategory>> LoadSubCategories(string cateCode)
         {
-            var subcategories = _db.GetSubcategory(cateCode);
-            return subcategories ?? new List<Subcategory>();
+            return Task.Run(() => _db.GetSubcategory(cateCode) ?? new List<Subcategory>());
         }
 
-        public async Task<List<Category>> LoadHomePageCategories()
+        public Task<List<Category>> LoadHomePageCategories()
         {
-            var homePageCategories = _db.GetHomePageCategories();
-            return homePageCategories ?? new List<Category>();
+            return Task.Run(() => _db.GetHomePageCategories() ?? new List<Category>());
         }
 
         public void Clear()
@@ -51,7 +48,7 @@ namespace POMuswick.Repository
         public void SaveCategories(List<Category> categories);
         public void SaveSubCategories(List<Subcategory> subcategories);
 
-        public  Task<List<Category>> LoadCategories();
+        public Task<List<Category>> LoadCategories();
 
         public Task<List<Category>> LoadHomePageCategories();
 

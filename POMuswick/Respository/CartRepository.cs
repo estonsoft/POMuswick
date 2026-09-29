@@ -13,33 +13,36 @@ namespace POMuswick.Repository
             _settingRepository = settingRepository;
         }
 
-        public async Task<int> GetCartPieces()
+        public Task<int> GetCartPieces()
         {
-            return _db.GetCartPieces();
+            return Task.Run(() => _db.GetCartPieces());
         }
-        public async Task<List<Item>> GetCartItems()
+        public Task<List<Item>> GetCartItems()
         {
-            return _db.GetCartItems();
-        }
-
-        public async Task<List<Item>> GetCheckoutItem()
-        {
-            return _db.GetCheckoutItems();
-        }
-        public async Task RestoreCartItems()
-        {
-            var appSettings = _settingRepository.Load();
-            _db.RestoreCartItems(appSettings.CustomerNo);
+            return Task.Run(() => _db.GetCartItems());
         }
 
-        public async Task SuspendCartItems(string customerNumber)
+        public Task<List<Item>> GetCheckoutItem()
         {
-            _db.SuspendCartItems(customerNumber);
+            return Task.Run(() => _db.GetCheckoutItems());
+        }
+        public Task RestoreCartItems()
+        {
+            return Task.Run(() =>
+            {
+                var appSettings = _settingRepository.Load();
+                _db.RestoreCartItems(appSettings.CustomerNo);
+            });
         }
 
-        public async Task ClearCartItems()
+        public Task SuspendCartItems(string customerNumber)
         {
-            _db.ClearCartItems();
+            return Task.Run(() => _db.SuspendCartItems(customerNumber));
+        }
+
+        public Task ClearCartItems()
+        {
+            return Task.Run(() => _db.ClearCartItems());
         }
     }
 

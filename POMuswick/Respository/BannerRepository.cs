@@ -17,8 +17,7 @@ namespace POMuswick.Repository
 
         public Task<List<Banner>> Load()
         {
-            var banners = _db.GetBanners() ?? new List<Banner>();
-            return Task.FromResult(banners);
+            return Task.Run(() => _db.GetBanners() ?? new List<Banner>());
         }
 
         public void Clear()

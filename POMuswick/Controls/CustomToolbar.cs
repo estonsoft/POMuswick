@@ -76,7 +76,6 @@ public class CustomToolbar : StackLayout
     Label LabelHomeText;
     Image LabelShoppingCartIcon;
     Label LabelShoppingCartText;
-    Label LabelShoppingCartItems;
     Image LabelPurchaseHistoryIcon;
     Label LabelPurchaseHistoryText;
     Image LabelShopNowIcon;

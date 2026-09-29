@@ -28,7 +28,8 @@ namespace Profit_Order.Controls
             TapShowImage = new TapGestureRecognizer();
             TapShowImage.Tapped += (sender, e) =>
             {
-                OnImageTapped(sender, e);
+                if (sender != null)
+                    OnImageTapped(sender, e);
             };
         }
 
