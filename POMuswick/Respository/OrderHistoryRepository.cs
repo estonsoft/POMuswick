@@ -34,17 +34,14 @@ namespace POMuswick.Repository
         {
             return Task.Run(() => _db.GetOrderHeaders(orderNumber) ?? new List<OrderHeader>());//OrderNumer
         }
-
         public Task<List<OrderDetail>> LoadOrderDetails(string orderNumber)
         {
             return Task.Run(() => _db.GetOrderDetail(orderNumber) ?? new List<OrderDetail>());//OrderNumer
         }
-
         public Task<OrderHeader> LoadOrderHeader(string orderNumber)
         {
             return Task.Run(() => _db.GetOrderHeader(orderNumber));
         }
-
         public Task ClearOrderDetail(string orderNumber)
         {
             return Task.Run(() => _db.DeleteOrderDetail(orderNumber));//OrderNumer

@@ -23,27 +23,12 @@
         <Grid Grid.Row="0"
               HeightRequest="48"
               Padding="14,0"
-              ColumnDefinitions="Auto, Auto, Auto, *, Auto"
+              ColumnDefinitions="*,Auto,Auto"
               VerticalOptions="Center">
-
-            <!-- Back Arrow Button -->
-            <Button
-                Grid.Column="0"
-                Command="{Binding BackPressedCommand}"
-                FontFamily="FontAwesomeFreeSolid"
-                FontSize="18"
-                Text="&#xF060;"
-                TextColor="#FF271717"
-                Background="Transparent"
-                Padding="0"
-                WidthRequest="36"
-                HeightRequest="36"
-                VerticalOptions="Center"/>
 
             <!-- Page Title -->
             <Label
-                Grid.Column="1"
-                Margin="4,0,0,0"
+                Grid.Column="0"
                 Text="{Binding Title, FallbackValue='Cart'}"
                 FontSize="19"
                 FontAttributes="Bold"
@@ -52,7 +37,7 @@
 
             <!-- Cart Items Count Badge -->
             <Border
-                Grid.Column="2"
+                Grid.Column="1"
                 Margin="10,0,0,0"
                 Padding="8,2"
                 Background="{StaticResource SurfaceAlt}"
@@ -75,13 +60,14 @@
 
             <!-- Clear All Glyph Button in Top Right -->
             <Border
-                Grid.Column="4"
+                Grid.Column="2"
                 Padding="12,7"
                 Background="{StaticResource White}"
                 Stroke="{StaticResource Primary}"
                 StrokeShape="RoundRectangle 10"
                 StrokeThickness="1"
-                VerticalOptions="Center">
+                VerticalOptions="Center"
+                IsVisible="{Binding HasCartItems}">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ClearCartCommand}"/>
                 </Border.GestureRecognizers>
@@ -197,6 +183,19 @@
                         MinusCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DecreaseQtyCommand}"/>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Spacing="8"
+                                     HorizontalOptions="Center"
+                                     VerticalOptions="Center">
+                    <ActivityIndicator IsRunning="{Binding IsLoadingCart}"
+                                       IsVisible="{Binding IsLoadingCart}"
+                                       Color="{StaticResource Primary}"/>
+                    <Label Text="No items added to your cart"
+                           IsVisible="{Binding IsLoadingCart, Converter={StaticResource InverseBoolConverter}}"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource MutedInk}"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
         </CollectionView>
 
         <!--  3. BOTTOM SUMMARY & CHECKOUT CARD  -->

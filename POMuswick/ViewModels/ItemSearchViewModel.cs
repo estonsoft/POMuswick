@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FFImageLoading.Maui;
+using System.Collections.ObjectModel;
 using POMuswick.Models;
 using POMuswick.Services;
 using POMuswick.UIModels;
@@ -15,9 +15,9 @@ namespace POMuswick.ViewModels
         private readonly ISettingService _settingService;
         private readonly ICatNSubCatService _catNSubCatService;
         private AppSettings _appSettings;
-        private CatNSubCatParameter catNSubCatParameter;
+        private CatNSubCatParameter catNSubCatParameter = CreateDefaultCategoryParameter();
         [ObservableProperty]
-        public List<UIItems> _lstItems;
+        public ObservableCollection<UIItems> _lstItems = new();
         [ObservableProperty]
         public List<Item> _lstKeywordItems;
         [ObservableProperty]
@@ -30,7 +30,9 @@ namespace POMuswick.ViewModels
         public string _searchText = "";
 
         [ObservableProperty]
-        public CachedImage _selectedImage;
+        public ImageSource? _selectedImage;
+        [ObservableProperty]
+        public bool _isImagePreviewVisible;
 
         public ItemSearchViewModel(IAppServices appServices) : base(appServices)
         {
@@ -48,14 +50,27 @@ namespace POMuswick.ViewModels
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
+            if (query.TryGetValue("CatNSubCatParameter", out var categoryParameter) && categoryParameter is CatNSubCatParameter parameter)
+            {
+                catNSubCatParameter = parameter;
+            }
+            else if (query.TryGetValue("CategoryCode", out var categoryCode) && categoryCode is CatNSubCatParameter alternateParameter)
+            {
+                catNSubCatParameter = alternateParameter;
+            }
+            else if (query.ContainsKey("NEW ITEMS"))
+            {
+                catNSubCatParameter = new CatNSubCatParameter
+                {
+                    Category = new Category { Code = "NEW ITEMS", Description = "NEW ITEMS" },
+                    Subcategory = new Subcategory { Code = "", Description = "ALL SUBCATEGORIES" }
+                };
+            }
+
             if (query.TryGetValue("SearchText", out var searchValue))
-            {
                 SearchText = (string)searchValue;
-            }
-            else if (query.TryGetValue("CatNSubCatParameter", out var CategoryValue))
-            {
-                catNSubCatParameter = (CatNSubCatParameter)CategoryValue;
-            }
+
+            UpdatePageTitle();
             await RefreshList();
         }
 
@@ -64,22 +79,21 @@ namespace POMuswick.ViewModels
             _appSettings = await _settingService.LoadSetting();
             Category category = catNSubCatParameter.Category;
             Subcategory subcategory = catNSubCatParameter.Subcategory;
+            var uiList = new List<UIItems>();
 
             if (category.Description == "NEW ITEMS")
             {
                 var itemResult = await _itemService.FetchNewItemAsync(InStockOnly);
-                List<UIItems> uiList = itemResult.items
+                uiList = itemResult.items
                 .Select(x => x.ToUI())
                 .ToList();
-                LstItems = uiList;
             }
             else
             {
                 var items = await _itemService.SearchItemsAsync(InStockOnly, SearchText, category, _appSettings.scanBarcode, subcategory);
-                List<UIItems> uiList = items
+                uiList = items
                     .Select(x => x.ToUI())
                     .ToList();
-                LstItems = uiList;
                 // ✅ Only merge keyword items if NO specific category is selected
                 if (string.IsNullOrEmpty(category.Code) || category.Description == "ALL CATEGORIES")
                 {
@@ -87,25 +101,16 @@ namespace POMuswick.ViewModels
 
                     foreach (Item itemKeyword in LstKeywordItems)
                     {
-                        bool bFound = false;
-
-                        foreach (UIItems item in LstItems)
-                        {
-                            if (item.ItemNo == itemKeyword.ItemNo)
-                            {
-                                bFound = true;
-                                break;
-                            }
-                        }
-
-                        if (!bFound)
+                        if (!uiList.Any(item => item.ItemNo == itemKeyword.ItemNo))
                         {
                             UIItems item = itemKeyword.ToUI();
-                            LstItems.Add(item);
+                            uiList.Add(item);
                         }
                     }
                 }
             }
+
+            LstItems = new ObservableCollection<UIItems>(uiList);
 
             int iItems = 0;
 
@@ -246,6 +251,30 @@ namespace POMuswick.ViewModels
             }
         }
 
+        private void UpdatePageTitle()
+        {
+            var category = catNSubCatParameter.Category;
+            var subcategory = catNSubCatParameter.Subcategory;
+
+            if (category.Description == "NEW ITEMS")
+                Title = "New Items";
+            else if (!string.IsNullOrEmpty(subcategory.Code))
+                Title = subcategory.Description;
+            else if (!string.IsNullOrEmpty(category.Code) && category.Description != "ALL CATEGORIES")
+                Title = category.Description;
+            else
+                Title = string.IsNullOrWhiteSpace(SearchText) ? "Search Products" : "Search Results";
+        }
+
+        private static CatNSubCatParameter CreateDefaultCategoryParameter()
+        {
+            return new CatNSubCatParameter
+            {
+                Category = new Category { Code = "", Description = "ALL CATEGORIES" },
+                Subcategory = new Subcategory { Code = "", Description = "ALL SUBCATEGORIES" }
+            };
+        }
+
         [RelayCommand]
         private async Task ClearCategoryAsync()
         {
@@ -316,9 +345,16 @@ namespace POMuswick.ViewModels
         }
 
         [RelayCommand]
-        private async Task ShowImageAsync(CachedImage cachedImage)
+        private void ShowImage(ImageSource? imageSource)
         {
-            SelectedImage = cachedImage;
+            SelectedImage = imageSource;
+            IsImagePreviewVisible = imageSource != null;
+        }
+
+        [RelayCommand]
+        private void CloseImage()
+        {
+            IsImagePreviewVisible = false;
         }
 
         [RelayCommand]
@@ -334,9 +370,10 @@ namespace POMuswick.ViewModels
                 item.QtyOrder >= item.MaxOrderQty)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, 1);
+            var newQuantity = item.QtyOrder + 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
 
-            item.QtyOrder++;
+            item.QtyOrder = newQuantity;
 
             item.IsStepperVisible = true;
             item.IsAddToOrderVisible = false;
@@ -352,9 +389,10 @@ namespace POMuswick.ViewModels
             if (item.QtyOrder <= 0)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, -1);
+            var newQuantity = item.QtyOrder - 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
 
-            item.QtyOrder--;
+            item.QtyOrder = newQuantity;
 
             if (item.QtyOrder == 0)
             {

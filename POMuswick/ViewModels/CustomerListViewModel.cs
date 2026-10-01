@@ -54,13 +54,36 @@ namespace POMuswick.ViewModels
         public async Task RefreshListAsync()
         {
             IsBusy = true;
-            var firstPage = await _salesPersonCustomersService.GetSalesCustomer("", 0, PageSize);
-            if (firstPage == null || firstPage.Count == 0)
+            var customersResult = await _salesPersonCustomersService.GetSalesCustomer("");
+
+            if (customersResult != null)
             {
-                var customersResult = await _salesPersonCustomersService.FetchSalesPersonCustomersAsync("");
-                firstPage = customersResult.salesCustomers?.Take(PageSize).ToList() ?? new List<SalesCustomer>();
+                int totalAvailable = customersResult.Count;
+
+                // Track your current page index pointer. 
+                // Example: if page 1 loaded 20 items, your next 'currentOffset' is 20.
+                int currentOffset = _customers.Count;
+
+                // Safely calculate how many items are left to pull for the next segment chunk
+                int itemsToFetch = Math.Min(PageSize, totalAvailable - currentOffset);
+
+                if (itemsToFetch > 0)
+                {
+                    var nextChunk = new List<SalesCustomer>();
+
+                    for (int i = 0; i < itemsToFetch; i++)
+                    {
+                        // Realm instantly resolves individual items by index with zero memory overhead
+                        nextChunk.Add(customersResult[currentOffset + i]);
+                    }
+
+                    // Append the new page directly into your UI collection
+                    foreach (var customer in nextChunk)
+                    {
+                        _customers.Add(customer);
+                    }
+                }
             }
-            ResetPaging(firstPage);
             IsBusy = false;
         }
 

@@ -11,7 +11,7 @@ namespace POMuswick.Parsers
         }
         public async Task<ItemResult> Parse(string response)
         {
-            Console.WriteLine(DateTime.Now.ToString() + " - Get Items returned");
+            Console.WriteLine(DateTimeOffset.Now.ToString() + " - Get Items returned");
 
             String sItems = response;
             String[] aItems = sItems.Split('~');
@@ -76,23 +76,31 @@ namespace POMuswick.Parsers
                         try
                         {
                             int iAddedDate = GetIntegerValue("Added Date", aItem[25].Trim(), 0);
-                            if (iAddedDate > 0)
+                            string dateStr = iAddedDate.ToString();
+
+                            // Verify string is long enough before trying to take a Substring
+                            if (iAddedDate > 0 && dateStr.Length >= 7)
                             {
-                                int yy = 2000 + GetIntegerValue("Added Date Year", iAddedDate.ToString().Substring(1, 2), 0);
-                                int mm = GetIntegerValue("Added Date Month", iAddedDate.ToString().Substring(3, 2), 0);
-                                int dd = GetIntegerValue("Added Date Day", iAddedDate.ToString().Substring(5, 2), 0);
-                                item.DateAdded = new DateTime(yy, mm, dd);
-                                item.DateAddedDisplay = item.DateAdded.ToString("MM/dd/yy");
+                                int yy = 2000 + GetIntegerValue("Added Date Year", dateStr.Substring(1, 2), 0);
+                                int mm = GetIntegerValue("Added Date Month", dateStr.Substring(3, 2), 0);
+                                int dd = GetIntegerValue("Added Date Day", dateStr.Substring(5, 2), 0);
+
+                                // ✅ Option A: Create a plain DateTime and pass it (Easiest)
+                                var parsedDate = new DateTime(yy, mm, dd);
+                                item.DateAdded = new DateTimeOffset(parsedDate, TimeSpan.Zero);
+                                item.DateAddedDisplay = parsedDate.ToString("MM/dd/yy");
                             }
                             else
                             {
-                                item.DateAdded = new DateTime(2001, 1, 1);
+                                // ✅ Option B: Use the explicit numerical constructor with full arguments
+                                item.DateAdded = new DateTimeOffset(2001, 1, 1, 0, 0, 0, TimeSpan.Zero);
                                 item.DateAddedDisplay = "";
                             }
                         }
                         catch (Exception e)
                         {
-                            item.DateAdded = new DateTime(2001, 1, 1);
+                            // ✅ Option B: Fixed identical error signature in the catch block fallback
+                            item.DateAdded = new DateTimeOffset(2001, 1, 1, 0, 0, 0, TimeSpan.Zero);
                             item.DateAddedDisplay = "";
                             Console.WriteLine("Get Items Date Added exception" + e.Message + e.StackTrace);
                         }
@@ -138,7 +146,10 @@ namespace POMuswick.Parsers
                             item.LastPurchDateDisplay = "";
                             Console.WriteLine("Get Items Last Purch Date exception" + e.Message + e.StackTrace);
                         }
-                        item.LastPurchDate = GetDateTime("Last Purchase Date", item.LastPurchDateDisplay);
+                        var lastPurchaseDate = GetDateTime("Last Purchase Date", item.LastPurchDateDisplay);
+                        item.LastPurchDate = new DateTimeOffset(
+                            DateTime.SpecifyKind(lastPurchaseDate, DateTimeKind.Unspecified),
+                            TimeSpan.Zero);
                         item.QtyLastOrder = GetIntegerValue("last order", aItem[32], 0);
                         item.QtyLastOrderDisplay = item.QtyLastOrder.ToString();
                         try

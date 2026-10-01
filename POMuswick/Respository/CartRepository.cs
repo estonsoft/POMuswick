@@ -21,11 +21,11 @@ namespace POMuswick.Repository
         {
             return Task.Run(() => _db.GetCartItems());
         }
-
         public Task<List<Item>> GetCheckoutItem()
         {
             return Task.Run(() => _db.GetCheckoutItems());
         }
+
         public Task RestoreCartItems()
         {
             return Task.Run(() =>

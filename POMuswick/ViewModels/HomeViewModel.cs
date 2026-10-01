@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
 using POMuswick.Common;
 using POMuswick.Models;
 using POMuswick.Services;
@@ -9,8 +10,15 @@ namespace POMuswick.ViewModels
 {
     public partial class HomeViewModel : BaseViewModel
     {
+        private const int HomeItemsPageSize = 20;
+
         [ObservableProperty]
-        List<UIItems>? lstItems = new();
+        public ObservableCollection<UIItems> _cartItems = new();
+
+        [ObservableProperty]
+        public ObservableCollection<UIItems> _newItems = new();
+        [ObservableProperty]
+        private bool _isLoadingHomeItems;
 
         [ObservableProperty]
         ImageSource? bannerImage = null;
@@ -30,6 +38,12 @@ namespace POMuswick.ViewModels
         private readonly IItemService _itemService;
         private bool _isActive;
         private bool _isTimerRunning;
+        private bool _isLoadingCartPage;
+        private bool _isLoadingNewItemsPage;
+        private List<Item> _cartItemSource = new();
+        private List<Item> _newItemSource = new();
+        private AppSettings _homeSettings = new();
+        BannerResult? bannerResult;
 
 
         public HomeViewModel(IAppServices appServices) : base(appServices)
@@ -41,16 +55,25 @@ namespace POMuswick.ViewModels
             _bannerService = appServices._bannerService;
             _itemService = appServices._itemService;
             BannerImage = ImageSource.FromFile("logo.jpg");
-            var appSetting = _settingService.LoadSetting().Result;
-            _ = SetHomeUIControls(appSetting);
-            _ = RefreshNewItemsList(appSetting);
         }
 
         public override async Task OnAppearingAsync()
         {
             await base.OnAppearingAsync();
             _isActive = true;
-            StartTimer();
+            IsLoadingHomeItems = true;
+            try
+            {
+                var appSettings = await _settingService.LoadSetting();
+                await SetHomeUIControls(appSettings);
+                await LoadHomeItemsAsync(appSettings);
+                bannerResult = await _bannerService.GetBannerAsync();
+                StartTimer();
+            }
+            finally
+            {
+                IsLoadingHomeItems = false;
+            }
         }
 
         public override Task OnDisappearingAsync()
@@ -84,7 +107,6 @@ namespace POMuswick.ViewModels
         {
             try
             {
-                var bannerResult = await _bannerService.GetBannerAsync();
                 var banners = bannerResult?.banners;
                 if (banners == null || banners.Count == 0)
                 {
@@ -137,20 +159,69 @@ namespace POMuswick.ViewModels
             else
                 await _navigationService.ShowMyAccountMenu();
         }
-        public async Task RefreshNewItemsList(AppSettings appSettings)
+        private async Task LoadHomeItemsAsync(AppSettings appSettings)
         {
-            var itemResult = await _itemService.FetchNewItemAsync(true);
-            foreach (var item in itemResult.items)
-            {
-                UpdateItemDisplayState(item, appSettings);
-            }
-            List<UIItems> uiList = itemResult.items
-            .Select(x => x.ToUI())
-            .ToList();
-            LstItems = uiList;
+            _homeSettings = appSettings;
+            var cartItemsTask = _itemService.LoadItemsAsync();
+            var newItemsTask = _itemService.FetchNewItemAsync(appSettings.BlockItemsNoQOH);
+            await Task.WhenAll(cartItemsTask, newItemsTask);
+
+            _cartItemSource = (await cartItemsTask)
+                .Where(item => item.Status == "A")
+                .ToList();
+            _newItemSource = (await newItemsTask).items;
+
+            CartItems.Clear();
+            NewItems.Clear();
+            AppendNextPage(_cartItemSource, CartItems);
+            AppendNextPage(_newItemSource, NewItems);
         }
 
-        private void UpdateItemDisplayState(Item item, AppSettings appSettings)
+        private void AppendNextPage(List<Item> source, ObservableCollection<UIItems> destination)
+        {
+            foreach (var item in source.Skip(destination.Count).Take(HomeItemsPageSize))
+            {
+                var uiItem = item.ToUI();
+                UpdateItemDisplayState(uiItem, _homeSettings);
+                destination.Add(uiItem);
+            }
+        }
+
+        [RelayCommand]
+        private void LoadMoreCartItems()
+        {
+            if (_isLoadingCartPage)
+                return;
+
+            _isLoadingCartPage = true;
+            try
+            {
+                AppendNextPage(_cartItemSource, CartItems);
+            }
+            finally
+            {
+                _isLoadingCartPage = false;
+            }
+        }
+
+        [RelayCommand]
+        private void LoadMoreNewItems()
+        {
+            if (_isLoadingNewItemsPage)
+                return;
+
+            _isLoadingNewItemsPage = true;
+            try
+            {
+                AppendNextPage(_newItemSource, NewItems);
+            }
+            finally
+            {
+                _isLoadingNewItemsPage = false;
+            }
+        }
+
+        private void UpdateItemDisplayState(UIItems item, AppSettings appSettings)
         {
             bool hasOrder = item.QtyOrder > 0;
             bool hasStock = item.QOH > 0;
@@ -250,12 +321,17 @@ namespace POMuswick.ViewModels
         public async Task RefreshDataAsync()
         {
             IsBusy = true;
+            IsLoadingHomeItems = true;
             try
             {
                 await SyncAppAsync();
+                var appSettings = await _settingService.LoadSetting();
+                await LoadHomeItemsAsync(appSettings);
+                bannerResult = await _bannerService.GetBannerAsync();
             }
             finally
             {
+                IsLoadingHomeItems = false;
                 IsBusy = false;
             }
         }
@@ -279,9 +355,10 @@ namespace POMuswick.ViewModels
                 item.QtyOrder >= item.MaxOrderQty)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, 1);
+            var newQuantity = item.QtyOrder + 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
 
-            item.QtyOrder++;
+            item.QtyOrder = newQuantity;
             item.IsStepperVisible = true;
             item.IsAddToOrderVisible = false;
         }
@@ -292,9 +369,10 @@ namespace POMuswick.ViewModels
             if (item == null || item.QtyOrder <= 0)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, -1);
+            var newQuantity = item.QtyOrder - 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
 
-            item.QtyOrder--;
+            item.QtyOrder = newQuantity;
 
             if (item.QtyOrder == 0)
             {

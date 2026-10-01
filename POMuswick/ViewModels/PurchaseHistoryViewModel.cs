@@ -14,7 +14,9 @@ namespace POMuswick.ViewModels
         private readonly ICustomerService _customerService;
 
         [ObservableProperty]
-        public List<OrderHeader> _orderHistoryList;
+        public List<OrderHeader> _orderHistoryList = new();
+        [ObservableProperty]
+        private bool _isLoadingHistory;
         [ObservableProperty]
         public string _order;
 
@@ -24,19 +26,27 @@ namespace POMuswick.ViewModels
             _dialogService = appServices._dialogService;
             _navigationService = appServices._navigationService;
             _orderHistoryService = appServices._orderHistoryService;
-            _customerService =appServices._customerService;
+            _customerService = appServices._customerService;
         }
 
         public async override Task OnAppearingAsync()
         {
             await base.OnAppearingAsync();
-            RefreshList();
+            await RefreshListAsync();
         }
 
-        public async void RefreshList()
+        public async Task RefreshListAsync()
         {
-            var customer = await _customerService.GetCustomerAsync();
-            OrderHistoryList = await _orderHistoryService.FetchOrderHeadersAsync(customer.CustNo);
+            IsLoadingHistory = true;
+            try
+            {
+                var customer = await _customerService.GetCustomerAsync();
+                OrderHistoryList = await _orderHistoryService.FetchOrderHeadersAsync(customer.CustNo);
+            }
+            finally
+            {
+                IsLoadingHistory = false;
+            }
         }
 
         [RelayCommand]

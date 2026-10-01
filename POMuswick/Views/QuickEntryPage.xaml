@@ -22,24 +22,11 @@
             <Grid Grid.Row="0"
                   HeightRequest="52"
                   Padding="16,0"
-                  ColumnDefinitions="Auto, *"
+                  ColumnDefinitions="*"
                   ColumnSpacing="8"
                   VerticalOptions="Center">
-                <Button
-                    Grid.Column="0"
-                    Command="{Binding BackPressedCommand}"
-                    FontFamily="FontAwesomeFreeSolid"
-                    FontSize="18"
-                    Text="&#xF060;"
-                    TextColor="{StaticResource Ink}"
-                    Background="Transparent"
-                    Padding="0"
-                    WidthRequest="36"
-                    HeightRequest="36"
-                    VerticalOptions="Center"/>
                 <Label
-                    Grid.Column="1"
-                    Margin="4,0,0,0"
+                    Grid.Column="0"
                     Text="{Binding Title, FallbackValue='Quick Entry'}"
                     FontSize="19"
                     FontAttributes="Bold"
@@ -67,7 +54,7 @@
                         <Grid>
                             <barcode:CameraView
                                 x:Name="ScannerControl"
-                                CameraEnabled="True"
+                                CameraEnabled="{Binding IsScannerEnabled}"
                                 HeightRequest="210"
                                 WidthRequest="210"
                                 HorizontalOptions="Center"
@@ -114,6 +101,7 @@
                             <Entry
                                 x:Name="ScanItem"
                                 Text="{Binding ScanItemText, Mode=TwoWay}"
+                                TextChanged="OnScanItemTextChanged"
                                 FontSize="15"
                                 HeightRequest="40"
                                 Keyboard="Numeric"
@@ -330,7 +318,7 @@
                             <!-- Unified Capsule Stepper -->
                             <Border
                                 x:Name="QuickEntryStepper"
-                                HeightRequest="38"
+                                HeightRequest="36"
                                 Padding="0"
                                 Background="{StaticResource SurfaceAlt}"
                                 Stroke="{StaticResource Divider}"
@@ -339,16 +327,21 @@
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
                                 IsVisible="{Binding QuickEntryStepperIsVisible}">
-                                <Grid ColumnDefinitions="42, 1, 60, 1, 42"
+                                <Grid ColumnDefinitions="36, 1, 44, 1, 36"
                                       VerticalOptions="Fill">
-                                    <ImageButton
+                                    <Button
                                         Grid.Column="0"
                                         x:Name="MinusButton"
-                                        BackgroundColor="Transparent"
+                                        Background="Transparent"
+                                        BorderWidth="0"
                                         Command="{Binding MinusButtonCommand}"
-                                        HeightRequest="24"
-                                        WidthRequest="24"
-                                        Source="blue_minus.png"
+                                        FontFamily="FontAwesomeFreeSolid"
+                                        FontSize="13"
+                                        Text="&#xF068;"
+                                        TextColor="{StaticResource Primary}"
+                                        Padding="0"
+                                        HeightRequest="32"
+                                        WidthRequest="32"
                                         HorizontalOptions="Center"
                                         VerticalOptions="Center"/>
 
@@ -365,21 +358,26 @@
                                         HorizontalTextAlignment="Center"
                                         VerticalTextAlignment="Center"
                                         Text="{Binding QtyStepperText}"
-                                        TextColor="Black"/>
+                                        TextColor="{StaticResource Ink}"/>
 
                                     <BoxView Grid.Column="3"
                                              WidthRequest="1"
                                              Color="{StaticResource Divider}"
                                              VerticalOptions="Fill"/>
 
-                                    <ImageButton
+                                    <Button
                                         Grid.Column="4"
                                         x:Name="PlusButton"
-                                        BackgroundColor="Transparent"
+                                        Background="Transparent"
+                                        BorderWidth="0"
                                         Command="{Binding PlusButtonCommand}"
-                                        HeightRequest="24"
-                                        WidthRequest="24"
-                                        Source="blue_plus.png"
+                                        FontFamily="FontAwesomeFreeSolid"
+                                        FontSize="13"
+                                        Text="&#xF067;"
+                                        TextColor="{StaticResource Primary}"
+                                        Padding="0"
+                                        HeightRequest="32"
+                                        WidthRequest="32"
                                         HorizontalOptions="Center"
                                         VerticalOptions="Center"/>
                                 </Grid>
@@ -419,6 +417,14 @@
 
                 </VerticalStackLayout>
             </ScrollView>
+
+            <controls:ImageAlertView
+                Grid.Row="0"
+                Grid.RowSpan="3"
+                ZIndex="99"
+                ImageSource="{Binding ImageURLSource}"
+                CloseCommand="{Binding CloseImagePreviewCommand}"
+                IsVisible="{Binding ShowImagePreview}"/>
 
             <!--  2. BOTTOM TOOLBAR  -->
         </Grid>

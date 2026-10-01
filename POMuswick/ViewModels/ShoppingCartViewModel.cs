@@ -16,7 +16,11 @@ namespace POMuswick.ViewModels
         private readonly ISubmitOrderService _submitOrderService;
 
         [ObservableProperty]
-        List<UIItems> _cartItemList;
+        List<UIItems> _cartItemList = new();
+        [ObservableProperty]
+        bool _hasCartItems;
+        [ObservableProperty]
+        bool _isLoadingCart;
         [ObservableProperty]
         int iCartItems = 0;
         [ObservableProperty]
@@ -68,7 +72,7 @@ namespace POMuswick.ViewModels
         {
             await base.OnAppearingAsync();
             await DPStatus();
-            await GetCartStatus();
+            await RefreshListAsync();
         }
 
         private async Task DPStatus()
@@ -96,94 +100,82 @@ namespace POMuswick.ViewModels
             }
         }
 
-        private async Task GetCartStatus()
-        {
-            var cartPieces = await _cartService.GetCartPieces();
-            if (cartPieces > 0)
-            {
-                await RefreshListAsync();
-            }
-            else
-            {
-                await _navigationService.GoToRootAsync(AppRoutes.Home);
-                await _dialogService.AlertAsync("Your shopping cart is empty", "Muswick Wholesale Grocers", "Ok");
-            }
-        }
-
         public async Task RefreshListAsync()
         {
-            var cartItems = await _cartService.GetCartItems();
-            List<UIItems> uiList = cartItems
-                .Select(x => x.ToUI())
-                .ToList();
-            CartItemList = uiList;
-
-            var appSetting = await _settingService.LoadSetting();
-            foreach (UIItems i in CartItemList)
+            IsLoadingCart = true;
+            try
             {
-                i.IsLoggedIn = appSetting.IsLoggedIn;
+                var cartItems = await _cartService.GetCartItems();
+                List<UIItems> uiList = cartItems
+                    .Select(x => x.ToUI())
+                    .ToList();
+                CartItemList = uiList;
+                HasCartItems = uiList.Count > 0;
 
-                if (i.QtyOrder == 0)
+                var appSetting = await _settingService.LoadSetting();
+                foreach (UIItems i in CartItemList)
                 {
-                    i.IsStepperVisible = false;
-                    i.IsAddToOrderVisible = true;
-                }
-                else if (i.QtyOrder < 0)
-                {
-                    i.IsStepperVisible = false;
-                    i.IsAddToOrderVisible = false;
-                }
-                else
-                {
-                    i.IsStepperVisible = true;
-                    i.IsAddToOrderVisible = false;
-                }
-                i.IsQOHBlackVisible = false;
-                i.IsQOHRedVisible = false;
-                if (appSetting.QOHDisplay == "Q")
-                {
-                    i.IsQOHVisible = true;
-                    i.IsInStockVisible = false;
-                    i.IsOutOfStockVisible = false;
-                    if (i.QOH > 0)
+                    i.IsLoggedIn = appSetting.IsLoggedIn;
+
+                    if (i.QtyOrder == 0)
                     {
-                        i.IsQOHBlackVisible = true;
+                        i.IsStepperVisible = false;
+                        i.IsAddToOrderVisible = true;
+                    }
+                    else if (i.QtyOrder < 0)
+                    {
+                        i.IsStepperVisible = false;
+                        i.IsAddToOrderVisible = false;
                     }
                     else
                     {
-                        i.IsQOHRedVisible = true;
+                        i.IsStepperVisible = true;
+                        i.IsAddToOrderVisible = false;
                     }
-                }
-                else if (appSetting.QOHDisplay == "I")
-                {
-                    i.IsQOHVisible = false;
-                    if (i.QOH > 0)
+                    i.IsQOHBlackVisible = false;
+                    i.IsQOHRedVisible = false;
+                    if (appSetting.QOHDisplay == "Q")
                     {
-                        i.IsInStockVisible = true;
+                        i.IsQOHVisible = true;
+                        i.IsInStockVisible = false;
+                        i.IsOutOfStockVisible = false;
+                        if (i.QOH > 0)
+                        {
+                            i.IsQOHBlackVisible = true;
+                        }
+                        else
+                        {
+                            i.IsQOHRedVisible = true;
+                        }
+                    }
+                    else if (appSetting.QOHDisplay == "I")
+                    {
+                        i.IsQOHVisible = false;
+                        if (i.QOH > 0)
+                        {
+                            i.IsInStockVisible = true;
+                            i.IsOutOfStockVisible = false;
+                        }
+                        else
+                        {
+                            i.IsInStockVisible = false;
+                            i.IsOutOfStockVisible = true;
+                        }
+                    }
+                    else
+                    {
+                        i.IsQOHVisible = false;
+                        i.IsInStockVisible = false;
                         i.IsOutOfStockVisible = false;
                     }
-                    else
-                    {
-                        i.IsInStockVisible = false;
-                        i.IsOutOfStockVisible = true;
-                    }
+                    i.IsStockRowVisible = i.IsQOHVisible || i.IsInStockVisible || i.IsOutOfStockVisible;
                 }
-                else
-                {
-                    i.IsQOHVisible = false;
-                    i.IsInStockVisible = false;
-                    i.IsOutOfStockVisible = false;
-                }
-                if (i.IsQOHVisible || i.IsInStockVisible || i.IsOutOfStockVisible)
-                {
-                    i.IsStockRowVisible = true;
-                }
-                else
-                {
-                    i.IsStockRowVisible = false;
-                }
+                UpdateTotals();
             }
-            UpdateTotals();
+            finally
+            {
+                IsLoadingCart = false;
+            }
         }
 
         public async void RefreshList()
@@ -278,13 +270,8 @@ namespace POMuswick.ViewModels
         [RelayCommand]
         public async Task ClearCartAsync()
         {
-            bool bClear = await _dialogService.ConfirmAsync("Profit Order", "Are you sure you wish to remove all the items from your shopping cart?", "Yes", "No");
-
-            if (bClear)
-            {
-                await _cartService.ClearCartItems();
-                await _navigationService.GoToRootAsync(AppRoutes.Home);
-            }
+            await _cartService.ClearCartItems();
+            await RefreshListAsync();
         }
 
         [RelayCommand]
@@ -342,9 +329,9 @@ namespace POMuswick.ViewModels
 
             if (item.QtyOrder == 0)
             {
-                item.IsStepperVisible = false;
-                item.IsAddToOrderVisible = true;
+                CartItemList.Remove(item);
             }
+            HasCartItems = CartItemList.Count > 0;
             UpdateTotals();
             await Task.CompletedTask;
         }

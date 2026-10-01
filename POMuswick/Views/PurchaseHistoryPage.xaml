@@ -52,25 +52,11 @@
             <Grid Grid.Row="0"
                   HeightRequest="48"
                   Padding="14,0"
-                  ColumnDefinitions="Auto,*,Auto"
+                  ColumnDefinitions="*"
                   Background="{StaticResource White}"
                   VerticalOptions="Center">
-                <Button
-                    Grid.Column="0"
-                    Command="{Binding BackPressedCommand}"
-                    FontFamily="FontAwesomeFreeSolid"
-                    FontSize="18"
-                    Text="&#xF060;"
-                    TextColor="{StaticResource Ink}"
-                    Background="Transparent"
-                    Padding="0"
-                    WidthRequest="36"
-                    HeightRequest="36"
-                    VerticalOptions="Center"/>
-
                 <Label
-                    Grid.Column="1"
-                    Margin="4,0,0,0"
+                    Grid.Column="0"
                     Text="{Binding Title, FallbackValue='Order History'}"
                     FontSize="19"
                     FontAttributes="Bold"
@@ -87,6 +73,18 @@
                         <controls:PurchaseHistoryItemCell/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Spacing="8"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
+                        <ActivityIndicator IsRunning="{Binding IsLoadingHistory}"
+                                           IsVisible="{Binding IsLoadingHistory}"
+                                           Color="{StaticResource Primary}"/>
+                        <Label Text="No order history found"
+                               IsVisible="{Binding IsLoadingHistory, Converter={StaticResource InverseBoolConverter}}"
+                               TextColor="{StaticResource MutedInk}"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
             </CollectionView>
 
         </Grid>

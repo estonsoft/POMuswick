@@ -1,8 +1,8 @@
-﻿using SQLite;
+﻿using Realms;
 
 namespace POMuswick
 {
-    public class Location
+    public class Location : RealmObject
     {
         [PrimaryKey]
         public int LocationId { get; set; }

@@ -248,15 +248,29 @@
                 <CollectionView
                     x:Name="CartSection"
                     HeightRequest="300"
-                    ItemsSource="{Binding LstItems}"
+                    ItemsSource="{Binding CartItems}"
                     ItemsLayout="HorizontalList"
                     SelectionMode="None"
+                    RemainingItemsThreshold="4"
+                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreCartItemsCommand}"
                     HorizontalScrollBarVisibility="Never">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <controls:HomePageCells/>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout Spacing="8"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center">
+                            <ActivityIndicator IsRunning="{Binding IsLoadingHomeItems}"
+                                               IsVisible="{Binding IsLoadingHomeItems}"
+                                               Color="{StaticResource Primary}"/>
+                            <Label Text="No products available"
+                                   IsVisible="{Binding IsLoadingHomeItems, Converter={StaticResource InverseBoolConverter}}"
+                                   TextColor="{StaticResource MutedInk}"/>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
                 </CollectionView>
 
                 <Grid Padding="0,4,0,0"
@@ -287,15 +301,29 @@
                 <CollectionView
                     x:Name="NewItemList"
                     HeightRequest="300"
-                    ItemsSource="{Binding LstItems}"
+                    ItemsSource="{Binding NewItems}"
                     ItemsLayout="HorizontalList"
                     SelectionMode="None"
+                    RemainingItemsThreshold="4"
+                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreNewItemsCommand}"
                     HorizontalScrollBarVisibility="Never">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <controls:HomePageCells/>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout Spacing="8"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center">
+                            <ActivityIndicator IsRunning="{Binding IsLoadingHomeItems}"
+                                               IsVisible="{Binding IsLoadingHomeItems}"
+                                               Color="{StaticResource Primary}"/>
+                            <Label Text="No new items available"
+                                   IsVisible="{Binding IsLoadingHomeItems, Converter={StaticResource InverseBoolConverter}}"
+                                   TextColor="{StaticResource MutedInk}"/>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
                 </CollectionView>
             </VerticalStackLayout>
         </ScrollView>

@@ -1,8 +1,8 @@
-﻿using SQLite;
+﻿using Realms;
 
 namespace POMuswick
 {
-    public class Setting
+    public class Setting : Realms.RealmObject
     {
         [PrimaryKey]
         public string Key { get; set; }

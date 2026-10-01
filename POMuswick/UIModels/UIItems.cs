@@ -60,9 +60,9 @@ namespace POMuswick.UIModels
         [ObservableProperty] public Boolean _isQOHBlackVisible;
         [ObservableProperty] public Boolean _isOutOfStock;
         [ObservableProperty] public string _newItem;
-        [ObservableProperty] public DateTime _dateAdded;
+        [ObservableProperty] public DateTimeOffset _dateAdded;
         [ObservableProperty] public string _dateAddedDisplay;
-        [ObservableProperty] public DateTime _lastPurchDate;
+        [ObservableProperty] public DateTimeOffset _lastPurchDate;
         [ObservableProperty] public string _lastPurchDateDisplay;
         [ObservableProperty] public int _qtyLastOrder;
         [ObservableProperty] public string _qtyLastOrderDisplay;

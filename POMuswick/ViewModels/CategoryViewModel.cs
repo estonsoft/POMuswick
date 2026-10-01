@@ -12,7 +12,9 @@ public partial class CategoryViewModel : BaseViewModel
     private Category _selectedItem;
 
     [ObservableProperty]
-    public List<Category> _categories;
+    public List<Category> _categories = new();
+    [ObservableProperty]
+    private bool _isLoadingCategories;
 
     public CategoryViewModel(IAppServices appServices) : base(appServices)
     {
@@ -30,14 +32,19 @@ public partial class CategoryViewModel : BaseViewModel
 
     private async Task LoadCategoriesAsync()
     {
-        IsBusy = true;
-        Categories = await _catNSubCatService.GetCategories();
-
-        if (Categories == null || Categories.Count == 0)
+        IsLoadingCategories = true;
+        try
         {
-            await _dialogService.AlertAsync("Error", "Unable to load categories.", "OK");
+            Categories = await _catNSubCatService.GetCategories();
         }
-        IsBusy = false;
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Category load failed: {ex}");
+        }
+        finally
+        {
+            IsLoadingCategories = false;
+        }
     }
 
     [RelayCommand]

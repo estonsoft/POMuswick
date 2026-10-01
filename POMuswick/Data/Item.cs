@@ -1,8 +1,8 @@
-﻿using SQLite;
+﻿using Realms;
 
 namespace POMuswick
 {
-    public class Item
+    public class Item : Realms.RealmObject
     {
         [PrimaryKey]
         public int ItemNo { get; set; }
@@ -59,9 +59,9 @@ namespace POMuswick
         public Boolean IsQOHBlackVisible { get; set; }
         public Boolean IsOutOfStock { get; set; }
         public string NewItem { get; set; }
-        public DateTime DateAdded { get; set; }
+        public DateTimeOffset DateAdded { get; set; }
         public string DateAddedDisplay { get; set; }
-        public DateTime LastPurchDate { get; set; }
+        public DateTimeOffset LastPurchDate { get; set; }
         public string LastPurchDateDisplay { get; set; }
         public int QtyLastOrder { get; set; }
         public string QtyLastOrderDisplay { get; set; }
@@ -73,5 +73,80 @@ namespace POMuswick
         public string Keyword3 { get; set; }
         public string LongDescription { get; set; }
         public string SearchDescription { get; set; }
+
+        public Item CopyDetached()
+        {
+            return new Item
+            {
+                ItemNo = ItemNo,
+                ItemNoDisplay = ItemNoDisplay,
+                ItemNoDisplayUPC = ItemNoDisplayUPC,
+                Qty = Qty,
+                QtyDisplay = QtyDisplay,
+                Description = Description,
+                ImageURL = ImageURL,
+                ImageBase64 = ImageBase64,
+                CategoryCode = CategoryCode,
+                CategoryDesc = CategoryDesc,
+                SubcategoryCode = SubcategoryCode,
+                SubcategoryDesc = SubcategoryDesc,
+                VendorCode = VendorCode,
+                VendorName = VendorName,
+                UOM = UOM,
+                Size = Size,
+                SizeDisplay = SizeDisplay,
+                Form = Form,
+                RetailUOM = RetailUOM,
+                RetailSize = RetailSize,
+                PackSize = PackSize,
+                SellUnitsInPurchaseUnit = SellUnitsInPurchaseUnit,
+                Price = Price,
+                PriceDisplay = PriceDisplay,
+                Tax = Tax,
+                TaxDisplay = TaxDisplay,
+                RetailPrice = RetailPrice,
+                RetailPriceDisplay = RetailPriceDisplay,
+                SizeUOM = SizeUOM,
+                RowHeight = RowHeight,
+                UPC_1 = UPC_1,
+                UPC_2 = UPC_2,
+                UPC_3 = UPC_3,
+                UPC_4 = UPC_4,
+                Status = Status,
+                QtyOrder = QtyOrder,
+                PriceOrder = PriceOrder,
+                ExtPriceOrder = ExtPriceOrder,
+                PriceOrderDisplay = PriceOrderDisplay,
+                IsCart = IsCart,
+                IsCheckout = IsCheckout,
+                IsLoggedIn = IsLoggedIn,
+                CategoryRank = CategoryRank,
+                IsStepperVisible = IsStepperVisible,
+                IsAddToOrderVisible = IsAddToOrderVisible,
+                QOH = QOH,
+                IsQOHVisible = IsQOHVisible,
+                IsInStockVisible = IsInStockVisible,
+                IsOutOfStockVisible = IsOutOfStockVisible,
+                IsStockRowVisible = IsStockRowVisible,
+                IsQOHRedVisible = IsQOHRedVisible,
+                IsQOHBlackVisible = IsQOHBlackVisible,
+                IsOutOfStock = IsOutOfStock,
+                NewItem = NewItem,
+                DateAdded = DateAdded,
+                DateAddedDisplay = DateAddedDisplay,
+                LastPurchDate = LastPurchDate,
+                LastPurchDateDisplay = LastPurchDateDisplay,
+                QtyLastOrder = QtyLastOrder,
+                QtyLastOrderDisplay = QtyLastOrderDisplay,
+                MaxOrderQty = MaxOrderQty,
+                IsMaxOrderQtyVisible = IsMaxOrderQtyVisible,
+                MaxOrderQtyDisplay = MaxOrderQtyDisplay,
+                Keyword1 = Keyword1,
+                Keyword2 = Keyword2,
+                Keyword3 = Keyword3,
+                LongDescription = LongDescription,
+                SearchDescription = SearchDescription
+            };
+        }
     }
 }

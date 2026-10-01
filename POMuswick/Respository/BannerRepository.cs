@@ -11,8 +11,9 @@ namespace POMuswick.Repository
         }
         public void Save(List<Banner> banners)
         {
+            var bannersToSave = banners.Select(banner => banner.CopyDetached()).ToList();
             Clear();
-            _db.SaveBannerAsync(banners);
+            _db.SaveBannerAsync(bannersToSave);
         }
 
         public Task<List<Banner>> Load()

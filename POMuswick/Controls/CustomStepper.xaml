@@ -38,7 +38,8 @@
                         BorderWidth="0"
                         VerticalOptions="Fill"
                         HorizontalOptions="Fill"
-                        Clicked="Minus_Clicked"/>
+                        Command="{Binding Source={x:Reference Root}, Path=MinusCommand}"
+                        CommandParameter="{Binding Source={x:Reference Root}, Path=CommandParameter}"/>
 
                     <!-- Vertical Divider Left -->
                     <BoxView
@@ -77,7 +78,8 @@
                         BorderWidth="0"
                         VerticalOptions="Fill"
                         HorizontalOptions="Fill"
-                        Clicked="Plus_Clicked"/>
+                        Command="{Binding Source={x:Reference Root}, Path=PlusCommand}"
+                        CommandParameter="{Binding Source={x:Reference Root}, Path=CommandParameter}"/>
                 </Grid>
             </Border>
 
@@ -117,7 +119,8 @@
             HorizontalOptions="End"
             VerticalOptions="Center"
             IsVisible="{Binding Source={x:Reference Root}, Path=IsAddToOrderVisible}"
-            Clicked="Plus_Clicked"/>
+            Command="{Binding Source={x:Reference Root}, Path=PlusCommand}"
+            CommandParameter="{Binding Source={x:Reference Root}, Path=CommandParameter}"/>
 
     </Grid>
 </ContentView>

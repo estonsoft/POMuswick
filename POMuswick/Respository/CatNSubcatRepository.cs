@@ -25,17 +25,14 @@ namespace POMuswick.Repository
         {
             return Task.Run(() => _db.GetCategories() ?? new List<Category>());
         }
-
         public Task<List<Subcategory>> LoadSubCategories(string cateCode)
         {
             return Task.Run(() => _db.GetSubcategory(cateCode) ?? new List<Subcategory>());
         }
-
         public Task<List<Category>> LoadHomePageCategories()
         {
             return Task.Run(() => _db.GetHomePageCategories() ?? new List<Category>());
         }
-
         public void Clear()
         {
             _db.DeleteAllCategory();

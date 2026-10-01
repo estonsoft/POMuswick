@@ -1,6 +1,6 @@
 ﻿namespace POMuswick
 {
-    public class SuspendItem
+    public class SuspendItem : Realms.RealmObject
     {
         public string CustNo { get; set; }
         public int ItemNo { get; set; }

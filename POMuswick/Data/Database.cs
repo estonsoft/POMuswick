@@ -1,299 +1,256 @@
-﻿using SQLite;
+using Realms;
 
 namespace POMuswick
 {
     public class Database
     {
-        readonly SQLiteConnection _database;
-        static object locker = new object();
-
+        private readonly RealmConfiguration _config;
+        private Realm _mainThreadRealm;
         public Database()
         {
-            string dbPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Constants.DBName);
+            // Realm config safely mapped to the application sandbox data directory on iOS and Android
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, Constants.DBName ?? "appdata.realm");
 
-            _database = new SQLiteConnection(dbPath);
-            _database.CreateTable<Item>();
-            _database.CreateTable<Customer>();
-            _database.CreateTable<Banner>();
-            _database.CreateTable<Category>();
-            _database.CreateTable<Subcategory>();
-            _database.CreateTable<Setting>();
-            _database.CreateTable<PaymentToken>();
-            _database.CreateTable<Location>();
-            _database.CreateTable<OrderHeader>();
-            _database.CreateTable<OrderDetail>();
-            _database.CreateTable<OrderSubmitted>();
-            _database.CreateTable<ReorderItem>();
-            _database.CreateTable<CartItem>();
-            _database.CreateTable<DiscontinuedItem>();
-            _database.CreateTable<SuspendItem>();
-            _database.CreateTable<SalesCustomer>();
+            _config = new RealmConfiguration(dbPath)
+            {
+                SchemaVersion = 1,
+                // Automatically handles schema migrations during rapid local prototyping phases
+                MigrationCallback = (migration, oldSchemaVersion) => { }
+            };
         }
 
-        public void BeginTransaction()
+        // Helper to retrieve thread-confined local instance dynamically on each execution request
+        private Realm GetRealm()
         {
-            if (DeviceInfo.Platform == DevicePlatform.iOS)
+            // If on the UI thread, keep a persistent instance alive
+            if (MainThread.IsMainThread)
             {
-                while (_database.IsInTransaction)
+                if (_mainThreadRealm == null || _mainThreadRealm.IsClosed)
                 {
-                    SpinWait.SpinUntil(() => !_database.IsInTransaction, 50); // Checks every 50ms
+                    _mainThreadRealm = Realm.GetInstance(_config);
                 }
-                _database.BeginTransaction();
+                return _mainThreadRealm;
             }
+
+            // Background threads spin up transient instances dynamically
+            return Realm.GetInstance(_config);
         }
 
-        public void CommitTransaction()
-        {
-            if (DeviceInfo.Platform == DevicePlatform.iOS)
-            {
-                _database.Commit();
-            }
-        }
 
-        public void RollbackTransaction()
+        #region Smart Item Search Engine
+        public List<Item> SearchItems(bool stockOnly, string sSearch, Category category, string sBarcode, Subcategory subcategory)
         {
-            if (DeviceInfo.Platform == DevicePlatform.iOS)
-            {
-                _database.Rollback();
-            }
-        }
+            // Save category parameters before evaluating any structural reset conditionals
+            string sSavedCategoryCode = category.Code;
+            string sSavedSubcategoryCode = subcategory.Code;
 
-        public List<Item> SearchItems(bool stockOnly, String sSearch, Category category, String sBarcode, Subcategory subcategory)
-        {
-            // ✅ Save category before any resets
-            String sSavedCategoryCode = category.Code;
-            String sSavedSubcategoryCode = subcategory.Code;
-
-            Decimal dItemNo = 0;
-            String sBarcodeShort = sBarcode;
-            if (sBarcode.Length > 11)
+            decimal dItemNo = 0;
+            string sBarcodeShort = sBarcode ?? "";
+            if (sBarcodeShort.Length > 11)
             {
                 sBarcodeShort = sBarcodeShort.Substring(0, 11);
             }
 
-            try
+            if (!string.IsNullOrEmpty(sBarcodeShort) && sBarcodeShort.Length <= 6 && decimal.TryParse(sBarcodeShort, out var parsedBarcode))
             {
-                if ((sBarcode.Length <= 6) && (sBarcode != ""))
-                {
-                    dItemNo = Decimal.Parse(sBarcode);
-                    sBarcodeShort = dItemNo.ToString();
-                    category.Code = "";
-                    subcategory.Code = "";
-                }
-            }
-            catch
-            {
+                dItemNo = parsedBarcode;
+                sBarcodeShort = dItemNo.ToString();
+                sSavedCategoryCode = "";
+                sSavedSubcategoryCode = "";
             }
 
-            if (sSearch != "")
+            if (!string.IsNullOrEmpty(sSearch))
             {
-                if (Decimal.TryParse(sSearch, out dItemNo))
+                if (decimal.TryParse(sSearch, out var parsedSearchId))
                 {
-                    dItemNo = Decimal.Parse(sSearch);
+                    dItemNo = parsedSearchId;
                     sBarcodeShort = dItemNo.ToString();
-                    category.Code = "";
-                    subcategory.Code = "";
+                    sSavedCategoryCode = "";
+                    sSavedSubcategoryCode = "";
                 }
             }
 
-            sSearch = sSearch.Replace("'", "");
-            String sSearchShort = sSearch;
-            if (sSearch.Length > 11)
+            string cleanSearch = (sSearch ?? "").Replace("'", "");
+            string sSearchShort = cleanSearch;
+            if (sSearchShort.Length > 11)
             {
                 sSearchShort = sSearchShort.Substring(0, 11);
             }
 
-            String sQuery = "SELECT * FROM [Item] WHERE ";
-
-            if (!string.IsNullOrEmpty(sBarcode))
-            {
-                sQuery += " (";
-                sQuery += " [ItemNoDisplay] = '" + sBarcode + "' OR ";
-                sQuery += " [ItemNoDisplay] = '" + sBarcodeShort + "' OR ";
-                sQuery += " ([UPC_1] LIKE '%" + sBarcode + "%' OR [UPC_1] LIKE '%" + sBarcodeShort + "') OR ";
-                sQuery += " ([UPC_2] LIKE '%" + sBarcode + "%' OR [UPC_2] LIKE '%" + sBarcodeShort + "') OR ";
-                sQuery += " ([UPC_3] LIKE '%" + sBarcode + "%' OR [UPC_3] LIKE '%" + sBarcodeShort + "') OR ";
-                sQuery += " ([UPC_4] LIKE '%" + sBarcode + "%' OR [UPC_4] LIKE '%" + sBarcodeShort + "') ";
-                sQuery += " ) ";
-            }
-            else
-            {
-                sQuery += " (";
-                sQuery += " [SearchDescription] LIKE '%" + sSearch + "%' OR ";
-                sQuery += " [ItemNoDisplay] LIKE '%" + sSearch + "%' ";
-                if (dItemNo > 0)
-                {
-                    sQuery += " OR [ItemNoDisplay] LIKE '%" + dItemNo.ToString() + "%' ";
-                }
-                sQuery += " OR ([UPC_1] LIKE '%" + sSearch + "%' OR [UPC_1] LIKE '%" + sSearchShort + "') ";
-                sQuery += " OR ([UPC_2] LIKE '%" + sSearch + "%' OR [UPC_2] LIKE '%" + sSearchShort + "') ";
-                sQuery += " OR ([UPC_3] LIKE '%" + sSearch + "%' OR [UPC_3] LIKE '%" + sSearchShort + "') ";
-                sQuery += " OR ([UPC_4] LIKE '%" + sSearch + "%' OR [UPC_4] LIKE '%" + sSearchShort + "') ";
-                sQuery += " ) ";
-            }
-
-            // ✅ Use saved category code so it's never lost after barcode/search parsing
-            if (!string.IsNullOrEmpty(sSavedCategoryCode))
-            {
-                if (sSavedCategoryCode == "NEW ITEMS")
-                    sQuery += " AND NewItem = 'Y' ";
-                else
-                    sQuery += " AND CategoryCode = '" + sSavedCategoryCode + "' ";
-            }
-
-            // ✅ Use saved subcategory code if needed
-            if (!string.IsNullOrEmpty(sSavedSubcategoryCode))
-            {
-                sQuery += " AND SubcategoryCode = '" + sSavedSubcategoryCode + "' ";
-            }
+            var realm = GetRealm();
+            var query = realm.All<Item>().Where(i => i.Status == "A");
 
             if (stockOnly)
             {
-                sQuery += " AND QOH > 0 ";
+                query = query.Where(i => i.QOH > 0);
             }
 
-            sQuery += " AND Status = 'A' ";
+            if (!string.IsNullOrEmpty(sSavedCategoryCode))
+            {
+                query = sSavedCategoryCode == "NEW ITEMS"
+                    ? query.Where(i => i.NewItem == "Y")
+                    : query.Where(i => i.CategoryCode == sSavedCategoryCode);
+            }
 
-            // 🔥 SMART ORDERING
+            if (!string.IsNullOrEmpty(sSavedSubcategoryCode))
+            {
+                query = query.Where(i => i.SubcategoryCode == sSavedSubcategoryCode);
+            }
+
             if (!string.IsNullOrEmpty(sBarcode))
             {
-                sQuery += " ORDER BY ";
-                sQuery += " CASE ";
-                sQuery += " WHEN [ItemNoDisplay] = '" + sBarcode + "' THEN 1 ";
-                sQuery += " WHEN [ItemNoDisplay] = '" + sBarcodeShort + "' THEN 1 ";
-                sQuery += " WHEN [UPC_1] LIKE '" + sBarcode + "%' THEN 2 ";
-                sQuery += " WHEN [UPC_2] LIKE '" + sBarcode + "%' THEN 2 ";
-                sQuery += " WHEN [UPC_3] LIKE '" + sBarcode + "%' THEN 2 ";
-                sQuery += " WHEN [UPC_4] LIKE '" + sBarcode + "%' THEN 2 ";
-                sQuery += " ELSE 3 END, ";
-                sQuery += " SearchDescription ";
+                query = query.Where(i => i.ItemNoDisplay == sBarcode ||
+                                         i.ItemNoDisplay == sBarcodeShort ||
+                                         i.UPC_1.Contains(sBarcode) || i.UPC_1.Contains(sBarcodeShort) ||
+                                         i.UPC_2.Contains(sBarcode) || i.UPC_2.Contains(sBarcodeShort) ||
+                                         i.UPC_3.Contains(sBarcode) || i.UPC_3.Contains(sBarcodeShort) ||
+                                         i.UPC_4.Contains(sBarcode) || i.UPC_4.Contains(sBarcodeShort));
             }
-            else
+            else if (!string.IsNullOrEmpty(cleanSearch))
             {
-                sQuery += " ORDER BY ";
-                sQuery += " CASE ";
-                sQuery += " WHEN [ItemNoDisplay] LIKE '" + sSearch + "%' THEN 1 ";
-                sQuery += " WHEN [SearchDescription] LIKE '" + sSearch + "%' THEN 2 ";
-                sQuery += " WHEN [ItemNoDisplay] LIKE '%" + sSearch + "%' THEN 3 ";
-                sQuery += " WHEN [SearchDescription] LIKE '%" + sSearch + "%' THEN 4 ";
-                sQuery += " ELSE 5 END, ";
-                sQuery += " SearchDescription ";
+                string dItemNoStr = dItemNo > 0 ? dItemNo.ToString() : "";
+                var numericItemMatches = string.IsNullOrEmpty(dItemNoStr)
+                    ? new List<Item>()
+                    : query.Where(i => i.ItemNoDisplay.Contains(dItemNoStr)).ToList();
+
+                query = query.Where(i => i.SearchDescription.Contains(cleanSearch) ||
+                                         i.ItemNoDisplay.Contains(cleanSearch) ||
+                                         i.UPC_1.Contains(cleanSearch) || i.UPC_1.Contains(sSearchShort) ||
+                                         i.UPC_2.Contains(cleanSearch) || i.UPC_2.Contains(sSearchShort) ||
+                                         i.UPC_3.Contains(cleanSearch) || i.UPC_3.Contains(sSearchShort) ||
+                                         i.UPC_4.Contains(cleanSearch) || i.UPC_4.Contains(sSearchShort));
+
+                if (numericItemMatches.Count > 0)
+                {
+                    query = query.AsEnumerable()
+                                 .Concat(numericItemMatches)
+                                 .DistinctBy(i => i.ItemNo)
+                                 .AsQueryable();
+                }
             }
 
-            return _database.Query<Item>(sQuery);
+            // Memory-mapped queries run evaluations natively in the C++ layer during collection transformations
+            var resultList = query.ToList();
+
+            if (!string.IsNullOrEmpty(sBarcode))
+            {
+                return resultList.OrderBy(i => i.ItemNoDisplay == sBarcode || i.ItemNoDisplay == sBarcodeShort ? 1 :
+                                               i.UPC_1.StartsWith(sBarcode) || i.UPC_2.StartsWith(sBarcode) ||
+                                               i.UPC_3.StartsWith(sBarcode) || i.UPC_4.StartsWith(sBarcode) ? 2 : 3)
+                                 .ThenBy(i => i.SearchDescription)
+                                 .ToList()
+                                 .Select(item => item.CopyDetached())
+                                 .ToList();
+            }
+
+            if (!string.IsNullOrEmpty(cleanSearch))
+            {
+                return resultList.OrderBy(i => i.ItemNoDisplay.StartsWith(cleanSearch) ? 1 :
+                                               i.SearchDescription.StartsWith(cleanSearch) ? 2 :
+                                               i.ItemNoDisplay.Contains(cleanSearch) ? 3 :
+                                               i.SearchDescription.Contains(cleanSearch) ? 4 : 5)
+                                 .ThenBy(i => i.SearchDescription)
+                                 .ToList()
+                                 .Select(item => item.CopyDetached())
+                                 .ToList();
+            }
+
+            return resultList.Select(item => item.CopyDetached()).ToList();
         }
 
-        public List<Item> SearchItemsKeyword(String sSearch, bool stockOnly)
+        public List<Item> SearchItemsKeyword(string sSearch, bool stockOnly)
         {
             var search = sSearch?.Trim() ?? "";
+            var realm = GetRealm();
 
-            var query = $@"
-            SELECT * FROM [Item]
-            WHERE Status = 'A'
-            {(stockOnly ? "AND QOH > 0" : "")}
-            AND (
-                ([Keyword1] LIKE ? AND [Keyword1] <> '') OR
-                ([Keyword2] LIKE ? AND [Keyword2] <> '') OR
-                ([Keyword3] LIKE ? AND [Keyword3] <> '')
-            )
-            ORDER BY
-                CASE
-                    WHEN [Keyword1] = ? OR [Keyword2] = ? OR [Keyword3] = ? THEN 1
-                    WHEN [Keyword1] LIKE ? OR [Keyword2] LIKE ? OR [Keyword3] LIKE ? THEN 2
-                    ELSE 3
-                END,
-                Description ASC";
+            var query = realm.All<Item>().Where(i => i.Status == "A");
 
-            return _database.Query<Item>(
-                query,
-                "%" + search + "%",   // WHERE
-                "%" + search + "%",
-                "%" + search + "%",
+            if (stockOnly)
+            {
+                query = query.Where(i => i.QOH > 0);
+            }
 
-                search,               // exact match
-                search,
-                search,
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(i => (i.Keyword1.Contains(search) && i.Keyword1 != "") ||
+                                         (i.Keyword2.Contains(search) && i.Keyword2 != "") ||
+                                         (i.Keyword3.Contains(search) && i.Keyword3 != ""));
+            }
 
-                search + "%",         // starts with
-                search + "%",
-                search + "%"
-            );
+            return query.ToList()
+                        .OrderBy(i => i.Keyword1 == search || i.Keyword2 == search || i.Keyword3 == search ? 1 :
+                                       i.Keyword1.StartsWith(search) || i.Keyword2.StartsWith(search) || i.Keyword3.StartsWith(search) ? 2 : 3)
+                        .ThenBy(i => i.Description)
+                        .ToList()
+                        .Select(item => item.CopyDetached())
+                        .ToList();
         }
 
-        public List<Item> SearchItemsQuickEntry(String sSearch)
+        public List<Item> SearchItemsQuickEntry(string sSearch)
         {
-            Decimal dItemNo = 0;
-            try
+            decimal dItemNo = 0;
+            if (!string.IsNullOrEmpty(sSearch) && sSearch.Length <= 6 && decimal.TryParse(sSearch, out var parsed))
             {
-                if ((sSearch.Length <= 6) && (sSearch != ""))
-                {
-                    dItemNo = Decimal.Parse(sSearch);
-                }
-            }
-            catch
-            {
+                dItemNo = parsed;
             }
 
-            String sSearch2 = "";
+            string sSearch2 = "";
+            string cleanSearch = (sSearch ?? "").Replace("'", "");
 
-            sSearch = sSearch.Replace("'", "");
-            if (sSearch.Length >= 6 && sSearch.Length <= 8)
+            if (cleanSearch.Length >= 6 && cleanSearch.Length <= 8)
             {
-                sSearch2 = sSearch;
-                string sUPCExpand = UPCExpand(sSearch);
-                if (sUPCExpand != "")
+                sSearch2 = cleanSearch;
+                string expanded = UPCExpand(cleanSearch);
+                if (!string.IsNullOrEmpty(expanded))
                 {
-                    sSearch = sUPCExpand;
+                    cleanSearch = expanded;
                 }
             }
 
-            String sSearchShort = sSearch;
-            String sSearchShort2 = sSearch;
-            if (sSearch.Length == 13)
+            string sSearchShort = cleanSearch;
+            string sSearchShort2 = cleanSearch;
+            if (cleanSearch.Length == 13)
             {
-                sSearchShort = sSearchShort.Substring(2, 11);
+                sSearchShort = cleanSearch.Substring(2, 11);
             }
-            else if (sSearch.Length > 11)
+            else if (cleanSearch.Length > 11)
             {
-                sSearchShort2 = sSearchShort2.Substring(0, 11);
-            }
-
-            String sQuery = "select * from [Item] where ";
-
-            sQuery += " ((([UPC_1] like '%" + sSearch + "%' or [UPC_1] like '%" + sSearchShort + "' or [UPC_1] like '%" + sSearchShort2 + "') and [UPC_1] > '') or ";
-            sQuery += " (([UPC_2] like '%" + sSearch + "%' or [UPC_2] like '%" + sSearchShort + "' or [UPC_2] like '%" + sSearchShort2 + "') and [UPC_2] > '') or ";
-            sQuery += " (([UPC_3] like '%" + sSearch + "%' or [UPC_3] like '%" + sSearchShort + "' or [UPC_3] like '%" + sSearchShort2 + "') and [UPC_3] > '') or ";
-            sQuery += " (([UPC_4] like '%" + sSearch + "%' or [UPC_4] like '%" + sSearchShort + "' or [UPC_4] like '%" + sSearchShort2 + "') and [UPC_4] > '') ";
-
-            if (sSearch2 != "")
-            {
-                sQuery += " or ([UPC_1] = '" + sSearch2 + "' or [UPC_2] = '" + sSearch2 + "' or [UPC_3] = '" + sSearch2 + "' or [UPC_4] = '" + sSearch2 + "') ";
+                sSearchShort2 = cleanSearch.Substring(0, 11);
             }
 
-            if (dItemNo > 0)
+            var realm = GetRealm();
+            var query = realm.All<Item>().Where(i => i.Status != "D");
+
+            string dItemNoStr = dItemNo > 0 ? dItemNo.ToString() : "";
+
+            var matchingItems = query.Where(i =>
+                ((i.UPC_1.Contains(cleanSearch) || i.UPC_1.Contains(sSearchShort) || i.UPC_1.Contains(sSearchShort2)) && i.UPC_1 != "") ||
+                ((i.UPC_2.Contains(cleanSearch) || i.UPC_2.Contains(sSearchShort) || i.UPC_2.Contains(sSearchShort2)) && i.UPC_2 != "") ||
+                ((i.UPC_3.Contains(cleanSearch) || i.UPC_3.Contains(sSearchShort) || i.UPC_3.Contains(sSearchShort2)) && i.UPC_3 != "") ||
+                ((i.UPC_4.Contains(cleanSearch) || i.UPC_4.Contains(sSearchShort) || i.UPC_4.Contains(sSearchShort2)) && i.UPC_4 != ""))
+                .ToList();
+
+            if (!string.IsNullOrEmpty(sSearch2))
             {
-                sQuery += " or ([ItemNoDisplay] like '%" + dItemNo.ToString() + "%')";
+                matchingItems.AddRange(query.Where(i => i.UPC_1 == sSearch2 || i.UPC_2 == sSearch2 || i.UPC_3 == sSearch2 || i.UPC_4 == sSearch2).ToList());
             }
 
-            sQuery += " ) and Status <> 'D' ";
+            if (!string.IsNullOrEmpty(dItemNoStr))
+            {
+                matchingItems.AddRange(query.Where(i => i.ItemNoDisplay.Contains(dItemNoStr)).ToList());
+            }
 
-            return _database.Query<Item>(sQuery);
+            return matchingItems.DistinctBy(i => i.ItemNo)
+                                .Select(item => item.CopyDetached())
+                                .ToList();
         }
 
         private string UPCExpand(string sUPC)
         {
-            string sUPCExpand = "";
-
-            if (sUPC.Length == 8)
-            {
-                //return UPC8Expand(sUPC);
-                sUPC = sUPC.Substring(1, 6);
-            }
-
-            if (sUPC.Length == 6)
-            {
-                sUPC = "0" + sUPC;
-            }
+            if (string.IsNullOrEmpty(sUPC)) return "";
+            if (sUPC.Length == 8) sUPC = sUPC.Substring(1, 6);
+            if (sUPC.Length == 6) sUPC = "0" + sUPC;
+            if (sUPC.Length < 7) return "";
 
             string D1 = sUPC.Substring(0, 1);
             string D2 = sUPC.Substring(1, 1);
@@ -303,596 +260,820 @@ namespace POMuswick
             string D6 = sUPC.Substring(5, 1);
             string D7 = sUPC.Substring(6, 1);
 
-            switch (D7)
+            return D7 switch
             {
-                case "0":
-                    sUPCExpand = D1 + D2 + D3 + "00000" + D4 + D5 + D6;
-                    break;
-
-                case "1":
-                    sUPCExpand = D1 + D2 + D3 + D7 + "0000" + D4 + D5 + D6;
-                    break;
-
-                case "2":
-                    sUPCExpand = D1 + D2 + D3 + D7 + "0000" + D4 + D5 + D6;
-                    break;
-
-                case "3":
-                    sUPCExpand = D1 + D2 + D3 + D4 + "00000" + D5 + D6;
-                    break;
-
-                case "4":
-                    sUPCExpand = D1 + D2 + D3 + D4 + D5 + "00000" + D6;
-                    break;
-
-                case "5":
-                    sUPCExpand = D1 + D2 + D3 + D4 + D5 + D6 + "0000" + D7;
-                    break;
-
-                case "6":
-                    sUPCExpand = D1 + D2 + D3 + D4 + D5 + D6 + "0000" + D7;
-                    break;
-
-                case "7":
-                    sUPCExpand = D1 + D2 + D3 + D4 + D5 + D6 + "0000" + D7;
-                    break;
-
-                case "8":
-                    sUPCExpand = D1 + D2 + D3 + D4 + D5 + D6 + "0000" + D7;
-                    break;
-
-                case "9":
-                    sUPCExpand = D1 + D2 + D3 + D4 + D5 + D6 + "0000" + D7;
-                    break;
-
-                default:
-                    sUPCExpand = "";
-                    break;
-            }
-
-            return sUPCExpand;
+                "0" => D1 + D2 + D3 + "00000" + D4 + D5 + D6,
+                "1" => D1 + D2 + D3 + D7 + "0000" + D4 + D5 + D6,
+                "2" => D1 + D2 + D3 + D7 + "0000" + D4 + D5 + D6,
+                "3" => D1 + D2 + D3 + D4 + "00000" + D5 + D6,
+                "4" => D1 + D2 + D3 + D4 + D5 + "00000" + D6,
+                _ => D1 + D2 + D3 + D4 + D5 + D6 + "0000" + D7
+            };
         }
 
-        public List<Item> GetNewItems(String sSearch, bool bQOHOnly, bool stockOnly)
+        public List<Item> GetNewItems(string sSearch, bool bQOHOnly, bool stockOnly)
         {
-            String sQuery = "select * from [Item] where NewItem = 'Y' and Status = 'A' ";
+            var realm = GetRealm();
+            var query = realm.All<Item>().Where(i => i.NewItem == "Y" && i.Status == "A");
 
-            if (sSearch != "")
+            if (!string.IsNullOrEmpty(sSearch))
             {
-                sSearch = sSearch.Replace("'", "");
-
-                sQuery += " AND (";
-                sQuery += " [Description] LIKE '%" + sSearch + "%' OR ";
-                sQuery += " [ItemNoDisplay] LIKE '%" + sSearch + "%' OR ";
-                sQuery += " (([UPC_1] LIKE '%" + sSearch + "%') AND [UPC_1] > '') OR ";
-                sQuery += " (([UPC_2] LIKE '%" + sSearch + "%') AND [UPC_2] > '') OR ";
-                sQuery += " (([UPC_3] LIKE '%" + sSearch + "%') AND [UPC_3] > '') OR ";
-                sQuery += " (([UPC_4] LIKE '%" + sSearch + "%') AND [UPC_4] > '') ";
-                sQuery += ") ";
+                string cleanSearch = sSearch.Replace("'", "");
+                query = query.Where(i => i.Description.Contains(cleanSearch) ||
+                                         i.ItemNoDisplay.Contains(cleanSearch) ||
+                                         (i.UPC_1.Contains(cleanSearch) && i.UPC_1 != "") ||
+                                         (i.UPC_2.Contains(cleanSearch) && i.UPC_2 != "") ||
+                                         (i.UPC_3.Contains(cleanSearch) && i.UPC_3 != "") ||
+                                         (i.UPC_4.Contains(cleanSearch) && i.UPC_4 != ""));
             }
 
             if (stockOnly || bQOHOnly)
             {
-                sQuery += " AND QOH > 0 ";
+                query = query.Where(i => i.QOH > 0);
             }
 
-            if (sSearch != "")
+            var results = query.ToList();
+
+            if (!string.IsNullOrEmpty(sSearch))
             {
-                sQuery += " ORDER BY ";
-                sQuery += " CASE ";
-                sQuery += " WHEN [Description] LIKE '" + sSearch + "%' THEN 1 ";
-                sQuery += " WHEN [ItemNoDisplay] LIKE '" + sSearch + "%' THEN 1 ";
-                sQuery += " ELSE 2 END, ";
-                sQuery += " DateAdded DESC ";
-            }
-            else
-            {
-                sQuery += " ORDER BY DateAdded DESC ";
+                string cleanSearch = sSearch.Replace("'", "");
+                return results.OrderBy(i => i.Description.StartsWith(cleanSearch) || i.ItemNoDisplay.StartsWith(cleanSearch) ? 1 : 2)
+                              .ThenByDescending(i => i.DateAdded)
+                              .ToList()
+                              .Select(item => item.CopyDetached())
+                              .ToList();
             }
 
-            return _database.Query<Item>(sQuery);
+            return results.OrderByDescending(i => i.DateAdded)
+                          .Select(item => item.CopyDetached())
+                          .ToList();
         }
+        #endregion
 
+        #region Discontinued Processing Matrix
         public int InsertDiscontinuedItems()
         {
-            String sQuery = "delete from [DiscontinuedItem]";
-            _database.Execute(sQuery);
+            var realm = GetRealm();
+            var allItems = realm.All<Item>().ToList();
 
-            sQuery = "insert into [DiscontinuedItem] select ItemNo from [Item]";
-            return _database.Execute(sQuery);
+            realm.Write(() =>
+            {
+                realm.RemoveAll<DiscontinuedItem>();
+                foreach (var item in allItems)
+                {
+                    realm.Add(new DiscontinuedItem { ItemNo = item.ItemNo });
+                }
+            });
+            return allItems.Count;
         }
 
         public void DeleteDiscontinuedItems(List<int> itemNos)
         {
             if (itemNos == null || itemNos.Count == 0) return;
 
-            const int chunkSize = 500; // stay under SQLite's default variable/expression limits
+            var realm = GetRealm();
+            var itemsToDelete = realm.All<DiscontinuedItem>()
+                                     .AsEnumerable()
+                                     .Where(d => itemNos.Contains(d.ItemNo))
+                                     .ToList();
 
-            for (int i = 0; i < itemNos.Count; i += chunkSize)
+            realm.Write(() =>
             {
-                var chunk = itemNos.Skip(i).Take(chunkSize);
-                string idList = string.Join(",", chunk); // ints only — no injection risk
-                _database.Execute($"delete from DiscontinuedItem where ItemNo in ({idList})");
-            }
+                foreach (var item in itemsToDelete)
+                {
+                    realm.Remove(item);
+                }
+            });
         }
 
-        public int DeleteDiscontinuedItem(string ItemNo)
+        public int DeleteDiscontinuedItem(string itemNoStr)
         {
-            String sQuery = "delete from [DiscontinuedItem] where ItemNo = " + ItemNo;
-            return _database.Execute(sQuery);
+            if (!int.TryParse(itemNoStr, out int targetNo)) return 0;
+
+            var realm = GetRealm();
+            var item = realm.All<DiscontinuedItem>().FirstOrDefault(d => d.ItemNo == targetNo);
+
+            if (item == null) return 0;
+
+            realm.Write(() => realm.Remove(item));
+            return 1;
         }
 
         public int UpdateDiscontinuedItems()
         {
-            String sQuery = "update [Item] set Status = 'D' where ItemNo in (select ItemNo from [DiscontinuedItem])";
-            return _database.Execute(sQuery);
-        }
+            var realm = GetRealm();
+            var targetIds = realm.All<DiscontinuedItem>().ToList().Select(d => d.ItemNo).ToList();
+            var matches = realm.All<Item>().AsEnumerable().Where(i => targetIds.Contains(i.ItemNo)).ToList();
 
+            realm.Write(() =>
+            {
+                foreach (var item in matches)
+                {
+                    item.Status = "D";
+                }
+            });
+            return matches.Count;
+        }
+        #endregion
+
+        #region Cart & Order Collections
         public List<Item> GetCartItems()
         {
-            String sQuery = "select * from [Item] where QtyOrder <> 0 order by Description";
-            return _database.Query<Item>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Item>()
+                        .Where(i => i.QtyOrder > 0)
+                        .OrderBy(i => i.Description)
+                        .ToList()
+                        .Select(item => item.CopyDetached())
+                        .ToList();
         }
 
         public List<Item> GetCheckoutItems()
         {
-            String sQuery = "select * from [Item] where QtyOrder > 0 order by Description";
-            return _database.Query<Item>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Item>()
+                        .Where(i => i.QtyOrder > 0)
+                        .OrderBy(i => i.Description)
+                        .ToList()
+                        .Select(item => item.CopyDetached())
+                        .ToList();
         }
 
         public int GetCartPieces()
         {
-            String sQuery = "select sum(QtyOrder) from [Item] where QtyOrder > 0";
-            return _database.ExecuteScalar<int>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Item>()
+                        .Where(i => i.QtyOrder > 0)
+                        .ToList()
+                        .Sum(i => i.QtyOrder);
         }
 
         public int ClearCartItems()
         {
-            String sQuery = "update [Item] set QtyOrder = 0, PriceOrder = 0";
-            return _database.Execute(sQuery);
-        }
+            var realm = GetRealm();
+            var items = realm.All<Item>().Where(i => i.QtyOrder != 0 || i.PriceOrder != 0).ToList();
 
+            realm.Write(() =>
+            {
+                foreach (var i in items)
+                {
+                    i.QtyOrder = 0;
+                    i.PriceOrder = 0;
+                }
+            });
+            return items.Count;
+        }
+        #endregion
+
+        #region Standard Object Management (CRUD)
         public int GetItemCount()
         {
-            String sQuery = "select count(*) from [Item]";
-            return _database.ExecuteScalar<int>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Item>().Count();
         }
 
-        public Item FindItem(int item_no)
+        public Item? FindItem(int itemNo)
         {
-            return _database.Find<Item>(s => s.ItemNo == item_no);
+            var realm = GetRealm();
+            return realm.Find<Item>(itemNo)?.CopyDetached();
         }
 
         public int SaveItems(List<Item> items)
         {
-            return _database.InsertAll(items);
+            if (items == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                foreach (var item in items) realm.Add(item, update: true);
+            });
+            return items.Count;
         }
 
         public int SaveItemReplace(Item item)
         {
-            return _database.InsertOrReplace(item);
+            if (item == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() => realm.Add(item, update: true));
+            return 1;
         }
 
         public int UpdateItem(Item item)
         {
-            return _database.Update(item);
+            return SaveItemReplace(item);
         }
 
         public int DeleteItems()
         {
-            return _database.Execute("delete from Item");
+            var realm = GetRealm();
+            int count = realm.All<Item>().Count();
+            realm.Write(() => realm.RemoveAll<Item>());
+            return count;
         }
 
         public List<Item> GetItems()
         {
-            String sQuery = "select * from [Item] ";
-            return _database.Query<Item>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Item>()
+                        .ToList()
+                        .Select(item => item.CopyDetached())
+                        .ToList();
         }
+        #endregion
 
+        #region Structured Inventory Adjustments
         public int UpdateItemQty(int iItem, int iQty)
         {
-            _database.Execute("update Item set QtyOrder = QtyOrder + " + iQty.ToString() + " where ItemNo = " + iItem.ToString());
+            var realm = GetRealm();
+            var item = realm.Find<Item>(iItem);
+            if (item == null) return 0;
+
+            realm.Write(() => { item.QtyOrder += iQty; });
             return 1;
         }
 
         public int UpdateItemQtySet(Dictionary<int, int> keyValuePairs)
         {
-            if (keyValuePairs == null || keyValuePairs.Count == 0)
-                return 0;
+            if (keyValuePairs == null || keyValuePairs.Count == 0) return 0;
 
-            while (_database.IsInTransaction)
-            {
-                SpinWait.SpinUntil(() => !_database.IsInTransaction, 50);
-            }
-
-            _database.RunInTransaction(() =>
+            var realm = GetRealm();
+            realm.Write(() =>
             {
                 foreach (var kvp in keyValuePairs)
                 {
-                    int itemNo = kvp.Key;
-                    int qoh = kvp.Value;
-                    if (qoh == 0)
+                    var item = realm.Find<Item>(kvp.Key);
+                    if (item != null)
                     {
-                        qoh = -1;
+                        item.QtyOrder = kvp.Value;
                     }
-                    _database.Execute(
-                        "Update Item set QtyOrder = ? WHERE ItemNo = ?",
-                        qoh, itemNo);
                 }
             });
-
             return keyValuePairs.Count;
         }
 
         public int UpdateItemQOH(Dictionary<int, int> keyValuePairs)
         {
-            if (keyValuePairs == null || keyValuePairs.Count == 0)
-                return 0;
+            if (keyValuePairs == null || keyValuePairs.Count == 0) return 0;
 
-            while (_database.IsInTransaction)
-            {
-                SpinWait.SpinUntil(() => !_database.IsInTransaction, 50);
-            }
-
-            _database.RunInTransaction(() =>
+            var realm = GetRealm();
+            realm.Write(() =>
             {
                 foreach (var kvp in keyValuePairs)
                 {
                     int itemNo = kvp.Key;
-                    int qoh = kvp.Value;
+                    int newQoh = kvp.Value;
 
-                    _database.Execute(
-                        "UPDATE Item SET QOH = ? WHERE ItemNo = ?",
-                        qoh, itemNo);
+                    var item = realm.Find<Item>(itemNo);
+                    if (item != null) item.QOH = newQoh;
 
-                    _database.Execute(
-                        "UPDATE ReorderItem SET QOH = ? WHERE ItemNo = ?",
-                        qoh, itemNo);
+                    var reorder = realm.Find<ReorderItem>(itemNo);
+                    if (reorder != null) reorder.QOH = newQoh;
 
-                    _database.Execute(
-                        "UPDATE OrderDetail SET QOH = ? WHERE ItemNo = ?",
-                        qoh, itemNo);
+                    var details = realm.All<OrderDetail>().Where(d => d.ItemNo == itemNo);
+                    foreach (var d in details) d.QOH = newQoh;
                 }
             });
-
             return keyValuePairs.Count;
         }
 
         public int GetItemQty(int iItem)
         {
-            return _database.ExecuteScalar<int>("select QtyOrder from Item where ItemNo = " + iItem.ToString());
+            var realm = GetRealm();
+            var item = realm.Find<Item>(iItem);
+            return item?.QtyOrder ?? 0;
         }
+        #endregion
 
+        #region Categorization Methods
         public List<Category> GetCategories()
         {
-            String sQuery = "select * from Category ";
-            sQuery += " union ";
-            sQuery += " select 'NEW ITEMS', 'NEW ITEMS', '', 0, -1, '' from Category order by Rank, Description";
+            var realm = GetRealm();
+            var baseList = realm.All<Category>()
+                                .OrderBy(c => c.Rank)
+                                .ThenBy(c => c.Description)
+                                .ToList()
+                                .Select(category => category.CopyDetached())
+                                .ToList();
 
-            return _database.Query<Category>(sQuery);
+            var compositeList = new List<Category>
+            {
+                new Category { Code = "NEW ITEMS", Description = "NEW ITEMS", Rank = -1 }
+            };
+            compositeList.AddRange(baseList);
+            return compositeList;
         }
 
         public List<Category> GetHomePageCategories()
         {
-            String sQuery = "select * from Category where HomePage > 0 order by HomePage limit 4";
-            return _database.Query<Category>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Category>()
+                        .Where(c => c.HomePage > 0)
+                        .OrderBy(c => c.HomePage)
+                        .ToList()
+                        .Take(4)
+                        .Select(category => category.CopyDetached())
+                        .ToList();
         }
 
-        public Category GetCategory(string sCategoryCode)
+        public Category? GetCategory(string sCategoryCode)
         {
-            return _database.Find<Category>(s => s.Code == sCategoryCode);
+            var realm = GetRealm();
+            return realm.Find<Category>(sCategoryCode)?.CopyDetached();
         }
 
         public int DeleteAllCategory()
         {
-            return _database.DeleteAll<Category>();
+            var realm = GetRealm();
+            int count = realm.All<Category>().Count();
+            realm.Write(() => realm.RemoveAll<Category>());
+            return count;
         }
 
-        public int SaveCategory(List<Category> categorys)
+        public int SaveCategory(List<Category> categories)
         {
-            return _database.InsertAll(categorys);
+            if (categories == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                foreach (var cat in categories) realm.Add(cat, update: true);
+            });
+            return categories.Count;
         }
 
         public int DeleteCategory(Category category)
         {
-            return _database.Delete(category);
+            if (category == null) return 0;
+            var realm = GetRealm();
+            var match = realm.Find<Category>(category.Code);
+            if (match == null) return 0;
+
+            realm.Write(() => realm.Remove(match));
+            return 1;
         }
 
-        public int DeleteCategories()
-        {
-            return _database.Execute("delete from Category");
-        }
+        public int DeleteCategories() => DeleteAllCategory();
 
         public List<Subcategory> GetSubcategory()
         {
-            return _database.Table<Subcategory>().OrderBy(t => t.Description).ToList();
+            var realm = GetRealm();
+            return realm.All<Subcategory>()
+                        .OrderBy(s => s.Description)
+                        .ToList()
+                        .Select(subcategory => subcategory.CopyDetached())
+                        .ToList();
         }
 
         public List<Subcategory> GetSubcategory(string sCategoryCode)
         {
-            String sQuery = "select * from Subcategory where Category = '" + sCategoryCode + "' order by Description";
-            return _database.Query<Subcategory>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Subcategory>()
+                        .Where(s => s.Category == sCategoryCode)
+                        .OrderBy(s => s.Description)
+                        .ToList()
+                        .Select(subcategory => subcategory.CopyDetached())
+                        .ToList();
         }
 
         public int DeleteAllSubcategory()
         {
-            return _database.DeleteAll<Subcategory>();
+            var realm = GetRealm();
+            int count = realm.All<Subcategory>().Count();
+            realm.Write(() => realm.RemoveAll<Subcategory>());
+            return count;
         }
 
-        public int SaveSubcategory(List<Subcategory> subcategorys)
+        public int SaveSubcategory(List<Subcategory> subcategories)
         {
-            return _database.InsertAll(subcategorys);
+            if (subcategories == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                foreach (var sub in subcategories) realm.Add(sub, update: true);
+            });
+            return subcategories.Count;
         }
 
         public int DeleteSubcategory(Subcategory subcategory)
         {
-            return _database.Delete(subcategory);
+            if (subcategory == null) return 0;
+            var realm = GetRealm();
+            var match = realm.Find<Subcategory>(subcategory.Code);
+            if (match == null) return 0;
+
+            realm.Write(() => realm.Remove(match));
+            return 1;
         }
 
-        public int DeleteSubcategories()
-        {
-            return _database.Execute("delete from Subcategory");
-        }
+        public int DeleteSubcategories() => DeleteAllSubcategory();
+        #endregion
 
+        #region Graphic Banner Management
         public int DeleteBannersAsync()
         {
-            return _database.Execute("delete from Banner");
+            var realm = GetRealm();
+            int count = realm.All<Banner>().Count();
+            realm.Write(() => realm.RemoveAll<Banner>());
+            return count;
         }
 
         public int SaveBannerAsync(List<Banner> banners)
         {
-            return _database.InsertAll(banners);
+            if (banners == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                foreach (var b in banners) realm.Add(b, update: true);
+            });
+            return banners.Count;
         }
 
         public List<Banner> GetBanners()
         {
-            return _database.Table<Banner>().OrderBy(t => t.BannerName).ToList();
+            var realm = GetRealm();
+            return realm.All<Banner>()
+                        .OrderBy(b => b.BannerName)
+                        .ToList()
+                        .Select(banner => banner.CopyDetached())
+                        .ToList();
         }
+        #endregion
 
+        #region B2B Identity Profiles
         public int SaveCustomer(Customer cust)
         {
-            _database.Delete(cust);
-            return _database.Insert(cust);
+            if (cust == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                var match = realm.Find<Customer>(cust.CustId);
+                if (match != null) realm.Remove(match);
+                realm.Add(cust);
+            });
+            return 1;
         }
 
-
-        public Customer GetCustomer()
+        public Customer? GetCustomer()
         {
-            //String sQuery = "select * from Customer limit 1";
-            return _database.Find<Customer>(s => s.CustId == -1);
+            var realm = GetRealm();
+            return realm.Find<Customer>(-1);
         }
 
         public int DeleteCustomer()
         {
-            _database.Execute("delete from Customer");
+            var realm = GetRealm();
+            realm.Write(() => realm.RemoveAll<Customer>());
             return 0;
         }
+        #endregion
 
+        #region Dynamic Key-Value Configuration Engine
         public string GetString(string sKey)
         {
             try
             {
-                var _setting = _database.Find<Setting>(s => s.Key == sKey);
-
-                if (_setting != null)
-                {
-                    return _setting.Value;
-                }
-                else
-                {
-                    return "";
-                }
+                var realm = GetRealm();
+                var setting = realm.Find<Setting>(sKey);
+                return setting?.Value ?? "";
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error retrieving setting for key: " + sKey + ". Exception: " + ex.Message);
+                Console.WriteLine($"Error retrieving setting for key: {sKey}. Exception: {ex.Message}");
                 return "";
             }
         }
 
         public int SaveString(string sKey, string sValue)
         {
-            Setting setting = new Setting();
-            setting.Key = sKey;
-            setting.Value = sValue;
-
-            return _database.InsertOrReplace(setting);
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                realm.Add(new Setting { Key = sKey, Value = sValue }, update: true);
+            });
+            return 1;
         }
+        #endregion
 
+        #region Location Logistics Matrix
         public int SaveLocation(Location location)
         {
-            return _database.InsertOrReplace(location);
+            if (location == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() => realm.Add(location, update: true));
+            return 1;
         }
 
         public int DeleteLocations()
         {
-            return _database.Execute("delete from Location");
+            var realm = GetRealm();
+            realm.Write(() => realm.RemoveAll<Location>());
+            return 0;
         }
 
-        public Location GetLocation(int iLocation)
+        public Location? GetLocation(int iLocation)
         {
-            return _database.Find<Location>(s => s.LocationId == iLocation);
+            var realm = GetRealm();
+            return realm.Find<Location>(iLocation);
         }
+        #endregion
 
+        #region B2B Invoice History Engine
         public int SaveOrderHeader(OrderHeader oh)
         {
-            return _database.InsertOrReplace(oh);
+            if (oh == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() => realm.Add(oh, update: true));
+            return 1;
         }
-        public int SaveAllOrderHeader(List<OrderHeader> oh)
+
+        public int SaveAllOrderHeader(List<OrderHeader> ohList)
         {
-            return _database.InsertAll(oh);
+            if (ohList == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                foreach (var oh in ohList) realm.Add(oh, update: true);
+            });
+            return ohList.Count;
         }
 
         public List<OrderHeader> GetOrderHeaders(string customerNumber)
         {
-            String sQuery = "select * from [OrderHeader] where [CustId] = " + customerNumber + " order by OrderDate desc";
+            if (!int.TryParse(customerNumber, out var customerId) || customerId.ToString() != customerNumber)
+            {
+                return new List<OrderHeader>();
+            }
 
-            return _database.Query<OrderHeader>(sQuery);
+            var realm = GetRealm();
+            return realm.All<OrderHeader>()
+                        .Where(oh => oh.CustId == customerId)
+                        .ToList()
+                        .OrderByDescending(oh => oh.OrderDate)
+                        .ToList()
+                        .Select(order => order.CopyDetached())
+                        .ToList();
         }
 
-        public OrderHeader GetOrderHeader(string sOrderNo)
+        public OrderHeader? GetOrderHeader(string sOrderNo)
         {
-            return _database.Find<OrderHeader>(s => s.OrderNo == sOrderNo);
+            var realm = GetRealm();
+            return realm.Find<OrderHeader>(sOrderNo)?.CopyDetached();
         }
 
         public int DeleteOrderHistory()
         {
-            _database.Execute("delete from OrderHeader");
-            _database.Execute("delete from OrderDetail");
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                realm.RemoveAll<OrderHeader>();
+                realm.RemoveAll<OrderDetail>();
+            });
             return 0;
         }
-        public int SaveAllOrderDetail(List<OrderDetail> od)
+
+        public int SaveAllOrderDetail(List<OrderDetail> odList)
         {
-            return _database.InsertAll(od);
+            if (odList == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                foreach (var od in odList) realm.Add(od, update: true);
+            });
+            return odList.Count;
         }
 
         public int SaveOrderDetail(OrderDetail od)
         {
-            return _database.InsertOrReplace(od);
+            if (od == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() => realm.Add(od, update: true));
+            return 1;
         }
 
         public int DeleteOrderDetail(string sOrderNo)
         {
-            return _database.Execute("delete from OrderDetail where OrderNo = '" + sOrderNo + "'");
+            var realm = GetRealm();
+            var targets = realm.All<OrderDetail>().Where(d => d.OrderNo == sOrderNo).ToList();
+            realm.Write(() =>
+            {
+                foreach (var t in targets) realm.Remove(t);
+            });
+            return targets.Count;
         }
 
         public List<OrderDetail> GetOrderDetail(string sOrderNo)
         {
-            String sQuery = "select * from OrderDetail where OrderNo = '" + sOrderNo + "' order by Description";
-            return _database.Query<OrderDetail>(sQuery);
+            var realm = GetRealm();
+            return realm.All<OrderDetail>()
+                        .Where(d => d.OrderNo == sOrderNo)
+                        .OrderBy(d => d.Description)
+                        .ToList()
+                        .Select(detail => detail.CopyDetached())
+                        .ToList();
         }
+        #endregion
 
+        #region Dynamic Stock Reordering Triggers
         public List<Item> GetReorderItems()
         {
-            String sQuery = "select * from Item where Status = 'A' and LastPurchDateDisplay > '' order by LastPurchDate desc, Description";
-            return _database.Query<Item>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Item>()
+                        .Where(i => i.Status == "A" && i.LastPurchDateDisplay != "")
+                        .ToList()
+                        .OrderByDescending(i => i.LastPurchDate)
+                        .ThenBy(i => i.Description)
+                        .ToList()
+                        .Select(item => item.CopyDetached())
+                        .ToList();
         }
 
         public List<ReorderItem> GetReorderItemsOld()
         {
-            String sQuery = "select * from ReorderItem where Status = 'A' order by LastPurchDate desc, Description";
-            return _database.Query<ReorderItem>(sQuery);
+            var realm = GetRealm();
+            return realm.All<ReorderItem>()
+                        .Where(r => r.Status == "A")
+                        .ToList()
+                        .OrderByDescending(r => r.LastPurchDate)
+                        .ThenBy(r => r.Description)
+                        .ToList();
         }
 
         public int SaveReorderItem(ReorderItem ri)
         {
-            return _database.InsertOrReplace(ri);
+            if (ri == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() => realm.Add(ri, update: true));
+            return 1;
         }
 
         public int GetReorderItemsCount()
         {
-            String sQuery = "select count(*) from [Item] where LastPurchDateDisplay > ''";
-            return _database.ExecuteScalar<int>(sQuery);
+            var realm = GetRealm();
+            return realm.All<Item>().Where(i => i.LastPurchDateDisplay != "").Count();
         }
 
         public int DeleteReorderItems()
         {
-            return _database.Execute("delete from ReorderItem");
+            var realm = GetRealm();
+            realm.Write(() => realm.RemoveAll<ReorderItem>());
+            return 0;
         }
+        #endregion
 
+        #region Session Cache Serialization
         public int DeleteSavedCartItems()
         {
-            return _database.Execute("delete from CartItem");
+            var realm = GetRealm();
+            realm.Write(() => realm.RemoveAll<CartItem>());
+            return 0;
         }
 
         public int SaveCartItems()
         {
-            String sQuery = "insert into CartItem select ItemNo, QtyOrder, QtyOnOrderSellUnit1, QtyOnOrderSellUnit3, QtyOnOrderSellUnit3, QtyOnOrderSellUnit4  from [Item] where QtyOrder > 0 or QtyOnOrderSellUnit1 > 0 or QtyOnOrderSellUnit2 > 0 or QtyOnOrderSellUnit3 > 0 or QtyOnOrderSellUnit4 > 0";
-            return _database.Execute(sQuery);
+            var realm = GetRealm();
+            var sourceItems = realm.All<Item>()
+                                   .Where(i => i.QtyOrder > 0)
+                                   .ToList();
+
+            realm.Write(() =>
+            {
+                foreach (var i in sourceItems)
+                {
+                    realm.Add(new CartItem
+                    {
+                        ItemNo = i.ItemNo,
+                        QtyOrder = i.QtyOrder
+                    });
+                }
+            });
+            return sourceItems.Count;
         }
 
         public List<CartItem> GetSavedCartItems()
         {
-            String sQuery = "select * from CartItem";
-            return _database.Query<CartItem>(sQuery);
+            var realm = GetRealm();
+            return realm.All<CartItem>().ToList();
         }
+        #endregion
+
+        #region Client Management & Suspended Checkouts
         public int DeleteSalesCustomers()
         {
-            return _database.Execute("delete from [SalesCustomer]");
+            var realm = GetRealm();
+            realm.Write(() => realm.RemoveAll<SalesCustomer>());
+            return 0;
         }
 
         public List<SalesCustomer> GetSalesCustomers()
         {
-            String sQuery = "select * from [SalesCustomer] ";
-            return _database.Query<SalesCustomer>(sQuery);
+            var realm = GetRealm();
+            return realm.All<SalesCustomer>()
+                        .ToList()
+                        .Select(customer => customer.CopyDetached())
+                        .ToList();
         }
 
-        public List<SalesCustomer> GetSalesCustomers(string SearchCustomer)
+        public List<SalesCustomer> GetSalesCustomers(string searchCustomer)
         {
-            String sOrderBy = " order by CompanyName ";
-            String sQuery = "select * from [SalesCustomer] ";
+            var realm = GetRealm();
+            var query = realm.All<SalesCustomer>();
 
-            if (SearchCustomer != null)
+            if (!string.IsNullOrEmpty(searchCustomer))
             {
-                if (SearchCustomer.Trim().Replace("'", "") != "")
-                {
-                    sQuery += " where (CompanyName like '%" + SearchCustomer.Trim().Replace("'", "") + "%' ";
-                    sQuery += " or CustNo = '" + SearchCustomer.Trim() + "') ";
-                }
+                string cleanStr = searchCustomer.Trim().Replace("'", "");
+                query = query.Where(c => c.CompanyName.Contains(cleanStr) || c.CustNo == searchCustomer.Trim());
             }
 
-            sQuery += sOrderBy;
-
-            return _database.Query<SalesCustomer>(sQuery);
+            return query.OrderBy(c => c.CompanyName)
+                        .ToList()
+                        .Select(customer => customer.CopyDetached())
+                        .ToList();
         }
 
-        public List<SalesCustomer> GetSalesCustomers(string SearchCustomer, int skip, int take)
+        public List<SalesCustomer> GetSalesCustomers(string searchCustomer, int skip, int take)
         {
-            String sOrderBy = " order by CompanyName ";
-            String sQuery = "select * from [SalesCustomer] ";
+            var realm = GetRealm();
+            var query = realm.All<SalesCustomer>();
 
-            if (SearchCustomer != null)
+            if (!string.IsNullOrEmpty(searchCustomer))
             {
-                if (SearchCustomer.Trim().Replace("'", "") != "")
-                {
-                    sQuery += " where (CompanyName like '%" + SearchCustomer.Trim().Replace("'", "") + "%' ";
-                    sQuery += " or CustNo = '" + SearchCustomer.Trim() + "') ";
-                }
+                string cleanStr = searchCustomer.Trim().Replace("'", "");
+                query = query.Where(c => c.CompanyName.Contains(cleanStr) || c.CustNo == searchCustomer.Trim());
             }
 
-            sQuery += sOrderBy;
-            sQuery += " limit ? offset ? ";
-
-            return _database.Query<SalesCustomer>(sQuery, take, skip);
+            return query.OrderBy(c => c.CompanyName)
+                        .ToList()
+                        .Skip(skip)
+                        .Take(take)
+                        .Select(customer => customer.CopyDetached())
+                        .ToList();
         }
 
-        public SalesCustomer FindSalesCustomer(string CustNo)
+        public SalesCustomer? FindSalesCustomer(string custNo)
         {
-            return _database.Find<SalesCustomer>(s => s.CustNo == CustNo);
+            var realm = GetRealm();
+            return realm.Find<SalesCustomer>(custNo)?.CopyDetached();
         }
 
         public int SaveSalesCustomer(List<SalesCustomer> salesCustomers)
         {
-            return _database.InsertAll(salesCustomers);
+            if (salesCustomers == null) return 0;
+            var realm = GetRealm();
+            realm.Write(() =>
+            {
+                foreach (var sc in salesCustomers) realm.Add(sc, update: true);
+            });
+            return salesCustomers.Count;
         }
 
-        public int SuspendCartItems(string CustNo)
+        public int SuspendCartItems(string custNo)
         {
-            string sQuery = "INSERT INTO SuspendItem (CustNo, ItemNo, QtyOrder) " +
-                   "SELECT '" + CustNo + "', ItemNo, QtyOrder " +
-                   "FROM [Item] WHERE QtyOrder > 0";
-            //String sQuery = "insert into SuspendItem select '" + CustNo + "', ItemNo, QtyOrder, from [Item] where QtyOrder > 0";
-            return _database.Execute(sQuery);
+            var realm = GetRealm();
+            var activeItems = realm.All<Item>().Where(i => i.QtyOrder > 0).ToList();
+
+            realm.Write(() =>
+            {
+                foreach (var i in activeItems)
+                {
+                    realm.Add(new SuspendItem
+                    {
+                        CustNo = custNo,
+                        ItemNo = i.ItemNo,
+                        QtyOrder = i.QtyOrder
+                    });
+                }
+            });
+            return activeItems.Count;
         }
 
-        public List<SuspendItem> GetSuspendedCartItems(string CustNo)
+        public List<SuspendItem> GetSuspendedCartItems(string custNo)
         {
-            String sQuery = "select * from SuspendItem where CustNo = '" + CustNo + "'";
-            return _database.Query<SuspendItem>(sQuery);
+            var realm = GetRealm();
+            return realm.All<SuspendItem>()
+                        .Where(s => s.CustNo == custNo)
+                        .ToList();
         }
 
-        public int RestoreCartItems(string CustNo)
+        public int RestoreCartItems(string custNo)
         {
-            List<SuspendItem> items = GetSuspendedCartItems(CustNo);
-            var qtyUpdates = items.Where(x => x.QtyOrder > 0).ToDictionary(x => x.ItemNo, x => x.QtyOrder);
+            var items = GetSuspendedCartItems(custNo);
+            var qtyUpdates = items.Where(x => x.QtyOrder > 0)
+                                  .ToDictionary(x => x.ItemNo, x => x.QtyOrder);
+
             UpdateItemQtySet(qtyUpdates);
-            DeleteSuspendedCartItems(CustNo);
+            DeleteSuspendedCartItems(custNo);
             return 0;
         }
 
-        public int DeleteSuspendedCartItems(string CustNo)
+        public int DeleteSuspendedCartItems(string custNo)
         {
-            return _database.Execute("delete from SuspendItem where CustNo = '" + CustNo + "'");
+            var realm = GetRealm();
+            var targets = realm.All<SuspendItem>().Where(s => s.CustNo == custNo).ToList();
+
+            realm.Write(() =>
+            {
+                foreach (var t in targets) realm.Remove(t);
+            });
+            return targets.Count;
         }
+        #endregion
     }
 }

@@ -35,20 +35,31 @@
                         Text="{Binding AppVersion, StringFormat='Version {0}'}"
                         VerticalOptions="Center"/>
                 </Border>
-                <ImageButton
-                    Grid.Column="1"
-                    BackgroundColor="Transparent"
-                    Command="{Binding SettingCommand}"
-                    HeightRequest="44"
-                    WidthRequest="44">
-                    <ImageButton.Source>
-                        <FontImageSource
-                            Color="{StaticResource Primary}"
+                <Border Grid.Column="1"
+                        Padding="10,7"
+                        Background="{StaticResource White}"
+                        Stroke="{StaticResource Divider}"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="1"
+                        VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SettingCommand}"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="7"
+                                           VerticalOptions="Center">
+                        <Label
                             FontFamily="FontAwesomeFreeSolid"
-                            Glyph="&#xF013;"
-                            Size="18"/>
-                    </ImageButton.Source>
-                </ImageButton>
+                            FontSize="15"
+                            Text="&#xF013;"
+                            TextColor="{StaticResource Primary}"
+                            VerticalOptions="Center"/>
+                        <Label Text="Settings"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Ink}"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
             </Grid>
 
             <ScrollView Grid.Row="1">

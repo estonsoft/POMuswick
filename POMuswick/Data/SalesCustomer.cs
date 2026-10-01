@@ -1,8 +1,9 @@
-﻿using SQLite;
+﻿using Realms;
+
 
 namespace POMuswick
 {
-    public class SalesCustomer
+    public class SalesCustomer : Realms.RealmObject
     {
         [PrimaryKey]
         public string CustNo { get; set; }
@@ -29,5 +30,36 @@ namespace POMuswick
         public string LastOrderDate { get; set; }
         public decimal MinOrderAmount { get; set; }
         public decimal ShippingFee { get; set; }
+
+        public SalesCustomer CopyDetached()
+        {
+            return new SalesCustomer
+            {
+                CustNo = CustNo,
+                CompanyName = CompanyName,
+                Contact = Contact,
+                Email = Email,
+                Phone = Phone,
+                Address1 = Address1,
+                Address2 = Address2,
+                City = City,
+                State = State,
+                Zip = Zip,
+                ARBalance = ARBalance,
+                ARBalanceDisplay = ARBalanceDisplay,
+                CreditLimit = CreditLimit,
+                CreditLimitDisplay = CreditLimitDisplay,
+                CityStateZip = CityStateZip,
+                Warehouse = Warehouse,
+                Delivery = Delivery,
+                TermsCode = TermsCode,
+                TermsDesc = TermsDesc,
+                AmountDue = AmountDue,
+                LastPaymentDate = LastPaymentDate,
+                LastOrderDate = LastOrderDate,
+                MinOrderAmount = MinOrderAmount,
+                ShippingFee = ShippingFee
+            };
+        }
     }
 }

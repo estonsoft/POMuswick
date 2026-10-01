@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using POMuswick.Common;
 using POMuswick.Models;
 using POMuswick.Services;
+using POMuswick.UIModels;
 
 namespace POMuswick.ViewModels
 {
@@ -12,7 +13,7 @@ namespace POMuswick.ViewModels
         private readonly IItemService _itemService;
         private readonly ISettingService _settingService;
         [ObservableProperty]
-        List<Item> _reorderList;
+        List<UIItems> _reorderList = new();
 
         public ReorderViewModel(IAppServices appServices) : base(appServices)
         {
@@ -29,9 +30,8 @@ namespace POMuswick.ViewModels
 
         public async Task RefreshListAsync()
         {
-            var itemResult = await _itemService.FetchReorderItemsAsync();
-            var itemLookup = itemResult.items.ToDictionary(i => i.ItemNo);
-            var itemsToProcess = await _itemService.FetchReorderItemsAsync();
+            var sourceItems = (await _itemService.FetchReorderItemsAsync()).items;
+            var itemLookup = sourceItems.ToDictionary(i => i.ItemNo);
 
             // Cache global flags to local variables so threads don't "fight" over App object access
             AppSettings appSettings = await _settingService.LoadSetting();
@@ -39,10 +39,10 @@ namespace POMuswick.ViewModels
             bool isLoggedIn = appSettings.IsLoggedIn;
             bool blockNoQoh = appSettings.BlockItemsNoQOH;
 
-            // 2. PARALLEL PROCESSING
-            // This utilizes all CPU cores to process the list simultaneously
-            Parallel.ForEach(itemsToProcess.items, ri =>
+            var reorderItems = new List<UIItems>(sourceItems.Count);
+            foreach (var sourceItem in sourceItems)
             {
+                var ri = sourceItem.ToUI();
                 ri.IsLoggedIn = isLoggedIn;
 
                 // Instant lookup via Dictionary
@@ -71,11 +71,13 @@ namespace POMuswick.ViewModels
                     ri.IsStepperVisible = false;
                     ri.IsAddToOrderVisible = false;
                 }
-            });
-            ReorderList = itemsToProcess.items;
+                reorderItems.Add(ri);
+            }
+
+            ReorderList = reorderItems;
         }
 
-        private void ProcessStockLogic(Item ri, string qohDisplay)
+        private void ProcessStockLogic(UIItems ri, string qohDisplay)
         {
             // Reset all visibility flags efficiently
             ri.IsQOHRedVisible = false;
@@ -100,7 +102,7 @@ namespace POMuswick.ViewModels
         }
 
         [RelayCommand]
-        private async Task IncreaseQtyAsync(Item item)
+        private async Task IncreaseQtyAsync(UIItems item)
         {
             if (item == null || item.QtyOrder >= 999)
                 return;
@@ -108,20 +110,22 @@ namespace POMuswick.ViewModels
             if (item.MaxOrderQty > 0 && item.QtyOrder >= item.MaxOrderQty)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, 1);
-            item.QtyOrder++;
+            var newQuantity = item.QtyOrder + 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
+            item.QtyOrder = newQuantity;
             item.IsStepperVisible = true;
             item.IsAddToOrderVisible = false;
         }
 
         [RelayCommand]
-        private async Task DecreaseQtyAsync(Item item)
+        private async Task DecreaseQtyAsync(UIItems item)
         {
             if (item == null || item.QtyOrder <= 0)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, -1);
-            item.QtyOrder--;
+            var newQuantity = item.QtyOrder - 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
+            item.QtyOrder = newQuantity;
 
             if (item.QtyOrder == 0)
             {

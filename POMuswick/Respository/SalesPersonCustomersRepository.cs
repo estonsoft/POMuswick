@@ -11,7 +11,10 @@ namespace POMuswick.Repository
         }
         public Task Save(List<SalesCustomer> salesPersonCustomers)
         {
-            return Task.Run(() => _db.SaveSalesCustomer(salesPersonCustomers));
+            var customersToSave = salesPersonCustomers
+                .Select(customer => customer.CopyDetached())
+                .ToList();
+            return Task.Run(() => _db.SaveSalesCustomer(customersToSave));
         }
 
         public Task<List<SalesCustomer>> Load()

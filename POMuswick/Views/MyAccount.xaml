@@ -4,108 +4,101 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:POMuswick.Controls"
-             Title="My Account">
+             xmlns:vm="clr-namespace:POMuswick.ViewModels"
+             x:DataType="vm:AccountViewModel"
+             Title="My Account"
+             Background="{StaticResource Surface}"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
 
     <ContentPage.Content>
         <Grid Margin="{OnPlatform iOS='0,50,0,0', Android='0'}"
-                SafeAreaEdges="{OnPlatform iOS='None', Android='All'}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+              SafeAreaEdges="{OnPlatform iOS='None', Android='All'}"
+              RowDefinitions="52,*">
 
             <controls:CustomHeader Grid.Row="0"
-                    Title="{Binding title}"
-                    BackCommand="{Binding BackPressedCommand}"/>
+                                   Title="{Binding Title}"
+                                   BackCommand="{Binding BackPressedCommand}"/>
 
-            <VerticalStackLayout
-                Grid.Row="1"
-                Margin="25,40,0,0"
-                HorizontalOptions="Start"
-                VerticalOptions="Start">
-                <Label
-                    x:Name="CompanyName"
-                    BackgroundColor="White"
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    HorizontalOptions="Start"
-                    Text="{Binding CompanyNameText}"
-                    TextColor="Blue"
-                    VerticalOptions="Start"/>
-                <Label
-                    x:Name="Address"
-                    BackgroundColor="White"
-                    FontSize="16"
-                    HorizontalOptions="Start"
-                    Text="{Binding AddressText}"
-                    TextColor="Black"
-                    VerticalOptions="Start"/>
-                <Label
-                    x:Name="CityStateZip"
-                    BackgroundColor="White"
-                    FontSize="16"
-                    HorizontalOptions="Start"
-                    Text="{Binding CityStateZipText}"
-                    TextColor="Black"
-                    VerticalOptions="Start"/>
-                <Label
-                    x:Name="Phone"
-                    BackgroundColor="White"
-                    FontSize="16"
-                    HorizontalOptions="Start"
-                    Text="{Binding PhoneText}"
-                    TextColor="Black"
-                    VerticalOptions="Start"/>
-                <Label
-                    x:Name="Email"
-                    BackgroundColor="White"
-                    FontSize="16"
-                    HorizontalOptions="Start"
-                    Text="{Binding EmailText}"
-                    TextColor="Black"
-                    VerticalOptions="Start"/>
-                <StackLayout HorizontalOptions="Start"
-                        Orientation="Horizontal">
-                    <Label
-                        BackgroundColor="White"
-                        FontSize="16"
-                        HorizontalOptions="Start"
-                        Text="Credit Limit:"
-                        TextColor="Black"
-                        VerticalOptions="Start"
-                        WidthRequest="90"/>
-                    <Label
-                        x:Name="CreditLimit"
-                        BackgroundColor="White"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        HorizontalOptions="Start"
-                        Text="{Binding CreditLimitText}"
-                        TextColor="Black"
-                        VerticalOptions="Start"/>
-                </StackLayout>
-                <StackLayout HorizontalOptions="Start"
-                        Orientation="Horizontal">
-                    <Label
-                        BackgroundColor="White"
-                        FontSize="16"
-                        HorizontalOptions="Start"
-                        Text="AR Balance:"
-                        TextColor="Black"
-                        VerticalOptions="Start"
-                        WidthRequest="90"/>
-                    <Label
-                        x:Name="ARBalance"
-                        BackgroundColor="White"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        HorizontalOptions="Start"
-                        Text="{Binding ARBalanceText}"
-                        TextColor="Black"
-                        VerticalOptions="Start"/>
-                </StackLayout>
-            </VerticalStackLayout>
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Padding="16,12,16,24"
+                                     Spacing="14">
+                    <Border Padding="18"
+                            Background="{StaticResource White}"
+                            Stroke="{StaticResource Divider}"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="1">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Business Profile"
+                                   FontAttributes="Bold"
+                                   FontSize="16"
+                                   TextColor="{StaticResource Tertiary}"/>
+                            <BoxView HeightRequest="1"
+                                     BackgroundColor="{StaticResource Divider}"/>
+                            <Label x:Name="CompanyName"
+                                   Text="{Binding CompanyNameText}"
+                                   FontAttributes="Bold"
+                                   FontSize="20"
+                                   TextColor="{StaticResource Ink}"/>
+                            <Label x:Name="Address"
+                                   Text="{Binding AddressText}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource Ink}"/>
+                            <Label x:Name="CityStateZip"
+                                   Text="{Binding CityStateZipText}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource MutedInk}"/>
+                            <Label x:Name="Phone"
+                                   Text="{Binding PhoneText}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource Ink}"/>
+                            <Label x:Name="Email"
+                                   Text="{Binding EmailText}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource Ink}"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="12">
+                        <Border Grid.Column="0"
+                                Padding="16"
+                                Background="{StaticResource SurfaceAlt}"
+                                Stroke="{StaticResource Divider}"
+                                StrokeShape="RoundRectangle 14"
+                                StrokeThickness="1">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Credit Limit"
+                                       FontSize="12"
+                                       TextColor="{StaticResource MutedInk}"/>
+                                <Label x:Name="CreditLimit"
+                                       Text="{Binding CreditLimitText}"
+                                       FontAttributes="Bold"
+                                       FontSize="18"
+                                       TextColor="{StaticResource Primary}"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Padding="16"
+                                Background="{StaticResource SurfaceAlt}"
+                                Stroke="{StaticResource Divider}"
+                                StrokeShape="RoundRectangle 14"
+                                StrokeThickness="1">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="AR Balance"
+                                       FontSize="12"
+                                       TextColor="{StaticResource MutedInk}"/>
+                                <Label x:Name="ARBalance"
+                                       Text="{Binding ARBalanceText}"
+                                       FontAttributes="Bold"
+                                       FontSize="18"
+                                       TextColor="{StaticResource Ink}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </ScrollView>
 
         </Grid>
     </ContentPage.Content>

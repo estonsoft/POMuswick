@@ -14,9 +14,7 @@ namespace POMuswick
         private readonly ICartService _cartService;
         private readonly ICustomerService _customerService;
         MenuItem custMenu;
-        Boolean bIsCustMenuVisible = false;
         MenuItem myAccountMenu;
-        Boolean bIsMyAccountMenuVisible = false;
 
         public AppShell(IAppServices appServices)
         {
@@ -30,10 +28,30 @@ namespace POMuswick
             _cartService = appServices._cartService;
             _customerService = appServices._customerService;
 
-            custMenu = MenuCustomers;
-            myAccountMenu = MenuMyAccount;
+            custMenu = CreateMenuItem("Customers  ›", "\uF500", MenuCustomers_Clicked);
+            myAccountMenu = CreateMenuItem("My Account  ›", "\uF007", MenuMyAccount_Clicked);
 
             Shell.SetNavBarIsVisible(this, false);
+        }
+
+        private static MenuItem CreateMenuItem(string text, string glyph, EventHandler clicked)
+        {
+            var primary = Application.Current?.Resources.TryGetValue("Primary", out var value) == true && value is Color color
+                ? color
+                : Colors.Teal;
+            var menuItem = new MenuItem
+            {
+                Text = text,
+                StyleClass = new List<string> { "MenuItemLayoutStyle" },
+                IconImageSource = new FontImageSource
+                {
+                    FontFamily = "FontAwesomeFreeSolid",
+                    Glyph = glyph,
+                    Color = primary
+                }
+            };
+            menuItem.Clicked += clicked;
+            return menuItem;
         }
 
         private void RegisterRoutes()
@@ -62,45 +80,34 @@ namespace POMuswick
 
         public void HideCustomerMenu()
         {
-            for (int index = Items.Count - 1; index >= 0; index--)
-            {
-                if (ReferenceEquals(Items[index], custMenu) || Items[index].Title == "Customers")
-                {
-                    Items.RemoveAt(index);
-                }
-            }
-            bIsCustMenuVisible = false;
+            SetOptionalMenuItemVisible(custMenu, "Customers", false);
         }
 
         public void HideMyAccountMenu()
         {
-            foreach (ShellItem item in Items)
-            {
-                if (item.Title == "My Account")
-                {
-                    Items.Remove(item);
-                    break;
-                }
-            }
-            bIsMyAccountMenuVisible = false;
+            SetOptionalMenuItemVisible(myAccountMenu, "My Account", false);
         }
 
         public void ShowCustomerMenu()
         {
-            if (!bIsCustMenuVisible && !Items.Contains(custMenu))
-            {
-                bIsCustMenuVisible = true;
-                Items.Add(custMenu);
-            }
+            SetOptionalMenuItemVisible(custMenu, "Customers", true);
         }
 
         public void ShowMyAccountMenu()
         {
-            if (!bIsMyAccountMenuVisible)
+            SetOptionalMenuItemVisible(myAccountMenu, "My Account", true);
+        }
+
+        private void SetOptionalMenuItemVisible(MenuItem menuItem, string title, bool isVisible)
+        {
+            for (int index = Items.Count - 1; index >= 0; index--)
             {
-                bIsMyAccountMenuVisible = true;
-                Items.Add(myAccountMenu);
+                if (ReferenceEquals(Items[index], menuItem) || Items[index].Title?.StartsWith(title, StringComparison.Ordinal) == true)
+                    Items.RemoveAt(index);
             }
+
+            if (isVisible)
+                Items.Add(menuItem);
         }
 
         public async Task Logout()
@@ -170,12 +177,12 @@ namespace POMuswick
             }
             await Logout();
         }
-        private async void MenuMyAccount_Clicked(object sender, EventArgs e)
+        private async void MenuMyAccount_Clicked(object? sender, EventArgs e)
         {
             await _navigationService.GoToAsync(AppRoutes.MyAccount);
             Shell.Current.FlyoutIsPresented = false;
         }
-        private async void MenuCustomers_Clicked(object sender, EventArgs e)
+        private async void MenuCustomers_Clicked(object? sender, EventArgs e)
         {
             await _navigationService.GoToAsync(AppRoutes.CustomerList);
             Shell.Current.FlyoutIsPresented = false;

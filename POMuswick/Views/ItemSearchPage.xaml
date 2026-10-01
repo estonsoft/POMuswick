@@ -7,6 +7,7 @@
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Maui"
     xmlns:local="clr-namespace:POMuswick.ViewModels"
+    xmlns:uimodels="clr-namespace:POMuswick.UIModels"
     x:DataType="local:ItemSearchViewModel"
     Title="Search Products"
     HideSoftInputOnTapped="True"
@@ -118,12 +119,12 @@
                                        ItemSpacing="0"/>
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="uimodels:UIItems">
                         <controls:CustomListItem
                             CommandParameter="{Binding .}"
-                            ImageViewCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShowImageCommand}"
-                            PlusCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IncreaseQtyCommand}"
-                            MinusCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DecreaseQtyCommand}"/>
+                            ImageViewCommand="{Binding Source={RelativeSource AncestorType={x:Type local:ItemSearchViewModel}}, Path=ShowImageCommand, x:DataType={x:Type local:ItemSearchViewModel}}"
+                            PlusCommand="{Binding Source={RelativeSource AncestorType={x:Type local:ItemSearchViewModel}}, Path=IncreaseQtyCommand, x:DataType={x:Type local:ItemSearchViewModel}}"
+                            MinusCommand="{Binding Source={RelativeSource AncestorType={x:Type local:ItemSearchViewModel}}, Path=DecreaseQtyCommand, x:DataType={x:Type local:ItemSearchViewModel}}"/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
@@ -134,7 +135,9 @@
                 ImageSource="{Binding SelectedImage}"
                 Grid.RowSpan="5"
                 Grid.Column="0"
-                ZIndex="99"/>
+                ZIndex="99"
+                CloseCommand="{Binding CloseImageCommand}"
+                IsVisible="{Binding IsImagePreviewVisible}"/>
 
         </Grid>
     </ContentPage.Content>

@@ -31,24 +31,11 @@
             <Grid Grid.Row="0"
                   HeightRequest="52"
                   Padding="14,0"
-                  ColumnDefinitions="Auto,*,Auto"
+                  ColumnDefinitions="*"
                   ColumnSpacing="8"
                   VerticalOptions="Center">
-                <Button
-                    Grid.Column="0"
-                    Command="{Binding BackPressedCommand}"
-                    FontFamily="FontAwesomeFreeSolid"
-                    FontSize="18"
-                    Text="&#xF060;"
-                    TextColor="{StaticResource Ink}"
-                    Background="Transparent"
-                    Padding="0"
-                    WidthRequest="36"
-                    HeightRequest="36"
-                    VerticalOptions="Center"/>
                 <Label
-                    Grid.Column="1"
-                    Margin="4,0,0,0"
+                    Grid.Column="0"
                     Text="{Binding Title, FallbackValue='Product Categories'}"
                     FontSize="19"
                     FontAttributes="Bold"
@@ -136,6 +123,18 @@
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Spacing="8"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
+                        <ActivityIndicator IsRunning="{Binding IsLoadingCategories}"
+                                           IsVisible="{Binding IsLoadingCategories}"
+                                           Color="{StaticResource Primary}"/>
+                        <Label Text="No categories available"
+                               IsVisible="{Binding IsLoadingCategories, Converter={StaticResource InverseBoolConverter}}"
+                               TextColor="{StaticResource MutedInk}"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
             </CollectionView>
 
         </Grid>

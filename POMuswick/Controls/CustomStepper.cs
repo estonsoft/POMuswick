@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using CommunityToolkit.Mvvm.Input;
 
 namespace POMuswick.Controls;
 
@@ -97,60 +96,6 @@ public partial class CustomStepper : ContentView
         get => GetValue(CommandParameterProperty);
         set => SetValue(CommandParameterProperty, value);
     }
-
-    private async void Plus_Clicked(object sender, EventArgs e)
-    {
-
-        if (PlusCommand?.CanExecute(CommandParameter) == true)
-        {
-            await ExecuteCommandAsync(PlusCommand, CommandParameter);
-            RefreshFromParameter();
-        }
-    }
-
-    private async void Minus_Clicked(object sender, EventArgs e)
-    {
-        if (MinusCommand?.CanExecute(CommandParameter) == true)
-        {
-            await ExecuteCommandAsync(MinusCommand, CommandParameter);
-            RefreshFromParameter();
-        }
-    }
-
-    private static async Task ExecuteCommandAsync(ICommand command, object? parameter)
-    {
-        if (command is IAsyncRelayCommand asyncCommand)
-        {
-            await asyncCommand.ExecuteAsync(parameter);
-            return;
-        }
-
-        command.Execute(parameter);
-    }
-
-    private void RefreshFromParameter()
-    {
-        if (CommandParameter == null)
-            return;
-
-        Type parameterType = CommandParameter.GetType();
-        int? quantity = parameterType.GetProperty(nameof(QtyOrder))?.GetValue(CommandParameter) as int?;
-        bool? stepperVisible = parameterType.GetProperty(nameof(IsStepperVisible))?.GetValue(CommandParameter) as bool?;
-        bool? addVisible = parameterType.GetProperty(nameof(IsAddToOrderVisible))?.GetValue(CommandParameter) as bool?;
-
-        if (quantity.HasValue)
-        {
-            QtyOrder = quantity.Value;
-            Text = quantity.Value;
-        }
-
-        if (stepperVisible.HasValue)
-            IsStepperVisible = stepperVisible.Value;
-
-        if (addVisible.HasValue)
-            IsAddToOrderVisible = addVisible.Value;
-    }
-
 
     public CustomStepper()
     {

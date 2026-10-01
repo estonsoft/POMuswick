@@ -1,8 +1,8 @@
-﻿using SQLite;
+﻿using Realms;
 
 namespace POMuswick
 {
-    public class CartItem
+    public class CartItem : Realms.RealmObject
     {
         [PrimaryKey]
         public int ItemNo { get; set; }

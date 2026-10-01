@@ -28,11 +28,11 @@ namespace POMuswick.Services
             _settingService = settingService;
             _locationService = locationService;
             _deviceIdProvider = deviceIdProvider;
+            CheckURL("").ConfigureAwait(false);
         }
 
         public async Task<LoginResult> LoginAsync(string user, string password)
         {
-            await CheckURL(user);
             var deviceID = _deviceIdProvider.GetDeviceId();
             var response = await _comm.ValidateLogin(user, password, deviceID);
 

@@ -40,9 +40,9 @@ namespace POMuswick.Services
             return Task.CompletedTask;
         }
 
-        public async Task<AppSettings> LoadSetting()
+        public Task<AppSettings> LoadSetting()
         {
-            return _settingRepository.Load();
+            return Task.Run(() => _settingRepository.Load());
         }
 
     }

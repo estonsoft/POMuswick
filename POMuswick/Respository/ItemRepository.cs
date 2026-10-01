@@ -38,27 +38,22 @@ namespace POMuswick.Repository
         {
             return Task.Run(() => _db.GetItems() ?? new List<Item>());
         }
-
         public Task<List<Item>> LoadReorderItems()
         {
             return Task.Run(() => _db.GetReorderItems() ?? new List<Item>());
         }
-
         public Task<List<Item>> LoadNewItems(bool stock)
         {
-            return Task.Run(() => _db.GetNewItems("", true, stock) ?? new List<Item>());
+            return Task.Run(() => _db.GetNewItems("", false, stock) ?? new List<Item>());
         }
-
         public Task<List<Item>> SearchItemsQuickEntry(string searchTerm)
         {
             return Task.Run(() => _db.SearchItemsQuickEntry(searchTerm) ?? new List<Item>());
         }
-
         public Task<List<Item>> SearchItemsAsync(bool stock, string searchText, Category category, string scanBarcode, Subcategory subcategory)
         {
             return Task.Run(() => _db.SearchItems(stock, searchText, category, scanBarcode, subcategory));
         }
-
         public Task<Item> GetItemByItemNo(int itemNo)
         {
             return Task.Run(() => _db.FindItem(itemNo));
@@ -79,7 +74,6 @@ namespace POMuswick.Repository
         {
             return Task.Run(() => _db.SearchItemsKeyword(searchText, stock) ?? new List<Item>());
         }
-
         public Task<int> GetItemQty(int itemNo)
         {
             return Task.Run(() => _db.GetItemQty(itemNo));

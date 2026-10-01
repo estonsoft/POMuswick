@@ -160,9 +160,10 @@ namespace POMuswick.ViewModels
                 item.QtyOrder >= item.MaxOrderQty)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, 1);
+            var newQuantity = item.QtyOrder + 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
 
-            item.QtyOrder++;
+            item.QtyOrder = newQuantity;
 
             item.IsStepperVisible = true;
             item.IsAddToOrderVisible = false;
@@ -178,9 +179,10 @@ namespace POMuswick.ViewModels
             if (item.QtyOrder <= 0)
                 return;
 
-            await _itemService.UpdateItemQtySet(item.ItemNo, -1);
+            var newQuantity = item.QtyOrder - 1;
+            await _itemService.UpdateItemQtySet(item.ItemNo, newQuantity);
 
-            item.QtyOrder--;
+            item.QtyOrder = newQuantity;
 
             if (item.QtyOrder == 0)
             {

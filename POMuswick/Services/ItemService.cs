@@ -51,6 +51,11 @@ namespace POMuswick.Services
             return itemResult;
         }
 
+        public Task<List<Item>> LoadItemsAsync()
+        {
+            return _ItemRepository.Load();
+        }
+
         public async Task<List<Item>> SearchItemsQuickEntry(string searchTerm)
         {
             var items = await _ItemRepository.SearchItemsQuickEntry(searchTerm);
@@ -99,6 +104,7 @@ namespace POMuswick.Services
         public Task<ItemResult> FetchItemAsync();
 
         public Task<ItemResult> FetchNewItemAsync(bool stock);
+        public Task<List<Item>> LoadItemsAsync();
         public Task<ItemResult> FetchReorderItemsAsync();
         public Task UpdateItemQtySet(int itemNo, int qty);
 

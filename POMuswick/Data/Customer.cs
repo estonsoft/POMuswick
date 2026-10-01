@@ -1,9 +1,8 @@
-﻿using banditoth.MAUI.DeviceId.Interfaces;
-using SQLite;
+﻿using Realms;
 
 namespace POMuswick
 {
-    public class Customer
+    public class Customer : Realms.RealmObject
     {
         [PrimaryKey]
         public int CustId { get; set; }
@@ -41,7 +40,7 @@ namespace POMuswick
         {
             CustId = -1;
             IsCodeVerified = false;
-            UniqueId="";
+            UniqueId = "";
             CustNo = "0";
             CompanyName = "";
             Contact = "";

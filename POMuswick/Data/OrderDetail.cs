@@ -2,7 +2,7 @@
 
 namespace POMuswick
 {
-    public partial class OrderDetail
+    public partial class OrderDetail : Realms.RealmObject
     {
         public string OrderNo { get; set; }
         public int ItemNo { get; set; }
@@ -46,5 +46,54 @@ namespace POMuswick
         public int MaxOrderQty { get; set; }
         public Boolean IsMaxOrderQtyVisible { get; set; }
         public string MaxOrderQtyDisplay { get; set; }
+
+        public OrderDetail CopyDetached()
+        {
+            return new OrderDetail
+            {
+                OrderNo = OrderNo,
+                ItemNo = ItemNo,
+                ItemNoDisplay = ItemNoDisplay,
+                LineNo = LineNo,
+                QtyOrdered = QtyOrdered,
+                QtyShipped = QtyShipped,
+                Description = Description,
+                Price = Price,
+                PriceDisplay = PriceDisplay,
+                UOM = UOM,
+                Size = Size,
+                Form = Form,
+                CategoryCode = CategoryCode,
+                CategoryDesc = CategoryDesc,
+                SubcategoryCode = SubcategoryCode,
+                SubcategoryDesc = SubcategoryDesc,
+                VendorId = VendorId,
+                VendorName = VendorName,
+                SellUnitsInPurch = SellUnitsInPurch,
+                SizeDisplay = SizeDisplay,
+                UPC = UPC,
+                ItemNoDisplayUPC = ItemNoDisplayUPC,
+                ImageURL = ImageURL,
+                ImageBase64 = ImageBase64,
+                IsLoggedIn = IsLoggedIn,
+                RowHeight = RowHeight,
+                IsStepperVisible = IsStepperVisible,
+                IsAddToOrderVisible = IsAddToOrderVisible,
+                QtyOrder = QtyOrder,
+                SizeUOM = SizeUOM,
+                Status = Status,
+                QOH = QOH,
+                IsAvailable = IsAvailable,
+                IsQOHVisible = IsQOHVisible,
+                IsInStockVisible = IsInStockVisible,
+                IsOutOfStockVisible = IsOutOfStockVisible,
+                IsStockRowVisible = IsStockRowVisible,
+                IsQOHRedVisible = IsQOHRedVisible,
+                IsQOHBlackVisible = IsQOHBlackVisible,
+                MaxOrderQty = MaxOrderQty,
+                IsMaxOrderQtyVisible = IsMaxOrderQtyVisible,
+                MaxOrderQtyDisplay = MaxOrderQtyDisplay
+            };
+        }
     }
 }

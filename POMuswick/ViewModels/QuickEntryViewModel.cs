@@ -78,6 +78,10 @@ namespace POMuswick.ViewModels
         bool _messageIsVisible;
         [ObservableProperty]
         bool _tapToScanIsVisible;
+        [ObservableProperty]
+        bool _isScannerEnabled;
+        [ObservableProperty]
+        bool _showImagePreview;
 
         [ObservableProperty]
         bool _maxOrderQtyIsVisible = false;
@@ -94,9 +98,16 @@ namespace POMuswick.ViewModels
         {
             await base.OnAppearingAsync();
             appSetting = await _settingService.LoadSetting();
-            await RequestCameraPermission();
             ClearItemInfo();
+            TapToScanIsVisible = true;
+            IsScannerEnabled = false;
             await SetInfo();
+        }
+
+        public override Task OnDisappearingAsync()
+        {
+            IsScannerEnabled = false;
+            return base.OnDisappearingAsync();
         }
 
         private async Task SetInfo()
@@ -161,6 +172,7 @@ namespace POMuswick.ViewModels
             QOHInStockIsVisible = false;
             QOHOutOfStockIsVisible = false;
             MaxOrderQtyIsVisible = false;
+            ShowImagePreview = false;
         }
 
         private void ShowItemInfo(Item item)
@@ -195,20 +207,10 @@ namespace POMuswick.ViewModels
             PlusButtonIsVisible = true;
             QuickEntryStepperIsVisible = true;
 
-            if (item.QtyOrder == 0)
-            {
-                IQty = 1;
-                QtyStepperText = IQty.ToString();
-                AddToOrderButtonIsVisible = true;
-                UpdateOrderButtonIsVisible = false;
-            }
-            else
-            {
-                IQty = item.QtyOrder;
-                QtyStepperText = item.QtyOrder.ToString();
-                AddToOrderButtonIsVisible = false;
-                UpdateOrderButtonIsVisible = true;
-            }
+            IQty = 1;
+            QtyStepperText = IQty.ToString();
+            AddToOrderButtonIsVisible = item.QtyOrder <= 0;
+            UpdateOrderButtonIsVisible = item.QtyOrder > 0;
 
             QOHBlackIsVisible = false;
             QOHRedIsVisible = false;
@@ -262,7 +264,7 @@ namespace POMuswick.ViewModels
         }
 
         [RelayCommand]
-        private void MinusButtonAsync()
+        private void MinusButton()
         {
             if (IQty > 1)
             {
@@ -272,14 +274,14 @@ namespace POMuswick.ViewModels
         }
 
         [RelayCommand]
-        private void PlusButtonAsync()
+        private void PlusButton()
         {
             if (IQty == 999)
             {
                 return;
             }
 
-            if (IQty + 1 > IMaxQty)
+            if (IMaxQty > 0 && IMaxQty < 9999 && IQty >= IMaxQty)
             {
                 return;
             }
@@ -292,17 +294,18 @@ namespace POMuswick.ViewModels
         }
 
         [RelayCommand]
-        private void AddToOrderButtonAsync()
+        private async Task AddToOrderButtonAsync()
         {
-            if (AddToOrderButtonIsVisible)
-            {
-                SetMessage("Item Added To Shopping Cart");
-            }
-            else
-            {
-                SetMessage("Shopping Cart Qty Updated");
-            }
-            _itemService.UpdateItemQtySet(IItemNo, IQty);
+            if (IItemNo <= 0 || IQty <= 0)
+                return;
+
+            bool isNewItem = AddToOrderButtonIsVisible;
+            await _itemService.UpdateItemQtySet(IItemNo, IQty);
+            AddToOrderButtonIsVisible = false;
+            UpdateOrderButtonIsVisible = true;
+            QtyStepperText = IQty.ToString();
+            MessageText = isNewItem ? "Item Added To Shopping Cart" : "Shopping Cart Qty Updated";
+            MessageIsVisible = true;
         }
 
         private void SetMessage(string sMessage)
@@ -382,23 +385,31 @@ namespace POMuswick.ViewModels
         }
 
         [RelayCommand]
-        async Task OnScannerEnableAsync()
+        private async Task OnScannerEnableAsync()
         {
+            var permission = await Permissions.CheckStatusAsync<Permissions.Camera>();
+            if (permission != PermissionStatus.Granted)
+                permission = await Permissions.RequestAsync<Permissions.Camera>();
+
+            if (permission != PermissionStatus.Granted)
+                return;
+
             ClearItemInfo();
             TapToScanIsVisible = false;
-            ScanItemText = "";
-            DescriptionText = "";
-            MessageText = "";
+            IsScannerEnabled = true;
         }
 
         [RelayCommand]
-        async Task ShowImageAsync()
+        private void ShowImage()
         {
-            ClearItemInfo();
-            TapToScanIsVisible = false;
-            ScanItemText = "";
-            DescriptionText = "";
-            MessageText = "";
+            if (ImageURLSource != null)
+                ShowImagePreview = true;
+        }
+
+        [RelayCommand]
+        private void CloseImagePreview()
+        {
+            ShowImagePreview = false;
         }
     }
 }
