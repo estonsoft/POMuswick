@@ -68,6 +68,9 @@
                 StrokeThickness="1"
                 VerticalOptions="Center"
                 IsVisible="{Binding HasCartItems}">
+                <Border.Behaviors>
+                    <controls:TapFeedbackBehavior/>
+                </Border.Behaviors>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ClearCartCommand}"/>
                 </Border.GestureRecognizers>
@@ -107,6 +110,9 @@
                         StrokeThickness="0"
                         StrokeShape="RoundRectangle 10"
                         Background="{Binding IsDeliveryHighlighted, Converter={StaticResource BoolToBgConverter}, FallbackValue=Transparent}">
+                    <Border.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </Border.Behaviors>
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding DeliveryCommand}"/>
                     </Border.GestureRecognizers>
@@ -137,6 +143,9 @@
                         StrokeThickness="0"
                         StrokeShape="RoundRectangle 10"
                         Background="{Binding IsPickupHighlighted, Converter={StaticResource BoolToBgConverter}, FallbackValue=Transparent}">
+                    <Border.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </Border.Behaviors>
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding PickupCommand}"/>
                     </Border.GestureRecognizers>

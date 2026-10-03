@@ -14,6 +14,8 @@
         protected override Window CreateWindow(IActivationState? activationState)
         {
             var shell = _serviceProvider.GetRequiredService<AppShell>();
+            if (_appState.IsLoggedIn)
+                shell.ShowMainTabs();
             var window = new Window(shell);
             //For Future user 
             // window.Created += OnAppCreated;

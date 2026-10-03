@@ -46,6 +46,10 @@
                 LoadingPlaceholder="logoicon.png"
                 VerticalOptions="Center">
 
+                <ff:CachedImage.Behaviors>
+                    <controls:TapFeedbackBehavior/>
+                </ff:CachedImage.Behaviors>
+
                 <ff:CachedImage.GestureRecognizers>
 
                     <TapGestureRecognizer

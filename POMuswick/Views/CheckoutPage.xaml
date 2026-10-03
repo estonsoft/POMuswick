@@ -58,6 +58,9 @@
                 StrokeShape="RoundRectangle 10"
                 StrokeThickness="1"
                 VerticalOptions="Center">
+                <Border.Behaviors>
+                    <controls:TapFeedbackBehavior/>
+                </Border.Behaviors>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding PlaceOrderCommand}"/>
                 </Border.GestureRecognizers>

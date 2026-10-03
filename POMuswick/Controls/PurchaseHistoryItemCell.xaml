@@ -20,6 +20,14 @@
                         Radius="8"
                         Opacity="0.05"/>
             </Border.Shadow>
+            <Border.Behaviors>
+                <controls:TapFeedbackBehavior/>
+            </Border.Behaviors>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DetailsCommand}"
+                    CommandParameter="{Binding .}"/>
+            </Border.GestureRecognizers>
 
             <Grid Padding="16"
                   RowDefinitions="Auto, Auto, Auto"
@@ -130,6 +138,9 @@
                             TextColor="{StaticResource Primary}"
                             VerticalOptions="Center"
                             HorizontalOptions="Center">
+                            <controls:OrderLabel.Behaviors>
+                                <controls:TapFeedbackBehavior/>
+                            </controls:OrderLabel.Behaviors>
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DetailsCommand}"

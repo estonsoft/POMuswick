@@ -58,6 +58,9 @@
                             Stroke="{StaticResource Divider}"
                             StrokeShape="RoundRectangle 16"
                             StrokeThickness="1">
+                            <Border.Behaviors>
+                                <controls:TapFeedbackBehavior/>
+                            </Border.Behaviors>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CategoriesSelectedCommand}"

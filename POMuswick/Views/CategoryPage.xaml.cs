@@ -10,12 +10,14 @@ namespace POMuswick.Views
         {
             InitializeComponent();
             BindingContext = _viewModel = viewModel;
-        }   
-        
+        }
 
-        protected override async void OnAppearing()
+
+        protected override async void OnNavigatedTo(NavigatedToEventArgs args)
         {
-            base.OnAppearing();
+            base.OnNavigatedTo(args);
+
+            // Load your data or items here
             await _viewModel.OnAppearingAsync();
         }
 

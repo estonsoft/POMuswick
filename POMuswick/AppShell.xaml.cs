@@ -135,6 +135,11 @@ namespace POMuswick
             }
         }
 
+        public void ShowMainTabs()
+        {
+            CurrentItem = MainTabBar;
+        }
+
         public void ShowNavBar()
         {
             SetNavBarIsVisible(this, true);

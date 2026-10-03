@@ -73,6 +73,9 @@
                            Text="&#xF002;"
                            TextColor="{StaticResource Primary}"
                            VerticalOptions="Center">
+                        <Label.Behaviors>
+                            <controls:TapFeedbackBehavior/>
+                        </Label.Behaviors>
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SearchCustomerCommand}"/>
                         </Label.GestureRecognizers>
@@ -99,6 +102,9 @@
                                 Stroke="{StaticResource Divider}"
                                 StrokeShape="RoundRectangle 14"
                                 StrokeThickness="1">
+                                <Border.Behaviors>
+                                    <controls:TapFeedbackBehavior/>
+                                </Border.Behaviors>
                                 <Border.Shadow>
                                     <Shadow Brush="{StaticResource Ink}"
                                             Offset="0,3"

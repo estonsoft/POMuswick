@@ -61,6 +61,9 @@
                             Orientation="Vertical"
                             Spacing="0"
                             VerticalOptions="Start">
+                            <StackLayout.Behaviors>
+                                <controls:TapFeedbackBehavior/>
+                            </StackLayout.Behaviors>
                             <StackLayout.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SubcategoriesSelectedCommand}"

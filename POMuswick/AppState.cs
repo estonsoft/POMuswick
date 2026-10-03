@@ -25,6 +25,8 @@ namespace POMuswick
             appSettings = settingRepository.Load();
         }
 
+        public bool IsLoggedIn => appSettings.IsLoggedIn;
+
         public static string GetbaseUrl()
         {
             return appSettings.BaseUrl;

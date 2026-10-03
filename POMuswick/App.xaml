@@ -9,6 +9,8 @@
         <ResourceDictionary>
             <converters:InverseBoolConverter
                 x:Key="InverseBoolConverter"/>
+            <converters:BoolToBgConverter
+                x:Key="BoolToBgConverter"/>
             <converters:StringNotEmptyConverter
                 x:Key="StringNotEmptyConverter"/>
             <converters:CategoryIconConverter

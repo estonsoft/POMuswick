@@ -54,6 +54,7 @@ public class CustomHeader : StackLayout
         TapBack.SetBinding(TapGestureRecognizer.CommandProperty,
             new Binding(nameof(BackCommand), source: this));
         StackBack.GestureRecognizers.Add(TapBack);
+        StackBack.Behaviors.Add(new TapFeedbackBehavior());
         BackIcon = new Image { BackgroundColor = white, Margin = new Thickness(0, 0, 0, 0) };
         BackIcon.VerticalOptions = LayoutOptions.Center;
         BackIcon.Source = new FontImageSource { Glyph = "\uF060", FontFamily = "FontAwesomeFreeSolid", Size = 20, Color = primary };

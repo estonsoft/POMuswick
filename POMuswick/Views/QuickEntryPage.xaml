@@ -68,6 +68,9 @@
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
                                 IsVisible="{Binding TapToScanIsVisible}">
+                                <VerticalStackLayout.Behaviors>
+                                    <controls:TapFeedbackBehavior/>
+                                </VerticalStackLayout.Behaviors>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OnScannerEnableCommand}"/>
                                 </VerticalStackLayout.GestureRecognizers>
@@ -206,6 +209,9 @@
                                     Source="{Binding ImageURLSource}"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
+                                    <ffImage:CachedImage.Behaviors>
+                                        <controls:TapFeedbackBehavior/>
+                                    </ffImage:CachedImage.Behaviors>
                                     <ffImage:CachedImage.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding ShowImageCommand}"/>
                                     </ffImage:CachedImage.GestureRecognizers>

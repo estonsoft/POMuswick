@@ -101,6 +101,9 @@
                            Text="&#xF002;"
                            TextColor="{StaticResource Primary}"
                            VerticalOptions="Center">
+                        <Label.Behaviors>
+                            <controls:TapFeedbackBehavior/>
+                        </Label.Behaviors>
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding RefreshListCommand}"/>
                         </Label.GestureRecognizers>

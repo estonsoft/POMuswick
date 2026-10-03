@@ -15,6 +15,12 @@
         Stroke="{StaticResource Divider}"
         StrokeShape="RoundRectangle 12"
         StrokeThickness="1">
+        <Border.Behaviors>
+            <controls:TapFeedbackBehavior/>
+        </Border.Behaviors>
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer/>
+        </Border.GestureRecognizers>
 
         <Grid ColumnDefinitions="92,*,Auto"
               RowDefinitions="Auto,Auto,Auto"
@@ -52,6 +58,9 @@
                     DownsampleToViewSize="True"
                     Source="{Binding ImageURL}"
                     WidthRequest="80">
+                    <ff:CachedImage.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </ff:CachedImage.Behaviors>
                     <ff:CachedImage.GestureRecognizers>
                         <TapGestureRecognizer
                             Command="{Binding Source={x:Reference Root}, Path=ImageViewCommand}"

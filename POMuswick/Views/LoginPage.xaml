@@ -29,6 +29,9 @@
                     Padding="10,5"
                     Stroke="{StaticResource Divider}"
                     StrokeShape="RoundRectangle 12">
+                    <Border.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </Border.Behaviors>
                     <Label
                         x:Name="AppVersion"
                         Style="{StaticResource CaptionText}"

@@ -64,6 +64,9 @@
                     TextColor="{StaticResource Primary}"
                     HorizontalOptions="Center"
                     VerticalOptions="Center">
+                    <Label.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </Label.Behaviors>
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding MenuTappedCommand}"/>
                     </Label.GestureRecognizers>
@@ -88,6 +91,9 @@
                     TextColor="{StaticResource Primary}"
                     VerticalOptions="Center"
                     HorizontalOptions="Center">
+                    <Label.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </Label.Behaviors>
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SearchTappedCommand}"/>
                     </Label.GestureRecognizers>
@@ -162,6 +168,9 @@
                             Stroke="{StaticResource Divider}"
                             StrokeShape="RoundRectangle 16"
                             StrokeThickness="1">
+                        <Border.Behaviors>
+                            <controls:TapFeedbackBehavior/>
+                        </Border.Behaviors>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding PastPurchasesCommand}"/>
                         </Border.GestureRecognizers>
@@ -193,6 +202,9 @@
                             Stroke="{StaticResource Divider}"
                             StrokeShape="RoundRectangle 16"
                             StrokeThickness="1">
+                        <Border.Behaviors>
+                            <controls:TapFeedbackBehavior/>
+                        </Border.Behaviors>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding RefreshDataCommand}"/>
                         </Border.GestureRecognizers>
@@ -243,6 +255,9 @@
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ShopNowCommand}"/>
                     </Grid.GestureRecognizers>
+                    <Grid.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </Grid.Behaviors>
                 </Grid>
 
                 <CollectionView
@@ -250,6 +265,7 @@
                     HeightRequest="300"
                     ItemsSource="{Binding CartItems}"
                     ItemsLayout="HorizontalList"
+                    ItemSizingStrategy="MeasureFirstItem"
                     SelectionMode="None"
                     RemainingItemsThreshold="4"
                     RemainingItemsThresholdReachedCommand="{Binding LoadMoreCartItemsCommand}"
@@ -296,6 +312,9 @@
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding NewItemsAllCommand}"/>
                     </Grid.GestureRecognizers>
+                    <Grid.Behaviors>
+                        <controls:TapFeedbackBehavior/>
+                    </Grid.Behaviors>
                 </Grid>
 
                 <CollectionView
@@ -303,6 +322,7 @@
                     HeightRequest="300"
                     ItemsSource="{Binding NewItems}"
                     ItemsLayout="HorizontalList"
+                    ItemSizingStrategy="MeasureFirstItem"
                     SelectionMode="None"
                     RemainingItemsThreshold="4"
                     RemainingItemsThresholdReachedCommand="{Binding LoadMoreNewItemsCommand}"

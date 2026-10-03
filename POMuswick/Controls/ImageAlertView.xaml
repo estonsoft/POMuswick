@@ -3,6 +3,7 @@
     x:Class="POMuswick.Controls.ImageAlertView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:POMuswick.Controls"
     xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     x:Name="this"
     IsVisible="False">
@@ -33,7 +34,7 @@
                         FontSize="16"
                         Text="Product Image Preview"
                         TextColor="#111111"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
 
                     <!--  X Close Button  -->
                     <Border
@@ -52,8 +53,11 @@
                             Text="&#xF00D;"
                             TextColor="#555555"
                             VerticalOptions="Center">
+                            <Label.Behaviors>
+                                <controls:TapFeedbackBehavior/>
+                            </Label.Behaviors>
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="CloseTapped" />
+                                <TapGestureRecognizer Tapped="CloseTapped"/>
                             </Label.GestureRecognizers>
                         </Label>
                     </Border>
@@ -61,7 +65,8 @@
                 </Grid>
 
                 <!--  Divider  -->
-                <BoxView HeightRequest="0.5" Color="#E0E0E0" />
+                <BoxView HeightRequest="0.5"
+                        Color="#E0E0E0"/>
 
                 <!--  Full Image via CachedImage  -->
                 <ff:CachedImage
@@ -72,7 +77,7 @@
                     HeightRequest="280"
                     Source="{Binding Source={x:Reference this}, Path=ImageSource}"
                     LoadingPlaceholder="logoicon.png"
-                    WidthRequest="280" />
+                    WidthRequest="280"/>
             </VerticalStackLayout>
         </Border>
     </Grid>
